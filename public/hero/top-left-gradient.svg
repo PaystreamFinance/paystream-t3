@@ -1,0 +1,23 @@
+<svg width="890" height="894" viewBox="0 0 890 894" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g style="mix-blend-mode:hard-light" filter="url(#filter0_f_15_1592)">
+        <path d="M689.919 439.5L372.419 693.5L200.419 439.5L516.419 200L689.919 439.5Z" fill="#D74F25" />
+    </g>
+    <g filter="url(#filter1_f_15_1592)">
+        <ellipse cx="574.139" cy="441.056" rx="193.455" ry="22.3498" transform="rotate(-42 574.139 441.056)"
+            fill="white" />
+    </g>
+    <defs>
+        <filter id="filter0_f_15_1592" x="0.418945" y="0" width="889.5" height="893.5" filterUnits="userSpaceOnUse"
+            color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+            <feGaussianBlur stdDeviation="100" result="effect1_foregroundBlur_15_1592" />
+        </filter>
+        <filter id="filter1_f_15_1592" x="329.587" y="210.534" width="489.105" height="461.044"
+            filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+            <feGaussianBlur stdDeviation="50" result="effect1_foregroundBlur_15_1592" />
+        </filter>
+    </defs>
+</svg>
