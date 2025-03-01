@@ -1,7 +1,7 @@
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 
-import Navbar from "@/app/_components/navbar";
+import Navbar from "@/components/navbar";
 import "@/styles/globals.css";
 import { TRPCReactProvider } from "@/trpc/react";
 

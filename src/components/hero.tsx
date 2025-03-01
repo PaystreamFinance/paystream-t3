@@ -14,7 +14,7 @@ const Hero: React.FC = () => {
         alt="hero-lines"
       />
 
-      <main className="relative flex min-h-screen w-full flex-col items-start justify-start border-x border-border-t3 text-white">
+      <main className="relative flex min-h-[968px] w-full flex-col items-start justify-start border-x border-border-t3 text-white">
         <div className="relative mt-4 h-[580px] w-full xl:mt-5">
           <Image
             src="/hero/lines.svg"
