@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import Faq from "@/components/faq";
 import Features from "@/components/features";
 import Flexible from "@/components/flexible";
 import Hero from "@/components/hero";
@@ -32,6 +33,7 @@ export default async function Home() {
         <Features />
         <PaymentSolution />
         <Flexible />
+        <Faq />
       </MaxWidthWrapper>
     </HydrateClient>
   );
