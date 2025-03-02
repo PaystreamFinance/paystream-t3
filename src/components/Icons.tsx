@@ -49,8 +49,8 @@ export const Icons = {
       <path
         d="M17.5 25.5L22 30L32.5 20"
         stroke="white"
-        stroke-width="2"
-        stroke-linecap="round"
+        strokeWidth="2"
+        strokeLinecap="round"
       />
     </svg>
   ),
@@ -70,9 +70,9 @@ export const Icons = {
       <path
         d="M5.25 12.75L12 6M12 6L6 6.00001M12 6V12"
         stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   ),
@@ -88,16 +88,16 @@ export const Icons = {
       <path
         d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
         stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M7.75 11.9999L10.58 14.8299L16.25 9.16992"
         stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   ),
@@ -110,7 +110,7 @@ export const Icons = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g clip-path="url(#clip0_1_3545)">
+      <g clipPath="url(#clip0_1_3545)">
         <path
           d="M20 4H4C2.9 4 2.01 4.9 2.01 6L2 18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z"
           fill="#9CE0FF"
@@ -135,9 +135,9 @@ export const Icons = {
       <path
         d="M14 3L9.8553 7.73684M3.50004 15L7.92109 9.94737M9.8553 7.73684L6.97829 3.67517C6.80317 3.42795 6.71562 3.30434 6.60245 3.21503C6.50225 3.13594 6.38783 3.07678 6.26537 3.04072C6.12708 3 5.9756 3 5.67265 3H4.54707C4.04686 3 3.79675 3 3.66191 3.10382C3.5445 3.19422 3.47323 3.33203 3.46733 3.48009C3.46055 3.65014 3.60512 3.85423 3.89425 4.26241L7.92109 9.94737M9.8553 7.73684L14.1058 13.7376C14.395 14.1458 14.5395 14.3499 14.5327 14.5199C14.5268 14.668 14.4556 14.8058 14.3382 14.8962C14.2033 15 13.9532 15 13.453 15H12.3274C12.0245 15 11.873 15 11.7347 14.9593C11.6123 14.9232 11.4978 14.8641 11.3976 14.785C11.2845 14.6957 11.1969 14.572 11.0218 14.3248L7.92109 9.94737"
         stroke="#9CE0FF"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   ),
