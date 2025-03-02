@@ -1,6 +1,7 @@
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 
+import Footer from "@/components/footer";
 import Navbar from "@/components/navbar";
 import "@/styles/globals.css";
 import { TRPCReactProvider } from "@/trpc/react";
@@ -20,6 +21,7 @@ export default function RootLayout({
         <TRPCReactProvider>
           <Navbar />
           {children}
+          <Footer />
         </TRPCReactProvider>
       </body>
     </html>

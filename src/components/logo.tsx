@@ -4,7 +4,7 @@ import React from "react";
 const Logo = () => {
   return (
     <Image
-      className="rounded-full"
+      className="select-none rounded-full"
       src="/logo.svg"
       width={32}
       height={32}

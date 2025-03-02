@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import React from "react";
+import Marquee from "react-fast-marquee";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Badge } from "./ui/badge";
 
 type Tabs = "lenders" | "borrowers" | "protocols" | "daos";
 
@@ -82,6 +84,22 @@ const PaymentSolution: React.FC = () => {
             found, they continue earning through Kamino and Marginfi, ensuring
             that your capital never sleeps.
           </p>
+          <div className="-ml-5 mt-3 w-full max-w-[360px] [mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)]">
+            <Marquee direction="left" speed={30} loop={0} className="w-fit">
+              <Badge variant="apy" className="mx-2">
+                3.9% APY
+              </Badge>
+              <Badge variant="apy" className="mx-2">
+                4% APY
+              </Badge>
+              <Badge variant="apy" className="mx-2">
+                4.1% APY
+              </Badge>
+              <Badge variant="apy" className="mx-2">
+                3.8% APY
+              </Badge>
+            </Marquee>
+          </div>
         </div>
 
         <div className="h-px w-[70px] rounded-full bg-[#9CE0FF4D]" />
