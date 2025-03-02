@@ -1,10 +1,11 @@
 import Image from "next/image";
 
-import { api, HydrateClient } from "@/trpc/server";
-
 import Features from "@/components/features";
+import Flexible from "@/components/flexible";
 import Hero from "@/components/hero";
 import MaxWidthWrapper from "@/components/max-width-wrapper";
+import PaymentSolution from "@/components/payment-solution";
+import { api, HydrateClient } from "@/trpc/server";
 
 export default async function Home() {
   const hello = await api.post.hello({ text: "from tRPC" });
@@ -29,6 +30,8 @@ export default async function Home() {
       <MaxWidthWrapper>
         <Hero />
         <Features />
+        <PaymentSolution />
+        <Flexible />
       </MaxWidthWrapper>
     </HydrateClient>
   );
