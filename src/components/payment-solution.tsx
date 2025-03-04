@@ -4,9 +4,9 @@ import Image from "next/image";
 import React from "react";
 import Marquee from "react-fast-marquee";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Badge } from "./ui/badge";
 
 type Tabs = "lenders" | "borrowers" | "protocols" | "daos";
 
