@@ -12,7 +12,14 @@ const globalForDb = globalThis as unknown as {
   conn: postgres.Sql | undefined;
 };
 
-const conn = globalForDb.conn ?? postgres(env.DATABASE_URL);
+// Configure connection for Neon DB which requires SSL
+const conn =
+  globalForDb.conn ??
+  postgres(env.DATABASE_URL, {
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  });
 if (env.NODE_ENV !== "production") globalForDb.conn = conn;
 
 export const db = drizzle(conn, { schema });
