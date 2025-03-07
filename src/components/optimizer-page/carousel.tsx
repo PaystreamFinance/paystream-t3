@@ -3,6 +3,7 @@ import * as React from "react";
 import OptimizersCard from "./optimizers-card";
 import "./carousel.css";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type CardVariant = "drift" | "kamino" | "save" | "marginfi";
 
@@ -14,6 +15,7 @@ export default function Carousel() {
   const [activeIndex, setActiveIndex] = React.useState(0);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const isManualScrollRef = React.useRef(false);
+  const isMobile = useIsMobile();
 
   /** @dev Change the cards data to add/remove cards */
   const cardsData: CarouselCard[] = [
@@ -25,6 +27,8 @@ export default function Carousel() {
 
   // Track scroll position and update active index
   React.useEffect(() => {
+    if (isMobile) return; // Skip for mobile
+
     const container = scrollContainerRef.current;
     if (!container) return;
 
@@ -46,11 +50,19 @@ export default function Carousel() {
         return;
       }
 
-      // Calculate card width (474px + 32px margin)
-      const cardWidth = 506;
+      // Calculate card width based on viewport size
+      const cardWidth =
+        container.querySelector("div[data-card]")?.clientWidth || 300;
+      const cardMargin =
+        parseInt(
+          window.getComputedStyle(
+            container.querySelector("div[data-card]") as Element,
+          ).marginRight,
+        ) || 16;
+      const totalCardWidth = cardWidth + cardMargin;
 
       // Calculate active index based on scroll position
-      const index = Math.round(scrollLeft / cardWidth);
+      const index = Math.round(scrollLeft / totalCardWidth);
 
       // Update active index
       setActiveIndex(Math.max(0, Math.min(index, cardsData.length - 1)));
@@ -74,10 +86,15 @@ export default function Carousel() {
       container.removeEventListener("scroll", handleScroll);
       container.removeEventListener("scrollend", handleScrollEnd);
     };
-  }, [cardsData.length]);
+  }, [cardsData.length, isMobile]);
 
   // Scroll to a specific card
   const scrollToCard = (index: number) => {
+    if (isMobile) {
+      setActiveIndex(index);
+      return;
+    }
+
     const container = scrollContainerRef.current;
     if (!container) return;
 
@@ -97,11 +114,19 @@ export default function Carousel() {
       return;
     }
 
-    // Calculate card width
-    const cardWidth = 506;
+    // Calculate card width based on viewport size
+    const cardWidth =
+      container.querySelector("div[data-card]")?.clientWidth || 300;
+    const cardMargin =
+      parseInt(
+        window.getComputedStyle(
+          container.querySelector("div[data-card]") as Element,
+        ).marginRight,
+      ) || 16;
+    const totalCardWidth = cardWidth + cardMargin;
 
     // Calculate scroll position
-    const scrollLeft = index * cardWidth;
+    const scrollLeft = index * totalCardWidth;
 
     // Scroll to position
     container.scrollTo({
@@ -110,6 +135,22 @@ export default function Carousel() {
     });
   };
 
+  // Mobile layout - stack cards vertically
+  if (isMobile) {
+    return (
+      <div className="flex w-full flex-col items-center gap-4">
+        <div className="flex w-full flex-col gap-4">
+          {cardsData.map((card, index) => (
+            <div key={index} className="w-full">
+              <OptimizersCard variant={card.variant} />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop layout - carousel
   return (
     <div className="flex w-full flex-col items-center gap-4">
       {/* Carousel container */}
@@ -122,7 +163,8 @@ export default function Carousel() {
           {cardsData.map((card, index) => (
             <div
               key={index}
-              className="mr-8 flex w-[474px] flex-none justify-center"
+              data-card
+              className="mr-3 flex w-[260px] flex-none justify-center sm:mr-4 sm:w-[320px] md:mr-6 md:w-[400px] lg:mr-8 lg:w-[474px]"
             >
               <OptimizersCard variant={card.variant} />
             </div>
