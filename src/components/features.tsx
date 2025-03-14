@@ -6,70 +6,89 @@ import Feat1 from "./feat-1";
 const Features: React.FC = () => {
   return (
     <div className="border-x border-t border-border-t3">
-      <div className="flex">
-        <div className="flex w-full flex-col items-start gap-6 border-r border-border-t3 px-[3.1rem] py-8">
-          <div className="flex items-center gap-3 text-4xl">
+      {/* First section - Mobile first with flex-col by default, row on md screens */}
+      <div className="flex flex-col md:flex-row">
+        <div className="flex w-full flex-col items-start gap-4 border-b border-border-t3 px-4 py-6 sm:gap-6 sm:px-6 md:border-b-0 md:border-r md:px-[3.1rem] md:py-8">
+          <div className="flex items-center gap-2 text-2xl sm:gap-3 sm:text-3xl md:text-4xl">
             <span className="font-medium text-[#BCEBFF80]">01</span>
             <h4 className="font-thin text-[#EAEAEA]">P2P Rate Matching</h4>
           </div>
-          <p className="leading-[17.28px] tracking-[-1%] text-[#FFFFFF3D]">
+          <p className="text-sm leading-[17.28px] tracking-[-1%] text-[#FFFFFF3D] sm:text-base">
             Match directly with other users for better rates than traditional
             platforms. When no match is found, automatically get the best rates
             from Kamino and MarginFi. Think of it as smart routing for your
             money.
           </p>
           {/* <Feat1 /> */}
-          <Image
-            src="/features/feat1.svg"
-            className="scale-125"
-            width={361}
-            height={241}
-            alt="feat1"
-          />
+          <div className="flex w-full justify-center md:justify-start">
+            <Image
+              src="/features/feat1.svg"
+              className="scale-100 sm:scale-110 md:scale-125"
+              width={300}
+              height={200}
+              alt="P2P Rate Matching"
+              style={{
+                maxWidth: "100%",
+                height: "auto",
+              }}
+            />
+          </div>
         </div>
 
-        <div className="flex w-full flex-col items-start gap-6 px-[3.1rem] py-8">
-          <div className="flex items-center gap-3 text-4xl">
+        <div className="flex w-full flex-col items-start gap-4 px-4 py-6 sm:gap-6 sm:px-6 md:px-[3.1rem] md:py-8">
+          <div className="flex items-center gap-2 text-2xl sm:gap-3 sm:text-3xl md:text-4xl">
             <span className="font-medium text-[#BCEBFF80]">02</span>
             <h4 className="font-thin text-[#EAEAEA]">Flexible Streaming</h4>
           </div>
-          <p className="leading-[17.28px] tracking-[-1%] text-[#FFFFFF3D]">
+          <p className="text-sm leading-[17.28px] tracking-[-1%] text-[#FFFFFF3D] sm:text-base">
             Pay teams, contributors, or lenders in any way that works for you.
             Daily salaries, milestone-based payments, or custom curves – all
             with minimal fees. Perfect for DAOs, startups, and organizations
             that value flexibility.
           </p>
-          <Image
-            src="/features/feat2.svg"
-            className="scale-110"
-            width={361}
-            height={241}
-            alt="feat1"
-          />
+          <div className="flex w-full justify-center md:justify-start">
+            <Image
+              src="/features/feat2.svg"
+              className="scale-100 sm:scale-110"
+              width={300}
+              height={200}
+              alt="Flexible Streaming"
+              style={{
+                maxWidth: "100%",
+                height: "auto",
+              }}
+            />
+          </div>
         </div>
       </div>
 
-      <div className="flex border-y border-border-t3">
-        <div className="flex w-full max-w-[53%] flex-col items-start gap-6 px-[3.1rem] py-8">
-          <div className="flex w-full items-center gap-3 text-4xl">
-            <span className="font-medium text-[#BCEBFF80]">02</span>
+      {/* Second section - Mobile first with flex-col by default, custom layout on md screens */}
+      <div className="flex flex-col border-y border-border-t3 md:flex-row">
+        <div className="flex w-full flex-col items-start gap-4 px-4 py-6 sm:gap-6 sm:px-6 md:max-w-[53%] md:px-[3.1rem] md:py-8">
+          <div className="flex w-full items-center gap-2 text-2xl sm:gap-3 sm:text-3xl md:text-4xl">
+            <span className="font-medium text-[#BCEBFF80]">03</span>
             <h4 className="font-thin text-[#EAEAEA]">Flexible Streaming</h4>
           </div>
           <hr className="h-px w-full rounded-full border-border-t3" />
-          <p className="leading-[17.28px] tracking-[-1%] text-[#FFFFFF3D]">
+          <p className="text-sm leading-[17.28px] tracking-[-1%] text-[#FFFFFF3D] sm:text-base">
             Pay teams, contributors, or lenders in any way that works for you.
             Daily salaries, milestone-based payments, or custom curves – all
             with minimal fees. Perfect for DAOs, startups, and organizations
             that value flexibility.
           </p>
         </div>
-        <Image
-          src="/features/feat3.svg"
-          className=""
-          width={379}
-          height={170}
-          alt="feat1"
-        />
+        <div className="flex w-full justify-center md:justify-start">
+          <Image
+            src="/features/feat3.svg"
+            width={300}
+            height={150}
+            alt="Feature 3"
+            style={{
+              maxWidth: "100%",
+              height: "auto",
+            }}
+          />
+        </div>
       </div>
     </div>
   );
