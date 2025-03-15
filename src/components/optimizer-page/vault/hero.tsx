@@ -1,4 +1,6 @@
-import VaultGraph from "./graph";
+import VaultActions from "./actions";
+import { VaultGraph } from "./graph";
+
 import StatsGrid, { StatsGridHorizontal } from "./stats-grid";
 import VaultDropdown from "./vault-dropdown";
 
@@ -20,7 +22,7 @@ export default function VaultHero() {
               projectedEarnings: "$74.6K",
             }}
           />
-          <div className="bg-[#9CE0FF05] p-4"></div>
+          <VaultActions />
         </div>
         <StatsGridHorizontal
           stats={{

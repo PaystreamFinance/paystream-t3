@@ -8,7 +8,12 @@ import {
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { useVaultStateStore } from "@/store/vault-state-store";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+} from "lucide-react";
 
 export default function VaultDropdown() {
   const { vaultState, setVaultState } = useVaultStateStore();
@@ -38,6 +43,39 @@ export default function VaultDropdown() {
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setVaultState("withdraw")}>
           Withdraw
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+export function VaultDropdownMonth() {
+  const [open, setOpen] = React.useState(false);
+  const [month, setMonth] = React.useState("1 month");
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button className="w-fit bg-[#9CE0FF14] font-body text-white hover:bg-[#9CE0FF14]">
+          {month}
+          {open ? (
+            <ChevronUp className="ml-1 h-4 w-4" />
+          ) : (
+            <ChevronDown className="ml-1 h-4 w-4" />
+          )}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-fit border-none bg-[#9CE0FF0F] font-body text-[#9CE0FF] backdrop-blur-lg">
+        <DropdownMenuItem onClick={() => setMonth("1 month")}>
+          1 month
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setMonth("3 months")}>
+          3 months
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setMonth("6 months")}>
+          6 months
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setMonth("9 months")}>
+          9 months
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
