@@ -14,6 +14,7 @@ export default {
         firaCode: ["Fira Code", "serif"],
         inter: ["Inter", "serif"],
         jetbrainsMono: ["JetBrains Mono", "serif"],
+        darkerGrotesque: ["var(--font-darker-grotesque)", "serif"],
         ibmPlexSerif: ["IBM Plex Serif", "serif"],
       },
       borderRadius: {
