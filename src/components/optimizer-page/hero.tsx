@@ -17,6 +17,7 @@ const Hero: React.FC = () => {
             </span>
           </h1>
 
+          {/* Stats for mobile view */}
           <div className="mb-8 w-full md:hidden">
             <Stats />
           </div>
@@ -24,6 +25,7 @@ const Hero: React.FC = () => {
           <Carousel />
         </div>
 
+        {/* Stats for desktop view */}
         <div className="hidden w-full md:block">
           <Stats />
         </div>

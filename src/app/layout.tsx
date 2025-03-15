@@ -1,5 +1,6 @@
 import { GeistSans } from "geist/font/sans";
 import { Darker_Grotesque } from "next/font/google";
+import localFont from "next/font/local";
 import { type Metadata } from "next";
 
 import Footer from "@/components/footer";
@@ -19,13 +20,18 @@ const darkerGrotesque = Darker_Grotesque({
   weight: ["300", "400", "500", "600", "700", "800", "900"],
 });
 
+const helvetica = localFont({
+  src: "../fonts/helvetica/Helvetica.ttf",
+  variable: "--font-helvetica",
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
-      className={`${GeistSans.variable} ${darkerGrotesque.variable}`}
+      className={`${GeistSans.variable} ${darkerGrotesque.variable} ${helvetica.variable}`}
     >
       <body className="overflow-x-hidden bg-bg-t3 bg-[url('/bg-noise.svg')]">
         <TRPCReactProvider>

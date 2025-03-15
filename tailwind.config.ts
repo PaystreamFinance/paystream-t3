@@ -16,6 +16,7 @@ export default {
         jetbrainsMono: ["JetBrains Mono", "serif"],
         darkerGrotesque: ["var(--font-darker-grotesque)", "serif"],
         ibmPlexSerif: ["IBM Plex Serif", "serif"],
+        body: ["var(--font-helvetica)", "serif"],
       },
       borderRadius: {
         lg: "var(--radius)",

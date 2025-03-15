@@ -2,15 +2,22 @@
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-export default function Stats() {
+export default function Stats({
+  stats,
+  underline = false,
+}: {
+  stats?: { title: string; value: string }[];
+  underline?: boolean;
+}) {
   const isMobile = useIsMobile();
 
-  const stats = [
-    { title: "Total Supply", value: "$102.3k" },
-    { title: "Total Borrow", value: "$102.3k" },
-    { title: "Matched Volume", value: "$102.3k" },
-    { title: "Available Liquidity", value: "$102.3k" },
-  ];
+  if (!stats) {
+    throw new Error("Stats is required");
+  }
+
+  if (stats.length > 4) {
+    throw new Error("Stats must be less than 4");
+  }
 
   return (
     <div
@@ -19,7 +26,7 @@ export default function Stats() {
         isMobile ? "grid-cols-2" : "grid-cols-4",
       )}
     >
-      {stats.map((stat, index) => (
+      {stats?.map((stat, index) => (
         <div
           key={index}
           className={cn(
@@ -33,7 +40,12 @@ export default function Stats() {
               "border-b border-border-t3",
           )}
         >
-          <span className="font-darkerGrotesque text-xs text-[#BCEBFF80] sm:text-sm md:text-base lg:text-lg">
+          <span
+            className={cn(
+              "font-darkerGrotesque text-xs text-[#BCEBFF80] sm:text-sm md:text-base lg:text-lg",
+              underline && "underline decoration-dotted",
+            )}
+          >
             {stat.title}
           </span>
           <span className="font-darkerGrotesque text-lg font-thin text-white sm:text-xl md:text-2xl lg:text-3xl">
