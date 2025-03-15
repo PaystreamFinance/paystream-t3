@@ -46,6 +46,9 @@ const PaymentSolution: React.FC = () => {
             "text-xs sm:text-sm",
             selectedTab === "lenders" &&
               "!h-8 bg-[#BCEBFF] text-[#02142B] sm:!h-9",
+            "text-xs sm:text-sm",
+            selectedTab === "lenders" &&
+              "!h-8 bg-[#BCEBFF] text-[#02142B] sm:!h-9",
           )}
           onClick={() => setSelectedTab("lenders")}
         >
@@ -54,6 +57,9 @@ const PaymentSolution: React.FC = () => {
         <Button
           variant="ghost"
           className={cn(
+            "text-xs sm:text-sm",
+            selectedTab === "borrowers" &&
+              "!h-8 bg-[#BCEBFF] text-[#02142B] sm:!h-9",
             "text-xs sm:text-sm",
             selectedTab === "borrowers" &&
               "!h-8 bg-[#BCEBFF] text-[#02142B] sm:!h-9",
@@ -68,6 +74,9 @@ const PaymentSolution: React.FC = () => {
             "text-xs sm:text-sm",
             selectedTab === "protocols" &&
               "!h-8 bg-[#BCEBFF] text-[#02142B] sm:!h-9",
+            "text-xs sm:text-sm",
+            selectedTab === "protocols" &&
+              "!h-8 bg-[#BCEBFF] text-[#02142B] sm:!h-9",
           )}
           onClick={() => setSelectedTab("protocols")}
         >
@@ -76,6 +85,9 @@ const PaymentSolution: React.FC = () => {
         <Button
           variant="ghost"
           className={cn(
+            "text-xs sm:text-sm",
+            selectedTab === "daos" &&
+              "!h-8 bg-[#BCEBFF] text-[#02142B] sm:!h-9",
             "text-xs sm:text-sm",
             selectedTab === "daos" &&
               "!h-8 bg-[#BCEBFF] text-[#02142B] sm:!h-9",
