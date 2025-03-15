@@ -4,8 +4,9 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import Carousel from "./carousel";
 import Stats from "./stats";
-
-const Hero: React.FC = () => {
+import { getStats } from "@/lib/data";
+const Hero: React.FC = async () => {
+  const stats = await getStats();
   return (
     <>
       <main className="relative flex min-h-[500px] w-full flex-col items-start justify-between border-x border-border-t3 px-6 text-white sm:min-h-[600px] sm:px-0 md:min-h-[700px] lg:min-h-[842px]">
@@ -19,7 +20,7 @@ const Hero: React.FC = () => {
 
           {/* Stats for mobile view */}
           <div className="mb-8 w-full md:hidden">
-            <Stats />
+            <Stats stats={stats} />
           </div>
 
           <Carousel />
@@ -27,7 +28,7 @@ const Hero: React.FC = () => {
 
         {/* Stats for desktop view */}
         <div className="hidden w-full md:block">
-          <Stats />
+          <Stats stats={stats} />
         </div>
       </main>
     </>
