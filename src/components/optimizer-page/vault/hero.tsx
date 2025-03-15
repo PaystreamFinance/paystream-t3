@@ -1,4 +1,4 @@
-import VaultActions from "./actions";
+import VaultActions from "./vault-actions";
 import { VaultGraph } from "./graph";
 
 import StatsGrid, { StatsGridHorizontal } from "./stats-grid";

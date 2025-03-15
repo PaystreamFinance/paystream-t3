@@ -29,14 +29,54 @@ import {
 import { Button } from "@/components/ui/button";
 import { useVaultStateStore } from "@/store/vault-state-store";
 import { VaultDropdownMonth } from "./vault-dropdown";
+import { Day } from "react-day-picker";
 const chartData = [
-  { month: "January", apy: 18 },
-  { month: "February", apy: 30 },
-  { month: "March", apy: 23 },
-  { month: "April", apy: 7 },
-  { month: "May", apy: 20 },
-  { month: "June", apy: 21 },
+  { month: "January", apy: 18, day: 100 },
+  { month: "February", apy: 30, day: 200 },
+  { month: "March", apy: 23, day: 300 },
+  { month: "April", apy: 7, day: 400 },
+  { month: "May", apy: 20, day: 500 },
+  { month: "June", apy: 21, day: 600 },
+  { month: "July", apy: 21, day: 700 },
+  { month: "August", apy: 21, day: 800 },
+  { month: "September", apy: 21, day: 900 },
+  { month: "October", apy: 21, day: 1000 },
+  { month: "November", apy: 21, day: 1100 },
+  { month: "December", apy: 21, day: 1200 },
+  { month: "January", apy: 21, day: 1300 },
+  { month: "February", apy: 21, day: 1400 },
+  { month: "March", apy: 21, day: 1500 },
+  { month: "April", apy: 21, day: 1600 },
+  { month: "May", apy: 21, day: 1700 },
+  { month: "June", apy: 21, day: 1800 },
 ];
+
+function getChartData(count = 18, startApy = 5, increment = 1.5) {
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  return Array.from({ length: count }, (_, i) => {
+    const monthIndex = i % 12;
+    const apy = startApy + i * increment;
+    return {
+      month: months[monthIndex],
+      apy: parseFloat(apy.toFixed(1)),
+      day: (i + 1) * 100,
+    };
+  });
+}
 
 const chartConfig = {
   apy: {
@@ -47,6 +87,7 @@ const chartConfig = {
 
 export function VaultGraph() {
   const { vaultState, setVaultState } = useVaultStateStore();
+  const data = getChartData();
 
   return (
     <Card className="w-full border-none bg-transparent">
@@ -62,7 +103,8 @@ export function VaultGraph() {
           </div>
           <div className="flex items-start justify-end gap-1 px-8 py-6">
             <Button
-              className={`w-fit bg-[#9CE0FF0F] font-body text-[#9CE0FF] hover:bg-[#BCEBFF] ${
+              variant="outline"
+              className={`w-fit border-border-t3 bg-transparent font-body text-[#BCEBFF80] hover:bg-[#BCEBFF] ${
                 vaultState === "supply" ? "bg-[#BCEBFF] text-[#02142B]" : ""
               }`}
               onClick={() => setVaultState("supply")}
@@ -94,7 +136,7 @@ export function VaultGraph() {
       <CardContent>
         <ChartContainer config={chartConfig}>
           <AreaChart
-            data={chartData}
+            data={data}
             margin={{
               left: 12,
               right: 12,
@@ -108,7 +150,7 @@ export function VaultGraph() {
               tickMargin={8}
               tickFormatter={(value) => value.slice(0, 3)}
             />
-            <YAxis hide />
+            <YAxis dataKey="day" tickLine={false} axisLine={false} />
             <Tooltip
               cursor={{
                 stroke: "#9CE0FF01",
