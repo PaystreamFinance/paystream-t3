@@ -23,9 +23,17 @@ const PaymentSolution: React.FC = () => {
         alt="middle-gradient"
       />
 
-      <h1 className="text-center text-3xl font-thin leading-[1.1] text-[#EAEAEA] sm:text-4xl md:text-5xl lg:text-[64px]">
+      <h1
+        style={{
+          background:
+            "linear-gradient(86.43deg, #EAEAEA 64.1%, rgba(215, 79, 37, 0.6) 95.45%)",
+          backgroundClip: "text",
+          color: "transparent",
+        }}
+        className="text-center text-3xl font-thin sm:text-4xl md:text-5xl lg:text-[64px]"
+      >
         Payment solutions <br />{" "}
-        <span className="font-ibmPlexSerif font-normal italic">
+        <span className="font-ibmPlexSerif font-normal italic !leading-[1.17]">
           {" "}
           For everyone
         </span>
@@ -35,6 +43,9 @@ const PaymentSolution: React.FC = () => {
         <Button
           variant="ghost"
           className={cn(
+            "text-xs sm:text-sm",
+            selectedTab === "lenders" &&
+              "!h-8 bg-[#BCEBFF] text-[#02142B] sm:!h-9",
             "text-xs sm:text-sm",
             selectedTab === "lenders" &&
               "!h-8 bg-[#BCEBFF] text-[#02142B] sm:!h-9",
@@ -49,6 +60,9 @@ const PaymentSolution: React.FC = () => {
             "text-xs sm:text-sm",
             selectedTab === "borrowers" &&
               "!h-8 bg-[#BCEBFF] text-[#02142B] sm:!h-9",
+            "text-xs sm:text-sm",
+            selectedTab === "borrowers" &&
+              "!h-8 bg-[#BCEBFF] text-[#02142B] sm:!h-9",
           )}
           onClick={() => setSelectedTab("borrowers")}
         >
@@ -60,6 +74,9 @@ const PaymentSolution: React.FC = () => {
             "text-xs sm:text-sm",
             selectedTab === "protocols" &&
               "!h-8 bg-[#BCEBFF] text-[#02142B] sm:!h-9",
+            "text-xs sm:text-sm",
+            selectedTab === "protocols" &&
+              "!h-8 bg-[#BCEBFF] text-[#02142B] sm:!h-9",
           )}
           onClick={() => setSelectedTab("protocols")}
         >
@@ -68,6 +85,9 @@ const PaymentSolution: React.FC = () => {
         <Button
           variant="ghost"
           className={cn(
+            "text-xs sm:text-sm",
+            selectedTab === "daos" &&
+              "!h-8 bg-[#BCEBFF] text-[#02142B] sm:!h-9",
             "text-xs sm:text-sm",
             selectedTab === "daos" &&
               "!h-8 bg-[#BCEBFF] text-[#02142B] sm:!h-9",
@@ -83,31 +103,109 @@ const PaymentSolution: React.FC = () => {
         <div className="h-px w-[50px] rounded-full bg-[#9CE0FF4D] sm:w-[60px] md:w-[70px]" />
 
         <div className="my-4 flex w-full max-w-full flex-col items-start justify-center gap-3 px-4 sm:my-5 sm:max-w-[350px] sm:px-0 md:my-6 md:gap-4">
-          <h5 className="font-ibmPlexSerif text-xl font-medium italic text-[#BCEBFF] sm:text-2xl">
-            Your capital never sleeps.
-          </h5>
-          <p className="text-sm font-normal leading-[1.4] text-[#BCEBFF99] md:text-base md:leading-[17.6px]">
-            Instead of relying solely on volatile DEX fees, your funds are
-            matched with borrowers directly at optimized rates. If no match is
-            found, they continue earning through Kamino and Marginfi, ensuring
-            that your capital never sleeps.
-          </p>
-          <div className="-ml-5 mt-2 w-full max-w-full [mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)] sm:max-w-[360px] md:mt-3">
-            <Marquee direction="left" speed={30} loop={0} className="w-fit">
-              <Badge variant="apy" className="mx-2 text-xs sm:text-sm">
-                3.9% APY
-              </Badge>
-              <Badge variant="apy" className="mx-2 text-xs sm:text-sm">
-                4% APY
-              </Badge>
-              <Badge variant="apy" className="mx-2 text-xs sm:text-sm">
-                4.1% APY
-              </Badge>
-              <Badge variant="apy" className="mx-2 text-xs sm:text-sm">
-                3.8% APY
-              </Badge>
-            </Marquee>
-          </div>
+          {selectedTab === "lenders" && (
+            <>
+              <h5 className="font-ibmPlexSerif text-xl font-medium italic text-[#BCEBFF] sm:text-2xl">
+                Your capital never sleeps.
+              </h5>
+              <p className="text-sm font-normal leading-[1.4] text-[#BCEBFF99] md:text-base md:leading-[17.6px]">
+                Instead of relying solely on volatile DEX fees, your funds are
+                matched with borrowers directly at optimized rates. If no match
+                is found, they continue earning through Kamino and Marginfi,
+                ensuring that your capital never sleeps.
+              </p>
+              <div className="-ml-5 mt-2 w-full max-w-full [mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)] sm:max-w-[360px] md:mt-3">
+                <Marquee direction="left" speed={30} loop={0} className="w-fit">
+                  <Badge variant="apy" className="mx-2 text-xs sm:text-sm">
+                    3.9% APY
+                  </Badge>
+                  <Badge variant="apy" className="mx-2 text-xs sm:text-sm">
+                    4% APY
+                  </Badge>
+                  <Badge variant="apy" className="mx-2 text-xs sm:text-sm">
+                    4.1% APY
+                  </Badge>
+                  <Badge variant="apy" className="mx-2 text-xs sm:text-sm">
+                    3.8% APY
+                  </Badge>
+                </Marquee>
+              </div>
+            </>
+          )}
+
+          {selectedTab === "borrowers" && (
+            <>
+              <h5 className="font-ibmPlexSerif text-xl font-medium italic text-[#BCEBFF] sm:text-2xl">
+                Borrow on your own terms
+              </h5>
+              <p className="text-sm font-normal leading-[1.4] text-[#BCEBFF99] md:text-base md:leading-[17.6px]">
+                No more rigid repayment schedules. Customize your loan
+                repayments with linear, milestone-based, or custom streams that
+                match your cash flow. Flexible borrowing, built for startups,
+                freelancers, and DAOs.
+              </p>
+              <div className="-ml-5 mt-2 w-full max-w-full [mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)] sm:max-w-[360px] md:mt-3">
+                <Marquee direction="left" speed={30} loop={0} className="w-fit">
+                  <Badge variant="apy" className="mx-2 text-xs sm:text-sm">
+                    Linear
+                  </Badge>
+                  <Badge variant="apy" className="mx-2 text-xs sm:text-sm">
+                    Milestone-based
+                  </Badge>
+                  <Badge variant="apy" className="mx-2 text-xs sm:text-sm">
+                    Custom
+                  </Badge>
+                </Marquee>
+              </div>
+            </>
+          )}
+
+          {selectedTab === "protocols" && (
+            <>
+              <h5 className="font-ibmPlexSerif text-xl font-medium italic text-[#BCEBFF] sm:text-2xl">
+                Optimize your liquidity, maximize returns.
+              </h5>
+              <p className="text-sm font-normal leading-[1.4] text-[#BCEBFF99] md:text-base md:leading-[17.6px]">
+                Idle liquidity hurts your bottom line. PayStream redirects
+                unused funds into lending opportunities, keeping capital
+                productive—even during market lulls. More efficiency, better
+                returns.
+              </p>
+              <div className="-ml-5 mt-2 w-full max-w-full [mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)] sm:max-w-[360px] md:mt-3">
+                <Marquee direction="left" speed={30} loop={0} className="w-fit">
+                  <Badge variant="apy" className="mx-2 text-xs sm:text-sm">
+                    Earn interest
+                  </Badge>
+                  <Badge variant="apy" className="mx-2 text-xs sm:text-sm">
+                    Enhance capital efficiency
+                  </Badge>
+                </Marquee>
+              </div>
+            </>
+          )}
+
+          {selectedTab === "daos" && (
+            <>
+              <h5 className="font-ibmPlexSerif text-xl font-medium italic text-[#BCEBFF] sm:text-2xl">
+                Automate your treasury, pay seamlessly.
+              </h5>
+              <p className="text-sm font-normal leading-[1.4] text-[#BCEBFF99] md:text-base md:leading-[17.6px]">
+                Managing contributor payments, grants, and vesting is complex.
+                With PayStream, set up automated payment streams that ensure
+                funds are released on time, every time.
+              </p>
+              <div className="-ml-5 mt-2 w-full max-w-full [mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)] sm:max-w-[360px] md:mt-3">
+                <Marquee direction="left" speed={30} loop={0} className="w-fit">
+                  <Badge variant="apy" className="mx-2 text-xs sm:text-sm">
+                    Contributor salaries
+                  </Badge>
+                  <Badge variant="apy" className="mx-2 text-xs sm:text-sm">
+                    Milestone-based grants
+                  </Badge>
+                </Marquee>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="h-px w-[50px] rounded-full bg-[#9CE0FF4D] sm:w-[60px] md:w-[70px]" />
