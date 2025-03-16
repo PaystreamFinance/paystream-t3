@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 import Coins from "@/components/coins";
 import Faq from "@/components/faq";
 import Features from "@/components/features";

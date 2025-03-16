@@ -1,9 +1,7 @@
-import React from "react";
-
 import Image from "next/image";
 import Link from "next/link";
-import { Icons } from "./Icons";
-import Logo from "./logo";
+import React from "react";
+
 import MaxWidthWrapper from "./max-width-wrapper";
 
 const Footer: React.FC = () => {
@@ -52,21 +50,25 @@ const Footer: React.FC = () => {
               <Link href="#">Docs</Link>
             </div>
             <div className="flex w-full flex-row items-center justify-start gap-6 text-[#BCEBFF99]">
-              <Image
-                src="/social/x-com.svg"
-                alt="Twitter"
-                width={24}
-                height={24}
-                className="cursor-pointer"
-              />
+              <Link href="https://x.com/Paystream_" target="_blank">
+                <Image
+                  src="/social/x-com.svg"
+                  alt="Twitter"
+                  width={24}
+                  height={24}
+                  className="cursor-pointer"
+                />
+              </Link>
 
-              <Image
-                src="/social/discord.svg"
-                alt="Discord"
-                width={24}
-                height={24}
-                className="cursor-pointer"
-              />
+              <Link href="https://discord.gg/kDYJWSVe" target="_blank">
+                <Image
+                  src="/social/discord.svg"
+                  alt="Discord"
+                  width={24}
+                  height={24}
+                  className="cursor-pointer"
+                />
+              </Link>
             </div>
           </div>
           <div className="flex flex-col items-center justify-between p-6">
@@ -74,13 +76,15 @@ const Footer: React.FC = () => {
               <p>Smarter Lending, Easier Borrowing</p>
             </div>
             <div className="flex h-14 w-full flex-row items-center justify-between gap-7 border border-border-t3 p-4 text-[#BCEBFF99]">
-              <Image
-                src="/social/telegram.svg"
-                alt="Telegram"
-                width={24}
-                height={24}
-                className="cursor-pointer"
-              />
+              <Link href="https://t.me/+3jh3Yg2IBXJjMTRl" target="_blank">
+                <Image
+                  src="/social/telegram.svg"
+                  alt="Telegram"
+                  width={24}
+                  height={24}
+                  className="cursor-pointer"
+                />
+              </Link>
               <p>Chat with us</p>
             </div>
           </div>

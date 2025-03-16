@@ -1,4 +1,5 @@
 "use client";
+
 import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
@@ -26,8 +27,7 @@ const navItems = [
   },
   {
     label: "Whitepaper",
-    href: "/docs",
-    target: "_blank",
+    href: "/whitepaper.pdf",
   },
 ];
 
@@ -38,7 +38,7 @@ const mobileMenuItems = [
   },
   {
     label: "Optimisers",
-    href: "/optimisers",
+    href: "/optimizers",
   },
 ];
 
@@ -53,7 +53,9 @@ const Navbar: React.FC = () => {
   return (
     <div className="border-b border-border-t3">
       <MaxWidthWrapper className="flex items-center justify-between border-x border-border-t3 px-6 py-5">
-        <Logo />
+        <Link href="/">
+          <Logo />
+        </Link>
 
         {/* Mobile Menu Button */}
         {isMobile && (

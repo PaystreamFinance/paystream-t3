@@ -1,7 +1,6 @@
 import React from "react";
 
 import Image from "next/image";
-import Feat1 from "./feat-1";
 
 const Features: React.FC = () => {
   return (
