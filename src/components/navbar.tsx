@@ -1,8 +1,8 @@
 "use client";
+import { Menu, X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { Menu, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -99,7 +99,9 @@ const Navbar: React.FC = () => {
               </Link>
             ))}
 
-            <Button variant="primary">Join Waitlist</Button>
+            <Link href="https://forms.gle/XiB5bhjWbp6uY9Ss8" target="_blank">
+              <Button variant="primary">Join Waitlist</Button>
+            </Link>
           </div>
         )}
 

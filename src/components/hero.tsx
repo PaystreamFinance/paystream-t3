@@ -5,6 +5,7 @@ import Image from "next/image";
 import React from "react";
 
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const Hero: React.FC = () => {
   return (
@@ -75,9 +76,11 @@ const Hero: React.FC = () => {
             with the perfect rates.
           </p>
 
-          <Button variant="shady" className="mt-7">
-            Join Waitlist
-          </Button>
+          <Link href="https://forms.gle/XiB5bhjWbp6uY9Ss8" target="_blank">
+            <Button variant="shady" className="mt-7">
+              Join Waitlist
+            </Button>
+          </Link>
         </div>
       </main>
     </>

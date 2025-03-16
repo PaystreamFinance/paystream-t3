@@ -19,7 +19,7 @@ const Footer: React.FC = () => {
       </div>
       <MaxWidthWrapper className="flex flex-col items-center">
         <div className="mt-32 grid h-72 w-full grid-cols-3 divide-x divide-border-t3 border border-border-t3 bg-bg-t3">
-          <div className="flex flex-col items-start justify-between p-6">
+          <div className="flex flex-col items-start justify-between p-6 px-4">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#9FB2C2]">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -38,10 +38,10 @@ const Footer: React.FC = () => {
                 />
               </svg>
             </div>
-            <div className="flex w-full flex-row items-start justify-start gap-7 text-[#BCEBFF99]">
-              <Link href="#">Optimisers</Link>
-              <Link href="#">Features</Link>
-              <Link href="#">Pricing</Link>
+            <div className="flex w-full flex-row items-start justify-start gap-5 text-[#BCEBFF99]">
+              <Link href="#">Support</Link>
+              <Link href="#">Terms of service</Link>
+              <Link href="#">License</Link>
             </div>
           </div>
           <div className="flex flex-col items-start justify-between p-6">
