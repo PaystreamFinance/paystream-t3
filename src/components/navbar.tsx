@@ -14,7 +14,7 @@ import MaxWidthWrapper from "./max-width-wrapper";
 const navItems = [
   {
     label: "What",
-    href: "#features",
+    href: "/#features",
   },
   {
     label: "How to earn?",
@@ -23,7 +23,7 @@ const navItems = [
   },
   {
     label: "Benefits",
-    href: "#payment-solutions",
+    href: "/#payment-solutions",
   },
   {
     label: "Whitepaper",

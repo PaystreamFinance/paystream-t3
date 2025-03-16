@@ -47,11 +47,11 @@ const Footer: React.FC = () => {
           {/* Second column */}
           <div className="flex items-start justify-start p-6 lg:flex-col lg:items-start lg:justify-between lg:gap-6">
             <div className="flex w-full flex-col items-start justify-start gap-3 text-[#BCEBFF99]">
-              <Link href="#features">What</Link>
+              <Link href="/#features">What</Link>
               <Link href="#" target="_blank">
-                How
+                How to earn?
               </Link>
-              <Link href="#payment-solutions">Benefits</Link>
+              <Link href="/#payment-solutions">Benefits</Link>
               <Link href="/whitepaper.pdf" target="_blank">
                 Docs
               </Link>
