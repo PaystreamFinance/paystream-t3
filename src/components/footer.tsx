@@ -44,10 +44,14 @@ const Footer: React.FC = () => {
           </div>
           <div className="flex flex-col items-start justify-between p-6">
             <div className="flex w-full flex-col items-start justify-between text-[#BCEBFF99]">
-              <Link href="#">What</Link>
-              <Link href="#">How</Link>
-              <Link href="#">Benefits</Link>
-              <Link href="#">Docs</Link>
+              <Link href="#features">What</Link>
+              <Link href="#" target="_blank">
+                How to earn?
+              </Link>
+              <Link href="#payment-solutions">Benefits</Link>
+              <Link href="/whitepaper.pdf" target="_blank">
+                Whitepaper
+              </Link>
             </div>
             <div className="flex w-full flex-row items-center justify-start gap-6 text-[#BCEBFF99]">
               <Link href="https://x.com/Paystream_" target="_blank">

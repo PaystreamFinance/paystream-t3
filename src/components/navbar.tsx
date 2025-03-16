@@ -18,7 +18,7 @@ const navItems = [
   },
   {
     label: "How to earn?",
-    href: "/how",
+    href: "#",
     target: "_blank",
   },
   {
@@ -28,6 +28,7 @@ const navItems = [
   {
     label: "Whitepaper",
     href: "/whitepaper.pdf",
+    target: "_blank",
   },
 ];
 
