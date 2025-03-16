@@ -38,10 +38,10 @@ const Footer: React.FC = () => {
                 />
               </svg>
             </div>
-            <div className="flex w-full flex-row items-start justify-start gap-5 text-[#BCEBFF99]">
+            <div className="flex w-full flex-row items-start justify-start gap-5 text-sm text-[#BCEBFF99]">
               <Link href="#">Support</Link>
               <Link href="#">Terms of service</Link>
-              <Link href="#">License</Link>
+              <Link href="#">Legal Notice</Link>
             </div>
           </div>
           <div className="flex flex-col items-start justify-between p-6">

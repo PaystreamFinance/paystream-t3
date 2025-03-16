@@ -5,7 +5,7 @@ import Feat1 from "./feat-1";
 
 const Features: React.FC = () => {
   return (
-    <div className="border-x border-t border-border-t3">
+    <div id="features" className="border-x border-t border-border-t3">
       {/* First section - Mobile first with flex-col by default, row on md screens */}
       <div className="flex flex-col md:flex-row">
         <div className="flex w-full flex-col items-start gap-4 border-b border-border-t3 px-4 py-6 sm:gap-6 sm:px-6 md:border-b-0 md:border-r md:px-[3.1rem] md:py-8">

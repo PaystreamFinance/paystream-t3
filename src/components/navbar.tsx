@@ -13,19 +13,21 @@ import MaxWidthWrapper from "./max-width-wrapper";
 const navItems = [
   {
     label: "What",
-    href: "/what",
+    href: "#features",
   },
   {
-    label: "How",
+    label: "How to earn?",
     href: "/how",
+    target: "_blank",
   },
   {
     label: "Benefits",
-    href: "/benefits",
+    href: "#payment-solutions",
   },
   {
-    label: "Docs",
+    label: "Whitepaper",
     href: "/docs",
+    target: "_blank",
   },
 ];
 
@@ -93,6 +95,7 @@ const Navbar: React.FC = () => {
               <Link
                 key={item.href}
                 href={item.href}
+                target={item?.target ?? "_self"}
                 className="hover:text-accent-t3 text-sm font-normal text-[#325889] transition-all hover:brightness-150"
               >
                 {item.label}

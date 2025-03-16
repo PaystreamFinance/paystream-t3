@@ -14,7 +14,10 @@ const PaymentSolution: React.FC = () => {
   const [selectedTab, setSelectedTab] = React.useState<Tabs>("lenders");
 
   return (
-    <div className="relative border-x border-border-t3 px-4 py-8 sm:py-16 md:py-24 lg:py-56">
+    <div
+      id="payment-solutions"
+      className="relative border-x border-border-t3 px-4 py-8 sm:py-16 md:py-24 lg:py-56"
+    >
       <Image
         src="/payment/middle-gradient.svg"
         className="pointer-events-none absolute -right-[10rem] -top-[8rem] z-0 w-full max-w-[600px] select-none md:-right-[20rem] md:-top-[12rem] md:max-w-[800px] lg:-right-[30rem] lg:-top-[16rem] lg:max-w-[1200px]"
