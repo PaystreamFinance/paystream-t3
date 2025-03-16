@@ -135,7 +135,7 @@ const Navbar: React.FC = () => {
               >
                 <div className="flex flex-col items-start space-y-6">
                   {/* Mobile menu items */}
-                  {mobileMenuItems.map((item) => (
+                  {navItems.map((item) => (
                     <motion.div
                       key={item.href}
                       initial={{ opacity: 0, x: -20 }}
