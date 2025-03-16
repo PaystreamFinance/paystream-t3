@@ -5,7 +5,7 @@ const Logo = () => {
   return (
     <Image
       className="select-none rounded-full"
-      src="/logo.svg"
+      src="/logo.png"
       width={32}
       height={32}
       alt="logo"
