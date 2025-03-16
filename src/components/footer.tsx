@@ -1,10 +1,10 @@
 import React from "react";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Icons } from "./Icons";
 import Logo from "./logo";
 import MaxWidthWrapper from "./max-width-wrapper";
-import Link from "next/link";
 
 const Footer: React.FC = () => {
   return (
@@ -59,23 +59,10 @@ const Footer: React.FC = () => {
                 height={24}
                 className="cursor-pointer"
               />
-              <Image
-                src="/social/linkedin.svg"
-                alt="LinkedIn"
-                width={24}
-                height={24}
-                className="cursor-pointer"
-              />
+
               <Image
                 src="/social/discord.svg"
                 alt="Discord"
-                width={24}
-                height={24}
-                className="cursor-pointer"
-              />
-              <Image
-                src="/social/telegram.svg"
-                alt="Telegram"
                 width={24}
                 height={24}
                 className="cursor-pointer"

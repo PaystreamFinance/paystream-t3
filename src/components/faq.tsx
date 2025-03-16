@@ -13,7 +13,7 @@ const items = [
     id: "1",
     title: "For a position, what fees am I paying?",
     content:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit repellendus, aliquam quisquam quam, sit quia, delectus omnis distinctio ipsum error praesentium dolores rerum assumenda commodi qui debitis rem fugiat blanditiis.",
+      "User will pay fees only when their position is matched with a borrower through our engine, the fees will be a certain percentage of the APY spread(generally 10%)",
   },
   {
     id: "2",
@@ -21,24 +21,25 @@ const items = [
     content:
       "On Kamino, APYs are influenced by DEX trading fees and incentives and the yields fluctuate based on multiple factors. Paystream provides a way of getting better rates while having the same guarantee, the same liquidity that you already get on other platforms.",
   },
+
   {
     id: "3",
     title: "Are there any subscriptions?",
-    content:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit repellendus, aliquam quisquam quam, sit quia, delectus omnis distinctio ipsum error praesentium dolores rerum assumenda commodi qui debitis rem fugiat blanditiis.",
+    content: "No",
   },
+
   {
     id: "4",
-    title: "Is there any risk of loss of funds?",
+    title: "What will happen if the position is not matched?",
     content:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit repellendus, aliquam quisquam quam, sit quia, delectus omnis distinctio ipsum error praesentium dolores rerum assumenda commodi qui debitis rem fugiat blanditiis.",
+      "User will keep earning underlying market yield returns and reward points of paystream",
   },
 ];
 
 const Faq: React.FC = () => {
   return (
     <div className="my-44 flex flex-col items-center justify-center">
-      <h2 className="text-center text-[64px] font-thin leading-[65.28px] tracking-[-1%] text-[#EAEAEA]">
+      <h2 className="font-darkGrotesque text-center text-[64px] font-normal leading-[65.28px] tracking-[-1%] text-[#EAEAEA]">
         Frequently Asked <br />
         <span className="font-ibmPlexSerif font-normal italic">Questions</span>
       </h2>

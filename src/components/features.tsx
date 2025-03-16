@@ -9,9 +9,9 @@ const Features: React.FC = () => {
       {/* First section - Mobile first with flex-col by default, row on md screens */}
       <div className="flex flex-col md:flex-row">
         <div className="flex w-full flex-col items-start gap-4 border-b border-border-t3 px-4 py-6 sm:gap-6 sm:px-6 md:border-b-0 md:border-r md:px-[3.1rem] md:py-8">
-          <div className="flex items-center gap-2 text-2xl sm:gap-3 sm:text-3xl md:text-4xl">
+          <div className="font-darkGrotesque flex items-center gap-2 text-2xl sm:gap-3 sm:text-3xl md:text-4xl">
             <span className="font-medium text-[#BCEBFF80]">01</span>
-            <h4 className="font-thin text-[#EAEAEA]">P2P Rate Matching</h4>
+            <h4 className="font-normal text-[#EAEAEA]">P2P Rate Matching</h4>
           </div>
           <p className="text-sm leading-[17.28px] tracking-[-1%] text-[#FFFFFF3D] sm:text-base">
             Match directly with other users for better rates than traditional
@@ -36,9 +36,9 @@ const Features: React.FC = () => {
         </div>
 
         <div className="flex w-full flex-col items-start gap-4 px-4 py-6 sm:gap-6 sm:px-6 md:px-[3.1rem] md:py-8">
-          <div className="flex items-center gap-2 text-2xl sm:gap-3 sm:text-3xl md:text-4xl">
+          <div className="font-darkGrotesque flex items-center gap-2 text-2xl font-medium sm:gap-3 sm:text-3xl md:text-4xl">
             <span className="font-medium text-[#BCEBFF80]">02</span>
-            <h4 className="font-thin text-[#EAEAEA]">Flexible Streaming</h4>
+            <h4 className="font-normal text-[#EAEAEA]">Flexible Streaming</h4>
           </div>
           <p className="text-sm leading-[17.28px] tracking-[-1%] text-[#FFFFFF3D] sm:text-base">
             Pay teams, contributors, or lenders in any way that works for you.
@@ -65,11 +65,11 @@ const Features: React.FC = () => {
       {/* Second section - Mobile first with flex-col by default, custom layout on md screens */}
       <div className="flex flex-col border-y border-border-t3 md:flex-row">
         <div className="flex w-full flex-col items-start gap-4 px-4 py-6 sm:gap-6 sm:px-6 md:max-w-[53%] md:px-[3.1rem] md:py-8">
-          <div className="flex w-full items-center gap-2 text-2xl sm:gap-3 sm:text-3xl md:text-4xl">
-            <span className="font-darkerGrotesque font-[400] text-[#BCEBFF80] drop-shadow-lg">
+          <div className="font-darkGrotesque flex w-full items-center gap-2 text-2xl sm:gap-3 sm:text-3xl md:text-4xl">
+            <span className="font-[400] text-[#BCEBFF80] drop-shadow-lg">
               03
             </span>
-            <h4 className="font-thin text-[#EAEAEA]">Always Earning</h4>
+            <h4 className="font-normal text-[#EAEAEA]">Always Earning</h4>
           </div>
           <hr className="h-px w-full rounded-full border-border-t3" />
           <p className="text-sm leading-[17.28px] tracking-[-1%] text-[#FFFFFF3D] sm:text-base">

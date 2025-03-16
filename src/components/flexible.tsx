@@ -3,13 +3,13 @@ import React from "react";
 const Flexible: React.FC = () => {
   return (
     <div className="relative flex w-full flex-col items-center justify-center">
-      <h1 className="font-ibmPlexSerif w-full pb-32 text-center text-4xl font-normal tracking-[-1%] text-[#BCEBFF]">
+      <h1 className="font-darkGrotesque w-full pb-32 text-center text-4xl font-normal tracking-[-1%] text-[#BCEBFF]">
         PayStream makes payments{" "}
-        <span className="text-[36px] font-medium italic leading-[30.8px]">
+        <span className="font-ibmPlexSerif text-[36px] font-medium italic leading-[30.8px]">
           flexible
         </span>{" "}
         and{" "}
-        <span className="text-[36px] font-medium italic leading-[30.8px]">
+        <span className="font-ibmPlexSerif text-[36px] font-medium italic leading-[30.8px]">
           effortless
         </span>
       </h1>

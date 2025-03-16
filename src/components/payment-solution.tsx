@@ -30,7 +30,7 @@ const PaymentSolution: React.FC = () => {
           backgroundClip: "text",
           color: "transparent",
         }}
-        className="text-center text-3xl font-thin sm:text-4xl md:text-5xl lg:text-[64px]"
+        className="font-darkGrotesque text-center text-3xl font-normal sm:text-4xl md:text-5xl lg:text-[64px]"
       >
         Payment solutions <br />{" "}
         <span className="font-ibmPlexSerif font-normal italic !leading-[1.17]">
