@@ -1,12 +1,8 @@
 import { type NextPage } from "next";
 import React from "react";
-
+import { CommingSoonPage } from "@/components/comming-soon-page";
 const TosPage: NextPage = () => {
-  return (
-    <div className="flex h-screen w-full items-center justify-center text-white">
-      coming soon
-    </div>
-  );
+  return <CommingSoonPage />;
 };
 
 export default TosPage;
