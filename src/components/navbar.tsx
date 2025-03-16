@@ -54,7 +54,7 @@ const Navbar: React.FC = () => {
   return (
     <div className="border-b border-border-t3">
       <MaxWidthWrapper className="flex items-center justify-between border-x border-border-t3 px-6 py-5">
-        <Link href="/">
+        <Link href="/" className="z-50">
           <Logo />
         </Link>
 

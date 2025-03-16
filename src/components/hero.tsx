@@ -14,11 +14,11 @@ const Hero: React.FC = () => {
         src="/hero/top-left-gradient.svg"
         width={532}
         height={493}
-        className="pointer-events-none absolute -left-[15rem] -top-[15rem] z-0 select-none object-cover"
+        className="pointer-events-none absolute -left-[8rem] -top-[10rem] z-0 select-none object-cover sm:-left-[15rem] md:-top-[15rem]"
         alt="hero-lines"
       />
 
-      <main className="relative flex min-h-[968px] w-full flex-col items-start justify-start border-x border-border-t3 text-white">
+      <main className="relative flex min-h-[968px] w-full flex-col items-start justify-start border-border-t3 text-white sm:border-x">
         <div className="relative mt-4 h-[580px] w-full xl:mt-5">
           <Image
             src="/hero/lines.svg"
@@ -44,7 +44,7 @@ const Hero: React.FC = () => {
         </motion.div>
 
         <motion.div
-          className="pointer-events-none absolute -right-12 top-20 z-0 h-[112px] w-[107px] select-none"
+          className="pointer-events-none absolute -right-12 top-20 z-0 hidden h-[112px] w-[107px] select-none lg:block"
           animate={{
             x: [0, 12, 0],
             y: [0, 12, 0],
@@ -63,15 +63,15 @@ const Hero: React.FC = () => {
           />
         </motion.div>
 
-        <div className="z-10 -mt-[16rem] flex w-full flex-col items-center justify-center">
-          <h1 className="font-darkGrotesque text-center text-[64px] font-normal leading-[1.1] text-[#EAEAEA]">
+        <div className="z-10 -mt-[20rem] flex w-full flex-col items-center justify-center md:-mt-[16rem]">
+          <h1 className="font-darkGrotesque text-center text-[42px] font-normal leading-[1.1] text-[#EAEAEA] lg:text-[64px]">
             Smarter lending, <br />{" "}
-            <span className="font-ibmPlexSerif font-normal italic">
+            <span className="text-nowrap font-ibmPlexSerif font-normal italic">
               {" "}
               Easier borrowing
             </span>
           </h1>
-          <p className="mt-3 text-center text-lg font-normal leading-[19.44px] tracking-[1%] text-[#FFFFFF3D]">
+          <p className="mt-3 text-center text-sm font-normal leading-[19.44px] tracking-[1%] text-[#FFFFFF3D] lg:text-lg">
             Automatic rate optimization for lenders and <br /> borrowers. Match
             with the perfect rates.
           </p>

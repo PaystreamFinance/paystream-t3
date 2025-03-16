@@ -17,7 +17,7 @@ const Coins: React.FC = () => {
           repeat: Infinity,
           repeatType: "reverse",
         }}
-        className="pointer-events-none absolute -left-4 bottom-44 z-0 h-[112px] w-[107px] select-none"
+        className="pointer-events-none absolute -left-4 bottom-44 z-0 hidden h-[112px] w-[107px] select-none lg:block"
       >
         <Image src="/hero/coin-left-2.svg" fill className="" alt="coin-right" />
       </motion.div>
