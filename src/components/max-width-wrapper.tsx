@@ -15,7 +15,10 @@ const MaxWidthWrapper: React.FC<MaxWidthWrapperProps> = ({
   return (
     <div
       {...props}
-      className={cn("mx-auto w-[min(60rem,_100%-2rem)]", className)}
+      className={cn(
+        "mx-auto w-[min(60rem,_100%-2rem)] overflow-x-hidden",
+        className,
+      )}
     >
       {children}
     </div>

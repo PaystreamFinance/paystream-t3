@@ -14,18 +14,20 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <Coins />
+      <div className="overflow-x-hidden">
+        <Coins />
 
-      <MaxWidthWrapper className="w-[min(60rem,_100%-0rem)] sm:w-[min(60rem,_100%-2rem)]">
-        <Hero />
-      </MaxWidthWrapper>
+        <MaxWidthWrapper className="w-[min(60rem,_100%-0rem)] sm:w-[min(60rem,_100%-2rem)]">
+          <Hero />
+        </MaxWidthWrapper>
 
-      <MaxWidthWrapper>
-        <Features />
-        <PaymentSolution />
-        <Flexible />
-        <Faq />
-      </MaxWidthWrapper>
+        <MaxWidthWrapper>
+          <Features />
+          <PaymentSolution />
+          <Flexible />
+          <Faq />
+        </MaxWidthWrapper>
+      </div>
     </HydrateClient>
   );
 }
