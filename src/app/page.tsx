@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import Coins from "@/components/coins";
 import Faq from "@/components/faq";
 import Features from "@/components/features";
 import Flexible from "@/components/flexible";
@@ -15,18 +16,7 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <div className="pointer-events-none absolute -left-4 bottom-44 z-0 h-[112px] w-[107px] select-none">
-        <Image src="/hero/coin-left-2.svg" fill className="" alt="coin-right" />
-      </div>
-
-      <div className="pointer-events-none absolute -right-7 bottom-44 z-0 h-[112px] w-[107px] select-none">
-        <Image
-          src="/hero/coin-right-2.svg"
-          fill
-          className=""
-          alt="coin-right"
-        />
-      </div>
+      <Coins />
 
       <MaxWidthWrapper>
         <Hero />

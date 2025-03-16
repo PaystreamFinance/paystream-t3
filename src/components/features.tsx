@@ -23,14 +23,10 @@ const Features: React.FC = () => {
           <div className="flex w-full justify-center md:justify-start">
             <Image
               src="/features/feat1.svg"
-              className="scale-100 sm:scale-110 md:scale-125"
+              className="mx-auto sm:scale-110 md:scale-150"
               width={300}
               height={200}
               alt="P2P Rate Matching"
-              style={{
-                maxWidth: "100%",
-                height: "auto",
-              }}
             />
           </div>
         </div>
@@ -49,21 +45,17 @@ const Features: React.FC = () => {
           <div className="flex w-full justify-center md:justify-start">
             <Image
               src="/features/feat2.svg"
-              className="scale-100 sm:scale-110"
+              className="mx-auto scale-100 sm:scale-125"
               width={300}
               height={200}
               alt="Flexible Streaming"
-              style={{
-                maxWidth: "100%",
-                height: "auto",
-              }}
             />
           </div>
         </div>
       </div>
 
       {/* Second section - Mobile first with flex-col by default, custom layout on md screens */}
-      <div className="flex flex-col border-y border-border-t3 md:flex-row">
+      <div className="flex flex-col border-y border-border-t3 py-1.5 md:flex-row">
         <div className="flex w-full flex-col items-start gap-4 px-4 py-6 sm:gap-6 sm:px-6 md:max-w-[53%] md:px-[3.1rem] md:py-8">
           <div className="font-darkGrotesque flex w-full items-center gap-2 text-2xl sm:gap-3 sm:text-3xl md:text-4xl">
             <span className="font-[400] text-[#BCEBFF80] drop-shadow-lg">
@@ -82,13 +74,10 @@ const Features: React.FC = () => {
         <div className="flex w-full justify-center md:justify-start">
           <Image
             src="/features/feat3.svg"
-            width={300}
-            height={150}
+            className="scale-105"
+            width={379}
+            height={170}
             alt="Feature 3"
-            style={{
-              maxWidth: "100%",
-              height: "auto",
-            }}
           />
         </div>
       </div>

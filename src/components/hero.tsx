@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "motion/react";
 import Image from "next/image";
 import React from "react";
 
@@ -24,18 +27,40 @@ const Hero: React.FC = () => {
           />
         </div>
 
-        <div className="pointer-events-none absolute -left-12 top-20 z-0 h-[112px] w-[107px] select-none">
+        <motion.div
+          animate={{
+            x: [0, 10, 0],
+            y: [0, 10, 0],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            repeatType: "reverse",
+          }}
+          className="pointer-events-none absolute -left-12 top-20 z-0 h-[112px] w-[107px] select-none"
+        >
           <Image src="/hero/coin-left.svg" fill className="" alt="coin-right" />
-        </div>
+        </motion.div>
 
-        <div className="pointer-events-none absolute -right-12 top-20 z-0 h-[112px] w-[107px] select-none">
+        <motion.div
+          className="pointer-events-none absolute -right-12 top-20 z-0 h-[112px] w-[107px] select-none"
+          animate={{
+            x: [0, 12, 0],
+            y: [0, 12, 0],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            repeatType: "reverse",
+          }}
+        >
           <Image
             src="/hero/coin-right.svg"
             fill
             className=""
             alt="coin-right"
           />
-        </div>
+        </motion.div>
 
         <div className="z-10 -mt-[16rem] flex w-full flex-col items-center justify-center">
           <h1 className="font-darkGrotesque text-center text-[64px] font-normal leading-[1.1] text-[#EAEAEA]">
