@@ -6,8 +6,8 @@ import MaxWidthWrapper from "./max-width-wrapper";
 
 const Footer: React.FC = () => {
   return (
-    <div className="relative h-[680px] w-full">
-      <div className="pointer-events-none absolute bottom-0 -z-10 h-[600px] w-full select-none">
+    <div className="relative w-full">
+      <div className="pointer-events-none absolute bottom-0 -z-10 h-[400px] w-full select-none sm:h-[500px] md:h-[600px]">
         <Image
           src="/footer/lines.svg"
           alt="Lines"
@@ -16,9 +16,10 @@ const Footer: React.FC = () => {
         />
       </div>
       <MaxWidthWrapper className="flex flex-col items-center">
-        <div className="mt-32 grid h-72 w-full grid-cols-3 divide-x divide-border-t3 border border-border-t3 bg-bg-t3">
-          <div className="flex flex-col items-start justify-between p-6 px-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#9FB2C2]">
+        <div className="mb-36 grid w-full grid-cols-1 divide-y divide-border-t3 border border-border-t3 bg-bg-t3 sm:mb-64 md:mt-2 lg:grid-cols-3 lg:divide-x lg:divide-y-0">
+          {/* First column */}
+          <div className="flex flex-col items-start justify-between gap-6 p-6">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#9FB2C2]">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -36,24 +37,26 @@ const Footer: React.FC = () => {
                 />
               </svg>
             </div>
-            <div className="flex w-full flex-row items-start justify-start gap-5 text-sm text-[#BCEBFF99]">
+            <div className="mt-auto flex w-full flex-row items-center justify-start gap-5 text-sm text-[#BCEBFF99]">
               <Link href="#">Support</Link>
               <Link href="#">Terms of service</Link>
-              <Link href="#">Legal Notice</Link>
+              <Link href="#">License</Link>
             </div>
           </div>
-          <div className="flex flex-col items-start justify-between p-6">
-            <div className="flex w-full flex-col items-start justify-between text-[#BCEBFF99]">
+
+          {/* Second column */}
+          <div className="flex items-start justify-start p-6 lg:flex-col lg:items-start lg:justify-between lg:gap-6">
+            <div className="flex w-full flex-col items-start justify-start gap-3 text-[#BCEBFF99]">
               <Link href="#features">What</Link>
               <Link href="#" target="_blank">
-                How to earn?
+                How
               </Link>
               <Link href="#payment-solutions">Benefits</Link>
               <Link href="/whitepaper.pdf" target="_blank">
-                Whitepaper
+                Docs
               </Link>
             </div>
-            <div className="flex w-full flex-row items-center justify-start gap-6 text-[#BCEBFF99]">
+            <div className="mb-auto flex w-full flex-row items-end justify-end gap-6 text-[#BCEBFF99] lg:mt-auto lg:items-start lg:justify-start">
               <Link href="https://x.com/Paystream_" target="_blank">
                 <Image
                   src="/social/x-com.svg"
@@ -63,7 +66,6 @@ const Footer: React.FC = () => {
                   className="cursor-pointer"
                 />
               </Link>
-
               <Link href="https://discord.gg/kDYJWSVe" target="_blank">
                 <Image
                   src="/social/discord.svg"
@@ -75,11 +77,13 @@ const Footer: React.FC = () => {
               </Link>
             </div>
           </div>
-          <div className="flex flex-col items-center justify-between p-6">
-            <div className="flex w-full flex-row items-start justify-start gap-7 text-[#BCEBFF99]">
-              <p>Smarter Lending, Easier Borrowing</p>
+
+          {/* Third column */}
+          <div className="flex flex-col items-start justify-between gap-6 p-6 lg:flex-col lg:items-start lg:justify-between lg:gap-6">
+            <div className="flex w-full flex-row items-start justify-start text-[#BCEBFF99]">
+              <p>Smarter Lending, Easier Borrowing!</p>
             </div>
-            <div className="flex h-14 w-full flex-row items-center justify-between gap-7 border border-border-t3 p-4 text-[#BCEBFF99]">
+            <div className="mt-auto flex h-14 w-full flex-row items-center justify-between border border-border-t3 p-4 text-[#BCEBFF99]">
               <Link href="https://t.me/+3jh3Yg2IBXJjMTRl" target="_blank">
                 <Image
                   src="/social/telegram.svg"
@@ -89,12 +93,12 @@ const Footer: React.FC = () => {
                   className="cursor-pointer"
                 />
               </Link>
-              <p>Chat with us</p>
+              <p>Chat with us!</p>
             </div>
           </div>
         </div>
 
-        <div className="pointer-events-none absolute bottom-0 h-[326px] w-full select-none">
+        <div className="pointer-events-none absolute bottom-0 h-[200px] w-full select-none sm:h-[250px] md:h-[326px]">
           <Image src="/footer/paystream.svg" alt="Paystream" fill />
         </div>
       </MaxWidthWrapper>
