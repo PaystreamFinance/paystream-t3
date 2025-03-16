@@ -38,9 +38,9 @@ const Footer: React.FC = () => {
               </svg>
             </div>
             <div className="mt-auto flex w-full flex-row items-center justify-start gap-5 text-sm text-[#BCEBFF99]">
-              <Link href="#">Support</Link>
-              <Link href="#">Terms of service</Link>
-              <Link href="#">License</Link>
+              <Link href="/support">Support</Link>
+              <Link href="/tos">Terms of service</Link>
+              <Link href="/legal">License</Link>
             </div>
           </div>
 
