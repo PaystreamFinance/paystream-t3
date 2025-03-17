@@ -18,7 +18,7 @@ const navItems = [
   },
   {
     label: "How to earn?",
-    href: "#",
+    href: "https://x.com/Paystream_/status/1901629122105008408",
     target: "_blank",
   },
   {
