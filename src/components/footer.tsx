@@ -84,7 +84,7 @@ const Footer: React.FC = () => {
               <p>Smarter Lending, Easier Borrowing!</p>
             </div>
             <div className="mt-auto flex h-14 w-full flex-row items-center justify-between border border-border-t3 p-4 text-[#BCEBFF99]">
-              <Link href="https://t.me/+3jh3Yg2IBXJjMTRl" target="_blank">
+              <Link href="https://t.me/paystreamfi" target="_blank">
                 <Image
                   src="/social/telegram.svg"
                   alt="Telegram"
