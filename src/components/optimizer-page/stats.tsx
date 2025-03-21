@@ -1,6 +1,7 @@
 "use client";
-import { cn } from "@/lib/utils";
+
 import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 export default function Stats({
   stats,
@@ -22,7 +23,7 @@ export default function Stats({
   return (
     <div
       className={cn(
-        "grid w-full border border-border-t3",
+        "w-full border border-border-t3 sm:grid",
         isMobile ? "grid-cols-2" : "grid-cols-4",
       )}
     >
@@ -30,7 +31,7 @@ export default function Stats({
         <div
           key={index}
           className={cn(
-            "flex flex-col items-start justify-center px-3 py-3 sm:px-4 sm:py-4 md:px-5 md:py-5 lg:px-7 lg:py-6",
+            "flex items-start justify-between px-3 py-3 sm:flex-col sm:justify-center sm:px-4 sm:py-4 md:px-5 md:py-5 lg:px-7 lg:py-6",
             // Add borders based on position
             index % (isMobile ? 2 : 4) !== (isMobile ? 1 : 3) &&
               "border-r border-border-t3",
@@ -42,13 +43,13 @@ export default function Stats({
         >
           <span
             className={cn(
-              "font-darkerGrotesque text-xs text-[#BCEBFF80] sm:text-sm md:text-base lg:text-lg",
+              "font-darkerGrotesque text-[20px] text-[#BCEBFF]/50 sm:text-sm md:text-base lg:text-lg",
               underline && "underline decoration-dotted",
             )}
           >
             {stat.title}
           </span>
-          <span className="font-darkerGrotesque text-lg font-thin text-white sm:text-xl md:text-2xl lg:text-3xl">
+          <span className="font-darkerGrotesque text-[32px] font-thin text-white sm:text-xl md:text-2xl lg:text-3xl">
             {stat.value}
           </span>
         </div>

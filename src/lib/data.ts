@@ -4,7 +4,7 @@ export async function getStats() {
   return [
     { title: "Supply Volume", value: "$102.3k" },
     { title: "Borrow Volume", value: "$12.3k" },
-    { title: "Matched Rate", value: "78.9%" },
+    { title: "Match Rate", value: "78.9%" },
     { title: "Available Liquidity", value: "$902.3k" },
   ];
 }
