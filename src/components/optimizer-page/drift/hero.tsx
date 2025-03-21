@@ -27,8 +27,8 @@ export default async function DriftHero() {
 
             {/* <DriftBanner /> */}
             {/* Content */}
-            <div className="flex h-full flex-col gap-4">
-              <h3 className="font-darkerGrotesque text-4xl text-white">
+            <div className="flex h-full flex-col gap-3">
+              <h3 className="font-darkerGrotesque text-4xl leading-[0.8] text-white">
                 Drift Optimizer
               </h3>
               <p className="max-w-[341px] font-darkerGrotesque text-[16px] font-normal leading-tight text-white/70">
