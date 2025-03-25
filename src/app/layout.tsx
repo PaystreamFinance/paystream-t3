@@ -7,6 +7,7 @@ import Footer from "@/components/footer";
 import Navbar from "@/components/navbar";
 import "@/styles/globals.css";
 import { TRPCReactProvider } from "@/trpc/react";
+import AppWalletProvider from "@/components/AppWalletProvider";
 
 export const metadata: Metadata = {
   title: "Paystream",
@@ -33,13 +34,15 @@ export default function RootLayout({
       lang="en"
       className={`${GeistSans.variable} ${darkerGrotesque.variable} ${helvetica.variable}`}
     >
-      <body className="overflow-x-hidden bg-bg-t3 bg-[url('/bg-noise.svg')]">
-        <TRPCReactProvider>
-          <Navbar />
-          {children}
-          <Footer />
-        </TRPCReactProvider>
-      </body>
+      <AppWalletProvider>
+        <body className="overflow-x-hidden bg-bg-t3 bg-[url('/bg-noise.svg')]">
+          <TRPCReactProvider>
+            <Navbar />
+            {children}
+            <Footer />
+          </TRPCReactProvider>
+        </body>
+      </AppWalletProvider>
     </html>
   );
 }

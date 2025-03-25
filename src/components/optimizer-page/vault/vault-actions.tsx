@@ -6,15 +6,56 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { useVaultStateStore } from "@/store/vault-state-store";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { VaultDataProps } from "./hero";
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 
 export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
+  const { connection } = useConnection();
+  const { publicKey, connected } = useWallet();
+  const [balance, setBalance] = useState<number | null>(null);
   const [inputValue, setInputValue] = useState("");
   const { vaultState, setVaultState } = useVaultStateStore();
   const [leverageValue, setLeverageValue] = useState(33);
   const [isDragging, setIsDragging] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (!connected || !publicKey) {
+        setBalance(null);
+        return;
+      }
+
+      try {
+        if (vaultTitle === 'SOL') {
+          const balance = await connection.getBalance(publicKey);
+          setBalance(balance / LAMPORTS_PER_SOL);
+        } else if (vaultTitle === 'USDC') {
+          const usdcMint = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'; 
+          const tokenAccounts = await connection.getParsedTokenAccountsByOwner(publicKey, {
+            mint: new PublicKey(usdcMint),
+          });
+          if (tokenAccounts.value.length > 0) {
+            const balance = tokenAccounts.value[0]?.account.data.parsed.info.tokenAmount.uiAmount;
+            setBalance(balance ?? 0);
+          } else {
+            setBalance(0);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching balance:', error);
+        setBalance(null);
+      }
+    };
+
+    fetchBalance();
+    const intervalId = setInterval(fetchBalance, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [connection, publicKey, connected, vaultTitle]);
 
   return (
     <>
@@ -25,7 +66,9 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               Supply {vaultTitle}
             </span>
             <div className="ml-auto flex items-center gap-2 font-body">
-              <span className="text-sm text-[#BCEBFF80]">Balance: 2000</span>
+              <span className="text-sm text-[#BCEBFF80]">
+                Balance: {balance !== null ? balance.toFixed(4) : '--'} {vaultTitle}
+              </span>
               <span className="cursor-pointer text-sm text-[#BCEBFF80]">
                 50%
               </span>
@@ -75,7 +118,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             </span>
           </div>
           <Button variant="shady" className="w-full">
-            Connect Wallet
+            Supply 
           </Button>
         </div>
       )}

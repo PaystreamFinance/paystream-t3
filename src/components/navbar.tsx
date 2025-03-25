@@ -3,6 +3,8 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X } from "lucide-react";
+import { usePathname } from 'next/navigation';
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -43,6 +45,8 @@ const mobileMenuItems = [
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isMobile = useIsMobile();
+  const pathname = usePathname();
+  const isOptimizerPage = pathname?.startsWith('/optimizer');
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -98,8 +102,30 @@ const Navbar: React.FC = () => {
                 {item.label}
               </Link>
             ))}
-
-            <Button variant="primary">Join Waitlist</Button>
+            
+            {isOptimizerPage ? (
+              <WalletMultiButton
+                style={{
+                  backgroundColor: "#02142B",
+                  color: "#BCEBFF",
+                  border: "1px solid #9CE0FF",
+                  borderRadius: "8px",
+                  padding: "0 24px",
+                  fontSize: "12px",
+                  height: "34px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px",
+                  whiteSpace: "nowrap",
+                  transition: "colors",
+                  fontWeight: "normal",
+                  cursor: "pointer",
+                }}
+              />
+            ) : (
+              <Button variant="primary">Join Waitlist</Button>
+            )}
           </div>
         )}
 
