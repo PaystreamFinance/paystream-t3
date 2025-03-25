@@ -4,13 +4,18 @@ import { VaultGraph } from "./graph";
 import StatsGrid, { StatsGridHorizontal } from "./stats-grid";
 import VaultDropdown from "./vault-dropdown";
 
-export default function VaultHero() {
+export interface VaultDataProps { 
+  vaultTitle: string;
+  icon: string;
+}
+
+export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
   return (
     <main className="relative flex min-h-[1064px] w-full flex-col items-center justify-start border-x border-b border-border-t3">
       <div className="relative flex w-full flex-col gap-4 overflow-hidden px-[46px] pt-[46px]">
         <div className="flex items-center justify-between">
           <p className="font-darkerGrotesque text-2xl font-[600] text-[#EAEAEA]">
-            USDC Vault
+            {vaultTitle} Vault
           </p>
           <VaultDropdown />
         </div>
@@ -22,7 +27,7 @@ export default function VaultHero() {
               projectedEarnings: "$74.6K",
             }}
           />
-          <VaultActions />
+          <VaultActions vaultTitle={vaultTitle} icon={icon} />
         </div>
         <StatsGridHorizontal
           stats={{

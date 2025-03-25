@@ -6,7 +6,7 @@ export default function VaultPage() {
   return (
     <HydrateClient>
       <MaxWidthWrapper>
-        <VaultHero vaultTitle="TEST" icon="/optimizers/usdc.png" />
+        <VaultHero vaultTitle="SOL" icon="/optimizers/sol.png" />
       </MaxWidthWrapper>
     </HydrateClient>
   );

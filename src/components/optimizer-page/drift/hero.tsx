@@ -7,7 +7,7 @@ import { columns } from "./table-columns";
 
 export default async function DriftHero() {
   const stats = await getStats();
-  const tableData = await getTableData(10);
+  const tableData = await getTableData();
 
   return (
     <main className="relative flex min-h-[1064px] w-full flex-col items-center justify-center border-x border-b border-border-t3">

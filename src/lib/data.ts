@@ -9,25 +9,25 @@ export async function getStats() {
   ];
 }
 
-export async function getTableData(count: number): Promise<OptimizerTable[]> {
-  const assets = ["weth", "dai", "usdc"] as const;
-  const result: OptimizerTable[] = [];
-
-  for (let i = 0; i < count; i++) {
-    const assetIndex = i % assets.length;
-    const asset = assets[assetIndex];
-    const multiplier = assetIndex === 0 ? 100 : assetIndex === 1 ? 200 : 300;
-
-    result.push({
-      id: (i + 1).toString(),
-      asset: asset as "weth" | "dai" | "usdc",
-      balance: multiplier,
-      avl_liquidity: multiplier,
+export async function getTableData() {
+  return [
+    {
+      id: "1",
+      asset: "sol" as const,
+      balance: 200,
+      avl_liquidity: 200,
       borrow_apr: 9.35,
       supply_apr: 10.35,
       p2p_apr: 10.35,
-    });
-  }
-
-  return result;
+    },
+    {
+      id: "2",
+      asset: "usdc" as const,
+      balance: 100,
+      avl_liquidity: 100,
+      borrow_apr: 9.35,
+      supply_apr: 10.35,
+      p2p_apr: 10.35,
+    }
+  ];
 }

@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export type OptimizerTable = {
   id: string;
-  asset: "weth" | "dai" | "usdc";
+  asset: "usdc" | "sol";
 
   balance: number;
   avl_liquidity: number;
@@ -28,7 +29,10 @@ export const columns: ColumnDef<OptimizerTable>[] = [
     ),
     cell: ({ row }) => {
       return (
-        <div className="flex items-center gap-2">
+        <Link 
+          href={`/optimizers/drift/${row.original.asset}`}
+          className="flex items-center gap-2 hover:opacity-80"
+        >
           <Image
             src={`/optimizers/${row.original.asset}.png`}
             alt={row.original.asset}
@@ -37,7 +41,7 @@ export const columns: ColumnDef<OptimizerTable>[] = [
             className="rounded-full"
           />
           <p className="uppercase text-white">{row.original.asset}</p>
-        </div>
+        </Link>
       );
     },
   },

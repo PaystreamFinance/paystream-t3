@@ -7,8 +7,9 @@ import { Slider } from "@/components/ui/slider";
 import { useVaultStateStore } from "@/store/vault-state-store";
 import Image from "next/image";
 import { useState } from "react";
+import { VaultDataProps } from "./hero";
 
-export default function VaultActions() {
+export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   const [inputValue, setInputValue] = useState("");
   const { vaultState, setVaultState } = useVaultStateStore();
   const [leverageValue, setLeverageValue] = useState(33);
@@ -21,7 +22,7 @@ export default function VaultActions() {
         <div className="flex flex-col gap-4 bg-[#9CE0FF05] p-[12px]">
           <div className="flex items-center justify-between gap-2">
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
-              Supply USDC
+              Supply {vaultTitle}
             </span>
             <div className="ml-auto flex items-center gap-2 font-body">
               <span className="text-sm text-[#BCEBFF80]">Balance: 2000</span>
@@ -36,14 +37,14 @@ export default function VaultActions() {
           <div className="flex h-[73px] w-full items-center justify-between bg-[#000D1E80] px-[16px]">
             <div className="flex items-center gap-2">
               <Image
-                src="/optimizers/usdc.png"
+                src={icon}
                 alt="vault"
                 width={100}
                 height={100}
                 className="h-6 w-6"
               />
               <span className="font-body text-[20px] font-[500] uppercase text-[#EAEAEA]">
-                USDC
+                {vaultTitle}
               </span>
             </div>
             <input
@@ -82,7 +83,7 @@ export default function VaultActions() {
         <div className="flex flex-col gap-4 bg-[#9CE0FF05] p-[12px]">
           <div className="flex items-center justify-between gap-2">
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
-              Withdraw USDC
+              Withdraw {vaultTitle}
             </span>
             <div className="ml-auto flex items-center gap-2 font-body">
               <span className="text-sm text-[#BCEBFF80]">Balance: 2000</span>
@@ -97,14 +98,14 @@ export default function VaultActions() {
           <div className="flex h-[73px] w-full items-center justify-between bg-[#000D1E80] px-[16px]">
             <div className="flex items-center gap-2">
               <Image
-                src="/optimizers/usdc.png"
+                src={icon}
                 alt="vault"
                 width={100}
                 height={100}
                 className="h-6 w-6"
               />
               <span className="font-body text-[20px] font-[500] uppercase text-[#EAEAEA]">
-                USDC
+                {vaultTitle}
               </span>
             </div>
             <input
@@ -152,7 +153,7 @@ export default function VaultActions() {
         <div className="flex flex-col gap-4 bg-[#9CE0FF05] p-[12px]">
           <div className="flex items-center justify-between gap-2">
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
-              Borrow USDC
+              Borrow {vaultTitle}
             </span>
             <div className="ml-auto flex items-center gap-2 font-body">
               <span className="text-sm text-[#BCEBFF80]">Balance: 2000</span>
@@ -167,14 +168,14 @@ export default function VaultActions() {
           <div className="flex h-[73px] w-full items-center justify-between bg-[#000D1E80] px-[16px]">
             <div className="flex items-center gap-2">
               <Image
-                src="/optimizers/usdc.png"
+                src={icon}
                 alt="vault"
                 width={100}
                 height={100}
                 className="h-6 w-6"
               />
               <span className="font-body text-[20px] font-[500] uppercase text-[#EAEAEA]">
-                USDC
+                {vaultTitle}
               </span>
             </div>
             <input
@@ -192,14 +193,14 @@ export default function VaultActions() {
             </span>
             <div className="flex items-center gap-2">
               <Image
-                src="/optimizers/juplp.svg"
+                src={icon}
                 alt="vault"
                 width={100}
                 height={100}
                 className="h-6 w-6"
               />
               <span className="font-body text-[20px] font-[500] uppercase text-[#EAEAEA]">
-                JLP
+                {vaultTitle}
               </span>
             </div>
           </div>

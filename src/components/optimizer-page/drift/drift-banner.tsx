@@ -398,7 +398,7 @@ export default function DriftBanner() {
             id="image4_275_3268"
             width="64"
             height="64"
-            xlinkHref="/optimizers/solana.png"
+            xlinkHref="/optimizers/sol.png"
           />
         </defs>
       </svg>
