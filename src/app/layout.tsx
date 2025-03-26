@@ -8,6 +8,7 @@ import Navbar from "@/components/navbar";
 import "@/styles/globals.css";
 import { TRPCReactProvider } from "@/trpc/react";
 import AppWalletProvider from "@/components/AppWalletProvider";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Paystream",
@@ -36,6 +37,7 @@ export default function RootLayout({
     >
       <AppWalletProvider>
         <body className="overflow-x-hidden bg-bg-t3 bg-[url('/bg-noise.svg')]">
+          <Toaster position="bottom-right"/>
           <TRPCReactProvider>
             <Navbar />
             {children}

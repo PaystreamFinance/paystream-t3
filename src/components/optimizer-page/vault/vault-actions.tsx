@@ -2,18 +2,36 @@
 
 import { Button } from "@/components/ui/button";
 
-import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { useVaultStateStore } from "@/store/vault-state-store";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { VaultDataProps } from "./hero";
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { PublicKey } from '@solana/web3.js';
+import {
+  useAnchorWallet,
+  useConnection,
+  useWallet,
+} from "@solana/wallet-adapter-react";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
+import {
+  AnchorProvider,
+  BN,
+} from "@coral-xyz/anchor";
+import {
+  _PaystreamV1Idl,
+  PaystreamV1Program,
+  MarketHeaderWithPubkey,
+} from "@meimfhd/paystream-v1";
+import toast from "react-hot-toast"
+import dynamic from "next/dynamic";
+
+const WalletMultiButton = dynamic(
+  () => import('@solana/wallet-adapter-react-ui').then(mod => mod.WalletMultiButton),
+  { ssr: false }
+);
 
 export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
-  const { connection } = useConnection();
   const { publicKey, connected } = useWallet();
   const [balance, setBalance] = useState<number | null>(null);
   const [inputValue, setInputValue] = useState("");
@@ -22,6 +40,69 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
 
+  const wallet = useAnchorWallet();
+  const { connection } = useConnection();
+
+  const [marketHeader, setMarketHeader] =
+    useState<MarketHeaderWithPubkey | null>(null);
+
+  // custom token mints on devnet for now
+  const SOL_MINT = "8GpouMs5EKn6PpHVkHqP3iiYTVLTynRStYNVRUQ6nJqc";
+  const USDC_MINT = "2Gzzp8xkZeRsTgdg36XrAWFKzKRSt6BfqshYEw7XRHub";
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const provider = new AnchorProvider(connection, wallet!, {});
+  const paystreamProgram = new PaystreamV1Program(provider);
+
+  useEffect(() => {
+    const fetchMarketHeader = async () => {
+      try {
+        const headers = await paystreamProgram.getAllMarketHeaders();
+        if (vaultTitle === "SOL") {
+          // headers[0] is for SOL vault
+          setMarketHeader(headers[1] ?? null);
+        } else if (vaultTitle === "USDC") {
+          // headers[1] is for USDC vault
+          setMarketHeader(headers[0] ?? null);
+        }
+      } catch (error) {
+        console.error("Error fetching market headers:", error);
+      }
+    };
+
+    fetchMarketHeader();
+  }, []);
+
+  const handleSupply = async () => {
+    if (!marketHeader || !inputValue) return;
+
+    try {
+      const marketConfig = {
+        market: marketHeader.market,
+        collateralMarket: marketHeader.collateralMarket,
+        mint: marketHeader.mint,
+        collateralMint: marketHeader.collateralMint,
+        tokenProgram: marketHeader.tokenProgram,
+        collateralTokenProgram: marketHeader.collateralTokenProgram,
+      };
+
+      const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000; // 9 decimals for SOL, 6 for USDC
+      const amount = new BN(Number(inputValue) * decimals);
+
+      const result = await paystreamProgram.depositWithUI(
+        marketConfig,
+        amount
+      );
+      console.log(result);
+      toast.success("Deposit successful");
+    } catch (error) {
+      console.error('Error in supply:', error);
+      toast.error("Deposit failed");
+    }
+  };
+
+  // fetch wallet balance to be shown in the UI
   useEffect(() => {
     const fetchBalance = async () => {
       if (!connected || !publicKey) {
@@ -30,23 +111,39 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       }
 
       try {
-        if (vaultTitle === 'SOL') {
-          const balance = await connection.getBalance(publicKey);
-          setBalance(balance / LAMPORTS_PER_SOL);
-        } else if (vaultTitle === 'USDC') {
-          const usdcMint = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'; 
-          const tokenAccounts = await connection.getParsedTokenAccountsByOwner(publicKey, {
-            mint: new PublicKey(usdcMint),
-          });
+        if (vaultTitle === "SOL") {
+          const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
+            publicKey,
+            {
+              mint: new PublicKey(SOL_MINT),
+            },
+          );
           if (tokenAccounts.value.length > 0) {
-            const balance = tokenAccounts.value[0]?.account.data.parsed.info.tokenAmount.uiAmount;
+            const balance =
+              tokenAccounts.value[0]?.account.data.parsed.info.tokenAmount
+                .uiAmount;
+            setBalance(balance ?? 0);
+          } else {
+            setBalance(0);
+          }
+        } else if (vaultTitle === "USDC") {
+          const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
+            publicKey,
+            {
+              mint: new PublicKey(USDC_MINT),
+            },
+          );
+          if (tokenAccounts.value.length > 0) {
+            const balance =
+              tokenAccounts.value[0]?.account.data.parsed.info.tokenAmount
+                .uiAmount;
             setBalance(balance ?? 0);
           } else {
             setBalance(0);
           }
         }
       } catch (error) {
-        console.error('Error fetching balance:', error);
+        console.error("Error fetching balance:", error);
         setBalance(null);
       }
     };
@@ -56,6 +153,22 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
     return () => clearInterval(intervalId);
   }, [connection, publicKey, connected, vaultTitle]);
+
+  const handlePercentageClick = (percentage: number) => {
+    if (balance === null) return;
+    const amount = percentage === 100 ? balance : (balance * percentage) / 100;
+
+    const maxDecimals = vaultTitle === "SOL" ? 9 : 6;
+    setInputValue(amount.toFixed(maxDecimals));
+  };
+
+  const handleSupplyClick = () => {
+    if (!inputValue) {
+      inputRef.current?.focus();
+      return;
+    }
+    handleSupply();
+  };
 
   return (
     <>
@@ -67,13 +180,20 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             </span>
             <div className="ml-auto flex items-center gap-2 font-body">
               <span className="text-sm text-[#BCEBFF80]">
-                Balance: {balance !== null ? balance.toFixed(4) : '--'} {vaultTitle}
+                Balance: {balance !== null ? balance.toFixed(2) : "--"}{" "}
+                {vaultTitle}
               </span>
-              <span className="cursor-pointer text-sm text-[#BCEBFF80]">
+              <span
+                onClick={() => handlePercentageClick(50)}
+                className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
+              >
                 50%
               </span>
-              <span className="cursor-pointer text-sm text-[#BCEBFF80]">
-                MAX
+              <span
+                onClick={() => handlePercentageClick(100)}
+                className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
+              >
+                max
               </span>
             </div>
           </div>
@@ -91,6 +211,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               </span>
             </div>
             <input
+              ref={inputRef}
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
@@ -117,9 +238,33 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               ---
             </span>
           </div>
-          <Button variant="shady" className="w-full">
-            Supply 
-          </Button>
+          {connected ? (
+            <Button
+              variant="shady"
+              className="w-full"
+              onClick={handleSupplyClick}
+            >
+              Supply
+            </Button>
+          ) : (
+            <WalletMultiButton
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+                backgroundColor: "#000D1E",
+                color: "#9CE0FF",
+                border: "1px solid #9CE0FF",
+                borderRadius: "8px",
+                padding: "12px",
+                fontSize: "16px",
+                fontWeight: "500",
+                textAlign: "center",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+              }}
+            />
+          )}
         </div>
       )}
       {vaultState === "withdraw" && (

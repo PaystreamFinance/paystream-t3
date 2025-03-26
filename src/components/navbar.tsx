@@ -1,16 +1,23 @@
 "use client";
+
 import Link from "next/link";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { usePathname } from 'next/navigation';
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import dynamic from 'next/dynamic';
 
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 import Logo from "./logo";
 import MaxWidthWrapper from "./max-width-wrapper";
+
+const WalletMultiButton = dynamic(
+  () => import('@solana/wallet-adapter-react-ui').then(mod => mod.WalletMultiButton),
+  { ssr: false }
+);
+
 
 const navItems = [
   {
