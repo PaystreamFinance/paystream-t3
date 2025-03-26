@@ -49,7 +49,7 @@ export default function Stats({
           >
             {stat.title}
           </span>
-          <span className="font-darkerGrotesque text-[32px] font-thin text-white sm:text-xl md:text-2xl lg:text-3xl">
+          <span className="font-darkerGrotesque text-[32px] font-thin text-white sm:text-lg md:text-lg lg:text-3xl">
             {stat.value}
           </span>
         </div>
