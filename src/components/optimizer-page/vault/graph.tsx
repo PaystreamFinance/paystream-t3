@@ -5,13 +5,14 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
+  Cross,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Cross,
 } from "recharts";
 
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -26,10 +27,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Button } from "@/components/ui/button";
 import { useVaultStateStore } from "@/store/vault-state-store";
-import { VaultDropdownMonth } from "./vault-dropdown";
 import { Day } from "react-day-picker";
+import { VaultDropdownMonth } from "./vault-dropdown";
 const chartData = [
   { month: "January", apy: 18, day: 100 },
   { month: "February", apy: 30, day: 200 },
@@ -70,9 +70,11 @@ function getChartData(count = 18, startApy = 5, increment = 1.5) {
   return Array.from({ length: count }, (_, i) => {
     const monthIndex = i % 12;
     const apy = startApy + i * increment;
+
     return {
       month: months[monthIndex],
-      apy: parseFloat(apy.toFixed(1)),
+      // apy: parseFloat(apy.toFixed(1)),
+      apy: 200,
       day: (i + 1) * 100,
     };
   });
