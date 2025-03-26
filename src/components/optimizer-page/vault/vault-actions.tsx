@@ -486,14 +486,18 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             </span>
             <div className="flex items-center gap-2">
               <Image
-                src={icon}
+                src={
+                  icon === "/optimizers/usdc.png"
+                    ? "/optimizers/sol.png"
+                    : "/optimizers/usdc.png"
+                }
                 alt="vault"
                 width={100}
                 height={100}
                 className="h-6 w-6"
               />
               <span className="font-body text-[20px] font-[500] uppercase text-[#EAEAEA]">
-                {vaultTitle}
+                {vaultTitle === "SOL" ? "USDC" : "SOL"}
               </span>
             </div>
           </div>
