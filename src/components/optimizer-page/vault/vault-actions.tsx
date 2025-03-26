@@ -306,7 +306,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               ---
             </span>
           </div>
-          <RadioGroup defaultValue="p2p" className="flex flex-col gap-2">
+          {/* <RadioGroup defaultValue="p2p" className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <RadioGroupItem value="p2p" id="p2p" className="border-[#9CE0FF]" />
               <label htmlFor="p2p" className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
@@ -319,7 +319,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
                 Collateral
               </label>
             </div>
-          </RadioGroup>
+          </RadioGroup> */}
           {connected ? (
             <Button
               variant="shady"
