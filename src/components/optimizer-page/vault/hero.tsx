@@ -118,7 +118,7 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
             apy: "Not available for testnet",
           }}
         />
-        <VaultGraph />
+        <VaultGraph dataUser={{position: userData?.myPositions ?? "--"}}/>
       </div>
     </main>
   );

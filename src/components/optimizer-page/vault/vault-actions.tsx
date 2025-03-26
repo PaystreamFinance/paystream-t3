@@ -22,6 +22,8 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { VaultDataProps } from "./hero";
+import { RadioGroup } from "@/components/ui/radio-group";
+import { RadioGroupItem } from "@/components/ui/radio-group";
 
 const WalletMultiButton = dynamic(
   () =>
@@ -304,6 +306,20 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               ---
             </span>
           </div>
+          <RadioGroup defaultValue="p2p" className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="p2p" id="p2p" className="border-[#9CE0FF]" />
+              <label htmlFor="p2p" className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
+                P2P Lending
+              </label>
+            </div>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="collateral" id="collateral" className="border-[#9CE0FF]" />
+              <label htmlFor="collateral" className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
+                Collateral
+              </label>
+            </div>
+          </RadioGroup>
           {connected ? (
             <Button
               variant="shady"

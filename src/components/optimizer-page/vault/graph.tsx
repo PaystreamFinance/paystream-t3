@@ -87,7 +87,11 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function VaultGraph() {
+export function VaultGraph({
+  dataUser,
+}: {
+  dataUser: { position: string};
+}) {
   const { vaultState, setVaultState } = useVaultStateStore();
   const data = getChartData();
 
@@ -100,7 +104,7 @@ export function VaultGraph() {
               Total Supply
             </span>
             <span className="font-darkerGrotesque text-[32px] font-[400] text-[#EAEAEA]">
-              $704.6K
+              {dataUser.position}
             </span>
           </div>
           <div className="flex items-start justify-end gap-1 px-8 py-6">
