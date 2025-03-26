@@ -74,7 +74,7 @@ function getChartData(count = 18, startApy = 5, increment = 1.5) {
     return {
       month: months[monthIndex],
       // apy: parseFloat(apy.toFixed(1)),
-      apy: 200,
+      apy: 100 * i,
       day: (i + 1) * 100,
     };
   });

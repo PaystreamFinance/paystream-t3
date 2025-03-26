@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 
+import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { useVaultStateStore } from "@/store/vault-state-store";
 import { AnchorProvider, BN } from "@coral-xyz/anchor";
@@ -400,6 +401,9 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               ---
             </span>
           </div>
+          <Badge className="w-full border border-[#BBEBFF]/40 bg-[#08192A] px-3 py-2 text-sm text-amber-600 hover:bg-[#08192A]">
+            Withdrawal period: 7 days
+          </Badge>
           {connected ? (
             <Button
               variant="shady"
