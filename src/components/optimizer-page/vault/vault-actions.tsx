@@ -139,8 +139,6 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       const amount = new BN(Number(inputValue) * decimals);
-      console.log(amount);
-      console.log(inputValue);
 
       const result = await paystreamProgram.withdrawWithUI(
         marketConfig,
@@ -228,6 +226,14 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       return;
     }
     handleWithdraw();
+  };
+
+  const handleBorrowClick = () => {
+    if (!inputValue) {
+      inputRef.current?.focus();
+      return;
+    }
+    handleBorrow();
   };
 
   return (
@@ -568,9 +574,33 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               80%
             </span>
           </div>
-          <Button variant="shady" className="w-full">
-            Connect Wallet
-          </Button>
+          {connected ? (
+            <Button
+              variant="shady"
+              className="w-full"
+              onClick={handleBorrowClick}
+            >
+              Borrow
+            </Button>
+          ) : (
+            <WalletMultiButton
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+                backgroundColor: "#000D1E",
+                color: "#9CE0FF",
+                border: "1px solid #9CE0FF",
+                borderRadius: "8px",
+                padding: "12px",
+                fontSize: "16px",
+                fontWeight: "500",
+                textAlign: "center",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+              }}
+            />
+          )}
         </div>
       )}
     </>
