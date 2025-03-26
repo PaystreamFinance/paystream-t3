@@ -98,6 +98,61 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     }
   };
 
+  const handleBorrow = async () => {
+    if (!marketHeader || !inputValue) return;
+
+    try {
+      const marketConfig = {
+        market: marketHeader.market,
+        collateralMarket: marketHeader.collateralMarket,
+        mint: marketHeader.mint,
+        collateralMint: marketHeader.collateralMint,
+        tokenProgram: marketHeader.tokenProgram,
+        collateralTokenProgram: marketHeader.collateralTokenProgram,
+      };
+
+      const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
+      const amount = new BN(Number(inputValue) * decimals);
+
+      const result = await paystreamProgram.borrowWithUI(marketConfig, amount);
+      console.log(result);
+      toast.success("Borrow successful");
+    } catch (error) {
+      console.error("Error in borrow:", error);
+      toast.error("Borrow failed");
+    }
+  };
+
+  const handleWithdraw = async () => {
+    if (!marketHeader || !inputValue) return;
+
+    try {
+      const marketConfig = {
+        market: marketHeader.market,
+        collateralMarket: marketHeader.collateralMarket,
+        mint: marketHeader.mint,
+        collateralMint: marketHeader.collateralMint,
+        tokenProgram: marketHeader.tokenProgram,
+        collateralTokenProgram: marketHeader.collateralTokenProgram,
+      };
+
+      const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
+      const amount = new BN(Number(inputValue) * decimals);
+      console.log(amount);
+      console.log(inputValue);
+
+      const result = await paystreamProgram.withdrawWithUI(
+        marketConfig,
+        amount,
+      );
+      console.log(result);
+      toast.success("Withdrawal successful");
+    } catch (error) {
+      console.error("Error in withdraw:", error);
+      toast.error("Withdrawal failed");
+    }
+  };
+
   // fetch wallet balance to be shown in the UI
   useEffect(() => {
     const fetchBalance = async () => {
@@ -164,6 +219,14 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       return;
     }
     handleSupply();
+  };
+
+  const handleWithdrawClick = () => {
+    if (!inputValue) {
+      inputRef.current?.focus();
+      return;
+    }
+    handleWithdraw();
   };
 
   return (
@@ -270,12 +333,21 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               Withdraw {vaultTitle}
             </span>
             <div className="ml-auto flex items-center gap-2 font-body">
-              <span className="text-sm text-[#BCEBFF80]">Balance: 2000</span>
-              <span className="cursor-pointer text-sm text-[#BCEBFF80]">
+              <span className="text-sm text-[#BCEBFF80]">
+                Balance: {balance !== null ? balance.toFixed(2) : "--"}{" "}
+                {vaultTitle}
+              </span>
+              <span
+                onClick={() => handlePercentageClick(50)}
+                className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
+              >
                 50%
               </span>
-              <span className="cursor-pointer text-sm text-[#BCEBFF80]">
-                MAX
+              <span
+                onClick={() => handlePercentageClick(100)}
+                className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
+              >
+                max
               </span>
             </div>
           </div>
@@ -328,9 +400,33 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               ---
             </span>
           </div>
-          <Button variant="shady" className="w-full">
-            Connect Wallet
-          </Button>
+          {connected ? (
+            <Button
+              variant="shady"
+              className="w-full"
+              onClick={handleWithdrawClick}
+            >
+              Withdraw
+            </Button>
+          ) : (
+            <WalletMultiButton
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+                backgroundColor: "#000D1E",
+                color: "#9CE0FF",
+                border: "1px solid #9CE0FF",
+                borderRadius: "8px",
+                padding: "12px",
+                fontSize: "16px",
+                fontWeight: "500",
+                textAlign: "center",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+              }}
+            />
+          )}
         </div>
       )}
       {vaultState === "borrow" && (
@@ -340,12 +436,21 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               Borrow {vaultTitle}
             </span>
             <div className="ml-auto flex items-center gap-2 font-body">
-              <span className="text-sm text-[#BCEBFF80]">Balance: 2000</span>
-              <span className="cursor-pointer text-sm text-[#BCEBFF80]">
+              <span className="text-sm text-[#BCEBFF80]">
+                Balance: {balance !== null ? balance.toFixed(2) : "--"}{" "}
+                {vaultTitle}
+              </span>
+              <span
+                onClick={() => handlePercentageClick(50)}
+                className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
+              >
                 50%
               </span>
-              <span className="cursor-pointer text-sm text-[#BCEBFF80]">
-                MAX
+              <span
+                onClick={() => handlePercentageClick(100)}
+                className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
+              >
+                max
               </span>
             </div>
           </div>
