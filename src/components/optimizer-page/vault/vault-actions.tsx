@@ -4,31 +4,30 @@ import { Button } from "@/components/ui/button";
 
 import { Slider } from "@/components/ui/slider";
 import { useVaultStateStore } from "@/store/vault-state-store";
-import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
-import { VaultDataProps } from "./hero";
+import { AnchorProvider, BN } from "@coral-xyz/anchor";
+import {
+  _PaystreamV1Idl,
+  MarketHeaderWithPubkey,
+  PaystreamV1Program,
+} from "@meimfhd/paystream-v1";
 import {
   useAnchorWallet,
   useConnection,
   useWallet,
 } from "@solana/wallet-adapter-react";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
-import { PublicKey } from "@solana/web3.js";
-import {
-  AnchorProvider,
-  BN,
-} from "@coral-xyz/anchor";
-import {
-  _PaystreamV1Idl,
-  PaystreamV1Program,
-  MarketHeaderWithPubkey,
-} from "@meimfhd/paystream-v1";
-import toast from "react-hot-toast"
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import dynamic from "next/dynamic";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
+import { VaultDataProps } from "./hero";
 
 const WalletMultiButton = dynamic(
-  () => import('@solana/wallet-adapter-react-ui').then(mod => mod.WalletMultiButton),
-  { ssr: false }
+  () =>
+    import("@solana/wallet-adapter-react-ui").then(
+      (mod) => mod.WalletMultiButton,
+    ),
+  { ssr: false },
 );
 
 export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
@@ -90,14 +89,11 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000; // 9 decimals for SOL, 6 for USDC
       const amount = new BN(Number(inputValue) * decimals);
 
-      const result = await paystreamProgram.depositWithUI(
-        marketConfig,
-        amount
-      );
+      const result = await paystreamProgram.depositWithUI(marketConfig, amount);
       console.log(result);
       toast.success("Deposit successful");
     } catch (error) {
-      console.error('Error in supply:', error);
+      console.error("Error in supply:", error);
       toast.error("Deposit failed");
     }
   };
@@ -392,7 +388,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               </span>
             </div>
           </div>
-          <div className="flex flex-col gap-1">
+          {/* <div className="flex flex-col gap-1">
             <div className="flex items-center justify-between gap-2">
               <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
                 Leverage
@@ -431,8 +427,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
                 <div className="absolute bottom-[-4px] left-1/2 h-0 w-0 -translate-x-1/2 border-x-4 border-t-4 border-x-transparent border-t-[#000D1E]"></div>
               </div>
             </div>
-          </div>
-          <div className="flex items-center justify-between gap-2">
+          </div> */}
+          {/* <div className="flex items-center justify-between gap-2">
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
               Borrow APY
             </span>
@@ -440,8 +436,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
               ---
             </span>
-          </div>
-          <div className="flex items-center justify-between gap-2">
+          </div> */}
+          {/* <div className="flex items-center justify-between gap-2">
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
               USDC Debt
             </span>
@@ -449,14 +445,14 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
               ---
             </span>
-          </div>
+          </div> */}
           <div className="flex items-center justify-between gap-2">
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
               Loan-to-value Ratio
             </span>
 
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
-              ---
+              80%
             </span>
           </div>
           <Button variant="shady" className="w-full">

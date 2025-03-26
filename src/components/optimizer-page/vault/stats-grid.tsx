@@ -54,7 +54,7 @@ export function StatsGridHorizontal({
         <span className="font-darkerGrotesque text-[20px] font-[500] text-[#BCEBFF80] underline decoration-dotted">
           Total Deposits
         </span>
-        <span className="font-darkerGrotesque text-[32px] font-[400] text-[#EAEAEA]">
+        <span className="font-darkerGrotesque text-lg font-[400] text-[#EAEAEA]">
           {stats.totalDeposits}
         </span>
       </div>
@@ -62,7 +62,7 @@ export function StatsGridHorizontal({
         <span className="font-darkerGrotesque text-[20px] font-[500] text-[#BCEBFF80] underline decoration-dotted">
           Liquidity
         </span>
-        <span className="font-darkerGrotesque text-[32px] font-[400] text-[#EAEAEA]">
+        <span className="font-darkerGrotesque text-lg font-[400] text-[#EAEAEA]">
           {stats.liquidity}
         </span>
       </div>
@@ -70,7 +70,7 @@ export function StatsGridHorizontal({
         <span className="font-darkerGrotesque text-[20px] font-[500] text-[#BCEBFF80] underline decoration-dotted">
           APY
         </span>
-        <span className="font-darkerGrotesque text-[32px] font-[400] text-[#EAEAEA]">
+        <span className="font-darkerGrotesque text-lg font-[400] text-[#EAEAEA]">
           {stats.apy}%
         </span>
       </div>

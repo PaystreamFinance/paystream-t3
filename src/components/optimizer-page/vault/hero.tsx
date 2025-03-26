@@ -1,10 +1,10 @@
-import VaultActions from "./vault-actions";
 import { VaultGraph } from "./graph";
+import VaultActions from "./vault-actions";
 
 import StatsGrid, { StatsGridHorizontal } from "./stats-grid";
 import VaultDropdown from "./vault-dropdown";
 
-export interface VaultDataProps { 
+export interface VaultDataProps {
   vaultTitle: string;
   icon: string;
 }
@@ -23,7 +23,7 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
           <StatsGrid
             stats={{
               myPosition: "$100.0K",
-              apy: "8.4%",
+              apy: "8.4",
               projectedEarnings: "$74.6K",
             }}
           />
@@ -31,9 +31,9 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
         </div>
         <StatsGridHorizontal
           stats={{
-            totalDeposits: "$704.6K",
-            liquidity: "$74.6K",
-            apy: "74.6%",
+            totalDeposits: "Not available for testnet",
+            liquidity: "Not available for testnet",
+            apy: "Not available for testnet",
           }}
         />
         <VaultGraph />
