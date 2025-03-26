@@ -104,9 +104,9 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
         <div className="grid min-h-[247px] w-full grid-cols-2 gap-4">
           <StatsGrid
             stats={{
-              myPosition: "$100.0K",
-              apy: "8.4",
-              projectedEarnings: "$74.6K",
+              myPosition: userData?.myPositions ?? "--",
+              apy: userData?.apy ?? "--",
+              projectedEarnings: userData?.projectedEarnings ?? "--",
             }}
           />
           <VaultActions vaultTitle={vaultTitle} icon={icon} />
