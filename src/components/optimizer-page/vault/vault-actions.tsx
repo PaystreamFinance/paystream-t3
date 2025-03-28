@@ -3,6 +3,8 @@
 import { Button } from "@/components/ui/button";
 
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
 import { useVaultStateStore } from "@/store/vault-state-store";
 import { AnchorProvider, BN } from "@coral-xyz/anchor";
@@ -22,8 +24,6 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { VaultDataProps } from "./hero";
-import { RadioGroup } from "@/components/ui/radio-group";
-import { RadioGroupItem } from "@/components/ui/radio-group";
 
 const WalletMultiButton = dynamic(
   () =>
@@ -41,6 +41,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   const [leverageValue, setLeverageValue] = useState(33);
   const [isDragging, setIsDragging] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+
+  const [supplyType, setSupplyType] = useState<"p2p" | "collateral">("p2p");
 
   const wallet = useAnchorWallet();
   const { connection } = useConnection();
@@ -92,9 +94,18 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000; // 9 decimals for SOL, 6 for USDC
       const amount = new BN(Number(inputValue) * decimals);
 
-      const result = await paystreamProgram.depositWithUI(marketConfig, amount);
-      console.log(result);
-      toast.success("Deposit successful");
+      if (supplyType === "p2p") {
+        const result = await paystreamProgram.lendWithUI(marketConfig, amount);
+        console.log(result);
+        toast.success("Deposit successful");
+      } else if (supplyType === "collateral") {
+        const result = await paystreamProgram.depositWithUI(
+          marketConfig,
+          amount,
+        );
+        console.log(result);
+        toast.success("Deposit successful");
+      }
     } catch (error) {
       console.error("Error in supply:", error);
       toast.error("Deposit failed");
@@ -306,20 +317,40 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               ---
             </span>
           </div>
-          {/* <RadioGroup defaultValue="p2p" className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="p2p" id="p2p" className="border-[#9CE0FF]" />
-              <label htmlFor="p2p" className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
+
+          <RadioGroup
+            defaultValue="p2p"
+            value={supplyType}
+            onValueChange={(val) => setSupplyType(val as "p2p" | "collateral")}
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem
+                value="p2p"
+                id="p2p"
+                className="border-[#9CE0FF]"
+              />
+              <Label
+                htmlFor="p2p"
+                className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]"
+              >
                 P2P Lending
-              </label>
+              </Label>
             </div>
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="collateral" id="collateral" className="border-[#9CE0FF]" />
-              <label htmlFor="collateral" className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
+
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem
+                value="collateral"
+                id="collateral"
+                className="border-[#9CE0FF]"
+              />
+              <Label
+                htmlFor="collateral"
+                className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]"
+              >
                 Collateral
-              </label>
+              </Label>
             </div>
-          </RadioGroup> */}
+          </RadioGroup>
           {connected ? (
             <Button
               variant="shady"
