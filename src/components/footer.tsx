@@ -66,7 +66,7 @@ const Footer: React.FC = () => {
                   className="cursor-pointer"
                 />
               </Link>
-              <Link href="https://discord.gg/kDYJWSVe" target="_blank">
+              <Link href="https://discord.gg/X7TyWfZW" target="_blank">
                 <Image
                   src="/social/discord.svg"
                   alt="Discord"
