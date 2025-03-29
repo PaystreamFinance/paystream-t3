@@ -35,8 +35,8 @@ export default function VaultDropdown() {
         align="start"
         className="w-fit border-none bg-[#9CE0FF0F] font-body text-[#9CE0FF] backdrop-blur-lg"
       >
-        <DropdownMenuItem onClick={() => setVaultState("supply")}>
-          Supply
+        <DropdownMenuItem onClick={() => setVaultState("lend")}>
+          Lend
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setVaultState("borrow")}>
           Borrow

@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { Menu, X } from "lucide-react";
-import { usePathname } from 'next/navigation';
-import dynamic from 'next/dynamic';
+import { AnimatePresence, motion } from "motion/react";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React, { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -14,10 +14,12 @@ import Logo from "./logo";
 import MaxWidthWrapper from "./max-width-wrapper";
 
 const WalletMultiButton = dynamic(
-  () => import('@solana/wallet-adapter-react-ui').then(mod => mod.WalletMultiButton),
-  { ssr: false }
+  () =>
+    import("@solana/wallet-adapter-react-ui").then(
+      (mod) => mod.WalletMultiButton,
+    ),
+  { ssr: false },
 );
-
 
 const navItems = [
   {
@@ -53,7 +55,7 @@ const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isMobile = useIsMobile();
   const pathname = usePathname();
-  const isOptimizerPage = pathname?.startsWith('/optimizer');
+  const isOptimizerPage = pathname?.startsWith("/optimizer");
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -109,8 +111,8 @@ const Navbar: React.FC = () => {
                 {item.label}
               </Link>
             ))}
-            
-            {isOptimizerPage ? (
+
+            {/* {isOptimizerPage ? (
               <WalletMultiButton
                 style={{
                   backgroundColor: "#02142B",
@@ -130,9 +132,9 @@ const Navbar: React.FC = () => {
                   cursor: "pointer",
                 }}
               />
-            ) : (
-              <Button variant="primary">Join Waitlist</Button>
-            )}
+            ) : ( */}
+            <Button variant="primary">Join Waitlist</Button>
+            {/* )} */}
           </div>
         )}
 

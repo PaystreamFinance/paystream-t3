@@ -248,7 +248,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
   return (
     <>
-      {vaultState === "supply" && (
+      {vaultState === "lend" && (
         <div className="flex flex-col gap-4 bg-[#9CE0FF05] p-[12px]">
           <div className="flex items-center justify-between gap-2">
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
@@ -315,7 +315,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             </span>
           </div>
 
-          <RadioGroup
+          {/* <RadioGroup
             defaultValue="p2p"
             value={supplyType}
             onValueChange={(val) => setSupplyType(val as "p2p" | "collateral")}
@@ -347,7 +347,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
                 Collateral
               </Label>
             </div>
-          </RadioGroup>
+          </RadioGroup> */}
+
           {connected ? (
             <Button
               variant="shady"

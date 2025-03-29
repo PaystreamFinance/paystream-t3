@@ -107,11 +107,11 @@ export function VaultGraph({ dataUser }: { dataUser: { position: string } }) {
             <Button
               variant="outline"
               className={`w-fit border-border-t3 bg-transparent font-body text-[#BCEBFF80] hover:bg-[#BCEBFF] ${
-                vaultState === "supply" ? "bg-[#BCEBFF] text-[#02142B]" : ""
+                vaultState === "lend" ? "bg-[#BCEBFF] text-[#02142B]" : ""
               }`}
-              onClick={() => setVaultState("supply")}
+              onClick={() => setVaultState("lend")}
             >
-              Supply
+              Lend
             </Button>
             <Button
               variant="outline"

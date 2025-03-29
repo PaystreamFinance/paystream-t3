@@ -1,11 +1,11 @@
 import { create } from "zustand";
 
 interface VaultStateStore {
-  vaultState: "supply" | "borrow" | "withdraw";
-  setVaultState: (vaultState: "supply" | "borrow" | "withdraw") => void;
+  vaultState: "lend" | "borrow" | "withdraw";
+  setVaultState: (vaultState: "lend" | "borrow" | "withdraw") => void;
 }
 
 export const useVaultStateStore = create<VaultStateStore>((set) => ({
-  vaultState: "supply",
+  vaultState: "lend",
   setVaultState: (vaultState) => set({ vaultState }),
 }));
