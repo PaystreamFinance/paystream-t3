@@ -11,7 +11,7 @@ export type DashboardTable = {
   id: string;
   asset: "usdc" | "sol";
   position: string;
-  type: "p2p" | "collateral";
+  type: "borrow" | "lend";
   apy: string;
 };
 
@@ -102,7 +102,7 @@ export const dashboardColumn: ColumnDef<DashboardTable>[] = [
       const type = row.original.type;
       return (
         <Button className="text-[14px] text-[#9CE0FF]" variant="primary">
-          {type === "p2p" ? "Repayment" : "Withdraw"}
+          {type === "borrow" ? "Repayment" : "Withdraw"}
         </Button>
       );
     },

@@ -38,14 +38,14 @@ export async function getDashboardTableData() {
       id: "1",
       asset: "sol" as const,
       position: "100",
-      type: "p2p",
+      type: "borrow",
       apy: "8.4",
     },
     {
       id: "2",
       asset: "usdc" as const,
       position: "200",
-      type: "collateral",
+      type: "lend",
       apy: "7.36",
     },
   ] as DashboardTable[];

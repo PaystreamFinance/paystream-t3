@@ -20,10 +20,6 @@ const DashboardPage: NextPage = async () => {
           <h3 className="w-fit font-darkerGrotesque text-4xl leading-[0.8] text-white">
             Dashboard
           </h3>
-          <p className="w-fit max-w-[341px] font-darkerGrotesque text-[16px] font-normal leading-tight text-white/70">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-            Praesentium, labore.
-          </p>
         </div>
 
         <div className="relative min-h-[616px] w-full px-3 pb-[30px] sm:px-[56px]">

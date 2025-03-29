@@ -47,9 +47,27 @@ export default async function DriftHero() {
       </div>
       <div className="mb-5 flex w-full items-center justify-end px-3 sm:px-[46px]">
         <Link href="/dashboard">
-          <Button variant="primary" className="group flex items-center gap-2">
-            Go to your Dashboard
-            <ArrowRight className="size-4 transition-all group-hover:translate-x-1" />
+          <Button
+            className="group flex items-center gap-2"
+            style={{
+              backgroundColor: "#02142B",
+              color: "#BCEBFF",
+              border: "1px solid #9CE0FF",
+              borderRadius: "8px",
+              padding: "0 24px",
+              fontSize: "12px",
+              height: "34px",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              whiteSpace: "nowrap",
+              transition: "colors",
+              fontWeight: "normal",
+              cursor: "pointer",
+            }}
+          >
+            Dashboard
           </Button>
         </Link>
       </div>
