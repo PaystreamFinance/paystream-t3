@@ -6,6 +6,18 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+import RepaymentModal from "./repayment-modal";
+import WithdrawModal from "./withdraw-modal";
 
 export type DashboardTable = {
   id: string;
@@ -100,10 +112,24 @@ export const dashboardColumn: ColumnDef<DashboardTable>[] = [
     ),
     cell: ({ row }) => {
       const type = row.original.type;
+
       return (
-        <Button className="text-[14px] text-[#9CE0FF]" variant="primary">
-          {type === "borrow" ? "Repayment" : "Withdraw"}
-        </Button>
+        <div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="text-[14px] text-[#9CE0FF]" variant="primary">
+                {type === "borrow" ? "Repayment" : "Withdraw"}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="border border-[#9CE0FF] bg-[#070f14] sm:max-w-[550px]">
+              {type === "borrow" ? (
+                <RepaymentModal row={row} />
+              ) : (
+                <WithdrawModal row={row} />
+              )}
+            </DialogContent>
+          </Dialog>
+        </div>
       );
     },
   },

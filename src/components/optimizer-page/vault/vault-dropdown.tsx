@@ -1,19 +1,19 @@
 "use client";
-import * as React from "react";
+import { Button } from "@/components/ui/button";
 import {
+  DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { useVaultStateStore } from "@/store/vault-state-store";
-import { Button } from "@/components/ui/button";
 import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
 } from "lucide-react";
+import * as React from "react";
 
 export default function VaultDropdown() {
   const { vaultState, setVaultState } = useVaultStateStore();
@@ -41,9 +41,9 @@ export default function VaultDropdown() {
         <DropdownMenuItem onClick={() => setVaultState("borrow")}>
           Borrow
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setVaultState("withdraw")}>
+        {/* <DropdownMenuItem onClick={() => setVaultState("withdraw")}>
           Withdraw
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
       </DropdownMenuContent>
     </DropdownMenu>
   );

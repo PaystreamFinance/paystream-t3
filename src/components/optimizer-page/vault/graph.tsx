@@ -87,11 +87,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function VaultGraph({
-  dataUser,
-}: {
-  dataUser: { position: string};
-}) {
+export function VaultGraph({ dataUser }: { dataUser: { position: string } }) {
   const { vaultState, setVaultState } = useVaultStateStore();
   const data = getChartData();
 
@@ -126,7 +122,7 @@ export function VaultGraph({
             >
               Borrow
             </Button>
-            <Button
+            {/* <Button
               variant="outline"
               className={`w-fit border-border-t3 bg-transparent font-body text-[#BCEBFF80] hover:bg-[#BCEBFF] ${
                 vaultState === "withdraw" ? "bg-[#BCEBFF] text-[#02142B]" : ""
@@ -134,7 +130,7 @@ export function VaultGraph({
               onClick={() => setVaultState("withdraw")}
             >
               Withdraw
-            </Button>
+            </Button> */}
             <VaultDropdownMonth />
           </div>
         </div>

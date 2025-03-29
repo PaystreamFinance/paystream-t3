@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
+import { SOL_MINT, USDC_MINT } from "@/constants";
 import { useVaultStateStore } from "@/store/vault-state-store";
 import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import {
@@ -49,10 +50,6 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
   const [marketHeader, setMarketHeader] =
     useState<MarketHeaderWithPubkey | null>(null);
-
-  // custom token mints on devnet for now
-  const SOL_MINT = "8GpouMs5EKn6PpHVkHqP3iiYTVLTynRStYNVRUQ6nJqc";
-  const USDC_MINT = "2Gzzp8xkZeRsTgdg36XrAWFKzKRSt6BfqshYEw7XRHub";
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -380,7 +377,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
           )}
         </div>
       )}
-      {vaultState === "withdraw" && (
+
+      {/* {vaultState === "withdraw" && (
         <div className="flex flex-col gap-4 bg-[#9CE0FF05] p-[12px]">
           <div className="flex items-center justify-between gap-2">
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
@@ -485,7 +483,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             />
           )}
         </div>
-      )}
+      )} */}
+
       {vaultState === "borrow" && (
         <div className="flex flex-col gap-4 bg-[#9CE0FF05] p-[12px]">
           <div className="flex items-center justify-between gap-2">
