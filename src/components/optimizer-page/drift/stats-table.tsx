@@ -68,7 +68,7 @@ export function StatsTable<TData, TValue>({
             <TableRow
               key={row.id}
               data-state={row.getIsSelected() && "selected"}
-              className=""
+              className="hover:bg-[#1E364B]"
             >
               {row.getVisibleCells().map((cell) => (
                 <TableCell className="h-16 text-white" key={cell.id}>

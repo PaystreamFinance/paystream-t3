@@ -1,4 +1,4 @@
-import { OptimizerTable } from "@/components/optimizer-page/drift/table-columns";
+import { type DashboardTable } from "@/app/dashboard/_components/dashboard-column";
 
 export async function getStats() {
   return [
@@ -30,4 +30,23 @@ export async function getTableData() {
       p2p_apr: 7.36,
     },
   ];
+}
+
+export async function getDashboardTableData() {
+  return [
+    {
+      id: "1",
+      asset: "sol" as const,
+      position: "100",
+      type: "p2p",
+      apy: "8.4",
+    },
+    {
+      id: "2",
+      asset: "usdc" as const,
+      position: "200",
+      type: "collateral",
+      apy: "7.36",
+    },
+  ] as DashboardTable[];
 }

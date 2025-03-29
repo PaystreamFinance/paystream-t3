@@ -20,7 +20,8 @@ const buttonVariants = cva(
         ghost:
           "border-[#BCEBFF0F] border rounded-lg !text-sm text-[#BCEBFF80] hover:bg-[#BCEBFF] hover:text-[#02142B] transition-all border bg-transparent",
         link: "text-primary underline-offset-4 hover:underline",
-        primary: "bg-[#BCEBFF] text-[#02142B] !h-[30px] rounded-lg font-normal",
+        primary:
+          "bg-[#BCEBFF] !text-[#02142B] !h-[30px] rounded-lg font-normal",
         shady:
           "bg-[#02142B] text-[#BCEBFF] !h-[42px] !px-6 !text-base rounded-xl font-normal shady",
       },

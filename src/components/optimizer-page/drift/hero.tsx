@@ -1,5 +1,8 @@
 import { getStats, getTableData } from "@/lib/data";
 
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import Stats from "../stats";
 import DriftBanner from "./drift-banner";
 import { StatsTable } from "./stats-table";
@@ -41,6 +44,14 @@ export default async function DriftHero() {
       </div>
       <div className="relative w-full px-3 py-[30px] sm:px-[46px]">
         <Stats stats={stats} underline />
+      </div>
+      <div className="mb-5 flex w-full items-center justify-end px-3 sm:px-[46px]">
+        <Link href="/dashboard">
+          <Button variant="primary" className="group flex items-center gap-2">
+            Go to your Dashboard
+            <ArrowRight className="size-4 transition-all group-hover:translate-x-1" />
+          </Button>
+        </Link>
       </div>
       <div className="relative min-h-[616px] w-full px-3 pb-[30px] sm:px-[56px]">
         <StatsTable columns={columns} data={tableData} />
