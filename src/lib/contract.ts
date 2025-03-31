@@ -102,6 +102,52 @@ export async function getP2PMatches(
   // TODO: return in correct format
 }
 
+export interface OptimizerStats {
+    borrowVolume: number;
+    availableLiquidity: number;
+}
+
+export async function getDriftOptimizerStats(paystreamProgram: PaystreamV1Program) { 
+  const marketHeaderData = await paystreamProgram.getAllMarketHeaders();
+  const usdcMarket = marketHeaderData[0];
+  const solMarket = marketHeaderData[1];
+
+  if (!usdcMarket || !solMarket) {
+    throw new Error("Market not found");
+  }
+
+  const marketData = await paystreamProgram.getMarketDataUI(
+    usdcMarket.market,
+    usdcMarket.mint,
+  );
+
+  const usdcMarketData = marketData
+  const solMarketData = marketData
+
+  const totalBorrowsUSDC = bnToNumber(usdcMarketData.stats.borrows.total, 6)
+  const totalBorrowsSOL = bnToNumber(solMarketData.stats.borrows.total, 9)
+  const solPrice = await getSolanaPrice();
+
+  const optimizerStats: OptimizerStats = { 
+    borrowVolume: totalBorrowsUSDC + (totalBorrowsSOL * solPrice),
+    availableLiquidity: bnToNumber(usdcMarketData.stats.deposits.total, 6) + bnToNumber(solMarketData.stats.deposits.total, 9)
+  }
+
+  return optimizerStats
+}
+
+async function getSolanaPrice(): Promise<number> {
+  try {
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
+    const data = await response.json();
+    return data.solana.usd;
+  } catch (error) {
+    console.error('Error fetching Solana price:', error);
+    return 0;
+  }
+}
+
+
 interface PositionData {
   amount: number;
   action_amount: BN;

@@ -1,11 +1,20 @@
-import { type DashboardTable } from "@/app/dashboard/_components/dashboard-column";
+"use client"
 
-export async function getStats() {
+import { type DashboardTable } from "@/app/dashboard/_components/dashboard-column";
+import { getDriftOptimizerStats } from "./contract";
+import { AnchorProvider } from "@coral-xyz/anchor";
+import { useConnection } from "@solana/wallet-adapter-react";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { PaystreamV1Program } from "@meimfhd/paystream-v1";
+
+export async function getStats(paystreamProgram: PaystreamV1Program) {
+  const optimizerStats = await getDriftOptimizerStats(paystreamProgram);
+
   return [
-    { title: "Supply Volume", value: "Not available in testnet" },
-    { title: "Borrow Volume", value: "Not available in testnet" },
+    { title: "Supply Volume", value: "Not available in testnet"},
+    { title: "Borrow Volume", value: "$ " + optimizerStats.borrowVolume.toFixed(2).toString() },
     { title: "Match Rate", value: "Not available in testnet" },
-    { title: "Available Liquidity", value: "Not available in testnet" },
+    { title: "Available Liquidity", value: "$ " + optimizerStats.availableLiquidity.toFixed(2).toString() },
   ];
 }
 
