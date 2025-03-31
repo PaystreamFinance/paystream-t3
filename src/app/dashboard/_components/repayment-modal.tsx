@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { SOL_MINT, USDC_MINT } from "@/constants";
 
 import { WithdrawModalProps } from "./withdraw-modal";
+import { bnToNumber } from "@/lib/contract";
 
 const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
   const [balance, setBalance] = React.useState<number | null>(null);
@@ -40,14 +41,14 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
   const vaultTitle = row.original.asset.toUpperCase();
 
   const handlePercentageClick = (percentage: number) => {
-    if (balance === null) return;
-    const amount = percentage === 100 ? balance : (balance * percentage) / 100;
+    const maxAmount = bnToNumber(row.original.action_amount, vaultTitle === "SOL" ? 9 : 6);
+    const amount = percentage === 100 ? maxAmount : (maxAmount * percentage) / 100;
 
     const maxDecimals = vaultTitle === "SOL" ? 9 : 6;
     setInputValue(amount.toFixed(maxDecimals));
   };
 
-  const handleWithdraw = async () => {
+  const handleRepayment = async () => {
     if (!marketHeader || !inputValue) return;
 
     try {
@@ -63,7 +64,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       const amount = new BN(Number(inputValue) * decimals);
 
-      const result = await paystreamProgram.withdrawWithUI(
+      const result = await paystreamProgram.repayWithUI(
         marketConfig,
         amount,
       );
@@ -75,12 +76,12 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
     }
   };
 
-  const handleWithdrawClick = () => {
+  const handleRepaymentClick = () => {
     if (!inputValue) {
       inputRef.current?.focus();
       return;
     }
-    handleWithdraw();
+    handleRepayment();
   };
 
   React.useEffect(() => {
@@ -162,7 +163,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
           </span>
           <div className="ml-auto flex items-center gap-2 font-body">
             <span className="text-sm text-[#BCEBFF80]">
-              Balance: {balance !== null ? balance.toFixed(2) : "--"}{" "}
+              Pending: {bnToNumber(row.original.action_amount, vaultTitle === "SOL" ? 9 : 6).toFixed(2)}{" "}
               {vaultTitle}
             </span>
             <span
@@ -194,7 +195,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
           </div>
           <input
             type="text"
-            value={inputValue}
+            value={Number(inputValue).toFixed(2)}
             onChange={(e) => setInputValue(e.target.value)}
             className="h-full w-full border-none bg-transparent text-right font-darkerGrotesque text-[40px] font-[400] uppercase text-[#EAEAEAA3] shadow-none outline-none focus:border-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             placeholder="0.0"
@@ -236,7 +237,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
           <Button
             variant="shady"
             className="w-full"
-            onClick={handleWithdrawClick}
+            onClick={handleRepaymentClick}
           >
             Repayment
           </Button>

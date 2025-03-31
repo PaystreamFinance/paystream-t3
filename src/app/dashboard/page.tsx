@@ -44,15 +44,18 @@ const DashboardPage: NextPage = () => {
       );
 
       // Convert positions to table data format
-      const tableData = positions.map((pos, idx) => ({
-        id: idx.toString(),
-        asset: pos.asset.toLowerCase() as "usdc" | "sol",
-        position: pos.positionData.amount.toString(),
-        type: (pos.type === "lending" ? "LEND" : 
-              pos.type === "p2pLending" ? "P2P LEND" : 
-              "BORROW") as "LEND" | "P2P LEND" | "BORROW",
-        apy: pos.apy?.toString() ?? "N/A",
-      }));
+      const tableData = positions
+        .filter(pos => Number(pos.positionData.amount) > 0)
+        .map((pos, idx) => ({
+          id: idx.toString(),
+          asset: pos.asset.toLowerCase() as "usdc" | "sol",
+          position: pos.positionData.amount.toString(),
+          type: (pos.type === "lending" ? "LEND" : 
+                pos.type === "p2pLending" ? "P2P LEND" : 
+                "BORROW") as "LEND" | "P2P LEND" | "BORROW",
+          apy: pos.apy?.toString() ?? "N/A",
+          action_amount: pos.positionData.action_amount,
+        }));
       
       setTableData(tableData);
     };

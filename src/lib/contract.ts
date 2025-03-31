@@ -100,6 +100,6 @@ function getP2PBorrowPosition(traderPosition: TraderPositionUI, decimals: number
     }
 }
 
-const bnToNumber = (bn: BN, decimals: number = 9): number => {
+export const bnToNumber = (bn: BN, decimals: number = 9): number => {
     return Number(bn) / Math.pow(10, decimals);
 }

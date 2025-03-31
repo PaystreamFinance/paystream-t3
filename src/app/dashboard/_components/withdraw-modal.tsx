@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { SOL_MINT, USDC_MINT } from "@/constants";
 
 import { DashboardTable } from "./dashboard-column";
+import { bnToNumber } from "@/lib/contract";
 
 export interface WithdrawModalProps {
   row: Row<DashboardTable>;
@@ -45,8 +46,12 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
   const vaultTitle = row.original.asset.toUpperCase();
 
   const handlePercentageClick = (percentage: number) => {
-    if (balance === null) return;
-    const amount = percentage === 100 ? balance : (balance * percentage) / 100;
+    const maxAmount = bnToNumber(
+      row.original.action_amount,
+      vaultTitle === "SOL" ? 9 : 6,
+    );
+    const amount =
+      percentage === 100 ? maxAmount : (maxAmount * percentage) / 100;
 
     const maxDecimals = vaultTitle === "SOL" ? 9 : 6;
     setInputValue(amount.toFixed(maxDecimals));
@@ -167,7 +172,11 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
           </span>
           <div className="ml-auto flex items-center gap-2 font-body">
             <span className="text-sm text-[#BCEBFF80]">
-              Balance: {balance !== null ? balance.toFixed(2) : "--"}{" "}
+              Available:{" "}
+              {bnToNumber(
+                row.original.action_amount,
+                vaultTitle === "SOL" ? 9 : 6,
+              ).toFixed(2)}{" "}
               {vaultTitle}
             </span>
             <span
@@ -199,7 +208,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
           </div>
           <input
             type="text"
-            value={inputValue}
+            value={Number(inputValue).toFixed(2)}
             onChange={(e) => setInputValue(e.target.value)}
             className="h-full w-full border-none bg-transparent text-right font-darkerGrotesque text-[40px] font-[400] uppercase text-[#EAEAEAA3] shadow-none outline-none focus:border-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             placeholder="0.0"
@@ -233,9 +242,9 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
             ---
           </span>
         </div>
-        <Badge className="mb-5 w-full border border-[#9CE0FF] bg-[#08192A] px-3 py-2 text-sm text-amber-600 hover:bg-[#08192A]">
-          Withdrawal period: 7 days
-        </Badge>
+        {/* <Badge className="mb-5 w-full border border-[#9CE0FF] bg-[#08192A] px-3 py-2 text-sm text-amber-600 hover:bg-[#08192A]">
+              Withdrawal period: 7 days
+            </Badge> */}
 
         {connected ? (
           <Button

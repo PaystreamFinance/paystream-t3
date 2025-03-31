@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { BN } from "@coral-xyz/anchor";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +25,7 @@ export type DashboardTable = {
   position: string;
   type: "LEND" | "P2P LEND" | "BORROW";
   apy: string;
+  action_amount: BN;
 };
 
 export const dashboardColumn: ColumnDef<DashboardTable>[] = [
