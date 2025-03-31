@@ -13,7 +13,7 @@ import {
 } from "./_components/dashboard-column";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
-import { getTraderPositions, Position } from "@/lib/contract";
+import { getTraderPositions, Position, getP2PMatches } from "@/lib/contract";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { PaystreamV1Program } from "@meimfhd/paystream-v1";
 import dynamic from "next/dynamic";
@@ -42,6 +42,8 @@ const DashboardPage: NextPage = () => {
         paystreamProgram,
         publicKey.toBase58(),
       );
+
+      const matches = await getP2PMatches(paystreamProgram, publicKey.toBase58());
 
       // Convert positions to table data format
       const tableData = positions
