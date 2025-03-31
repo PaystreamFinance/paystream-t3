@@ -195,7 +195,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
           </div>
           <input
             type="text"
-            value={Number(inputValue).toFixed(2)}
+            value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             className="h-full w-full border-none bg-transparent text-right font-darkerGrotesque text-[40px] font-[400] uppercase text-[#EAEAEAA3] shadow-none outline-none focus:border-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
             placeholder="0.0"
