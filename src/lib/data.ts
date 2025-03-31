@@ -6,8 +6,9 @@ import { AnchorProvider } from "@coral-xyz/anchor";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { PaystreamV1Program } from "@meimfhd/paystream-v1";
+import { BN } from "@coral-xyz/anchor";
 
-export async function getStats(paystreamProgram: PaystreamV1Program) {
+export async function getDriftStats(paystreamProgram: PaystreamV1Program) {
   const optimizerStats = await getDriftOptimizerStats(paystreamProgram);
 
   return [
@@ -15,6 +16,14 @@ export async function getStats(paystreamProgram: PaystreamV1Program) {
     { title: "Borrow Volume", value: "$ " + optimizerStats.borrowVolume.toFixed(2).toString() },
     { title: "Match Rate", value: "Not available in testnet" },
     { title: "Available Liquidity", value: "$ " + optimizerStats.availableLiquidity.toFixed(2).toString() },
+  ];
+}
+export async function getStats() {
+  return [
+    { title: "Supply Volume", value: "Not available in testnet"},
+    { title: "Borrow Volume", value: "Not available in testnet"},
+    { title: "Match Rate", value: "Not available in testnet" },
+    { title: "Available Liquidity", value: "Not available in testnet" },
   ];
 }
 
@@ -47,15 +56,17 @@ export async function getDashboardTableData() {
       id: "1",
       asset: "sol" as const,
       position: "100",
-      type: "borrow",
+      type: "BORROW" as const,
       apy: "8.4",
+      action_amount: new BN(1000000000),
     },
     {
       id: "2",
       asset: "usdc" as const,
       position: "200",
-      type: "lend",
+      type: "LEND" as const,
       apy: "7.36",
+      action_amount: new BN(200000000),
     },
   ] as DashboardTable[];
 }

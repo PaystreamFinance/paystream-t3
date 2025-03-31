@@ -1,6 +1,6 @@
 "use client"
 
-import { getStats, getTableData } from "@/lib/data";
+import { getDriftStats, getStats, getTableData } from "@/lib/data";
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
@@ -27,7 +27,7 @@ export default function DriftHero() {
 
   useEffect(() => {
     async function fetchStats() { 
-      const stats = await getStats(paystreamProgram);
+      const stats = await getDriftStats(paystreamProgram);
       setStats(stats);
 
       const tableData = await getTableData();
