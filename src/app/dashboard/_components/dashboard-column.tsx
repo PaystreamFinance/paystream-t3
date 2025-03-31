@@ -23,7 +23,7 @@ export type DashboardTable = {
   id: string;
   asset: "usdc" | "sol";
   position: string;
-  type: "borrow" | "lend";
+  type: "LEND" | "P2P LEND" | "BORROW";
   apy: string;
 };
 
@@ -31,77 +31,65 @@ export const dashboardColumn: ColumnDef<DashboardTable>[] = [
   {
     accessorKey: "asset",
     header: ({ column }) => (
-      <HeaderButton
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Assets
-      </HeaderButton>
+      <p className="inline-flex items-center gap-1 font-body text-[12px] font-light uppercase text-[#9CE0FF33]">
+        Asset
+      </p>
     ),
     cell: ({ row }) => {
+      const asset = row.original.asset;
       return (
-        <Link href={`#`} className="flex items-center gap-2 hover:opacity-80">
+        <div className="flex items-center gap-2">
           <Image
-            src={`/optimizers/${row.original.asset}.png`}
-            alt={row.original.asset}
+            src={`/optimizers/${asset}.png`}
+            alt={asset}
             width={24}
             height={24}
-            className="rounded-full"
           />
-          <p className="uppercase text-white">{row.original.asset}</p>
-        </Link>
+          <span className="text-[14px] font-light text-[#9CE0FF]">
+            {asset.toUpperCase()}
+          </span>
+        </div>
       );
     },
   },
   {
     accessorKey: "position",
     header: ({ column }) => (
-      <HeaderButton
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
+      <p className="inline-flex items-center gap-1 font-body text-[12px] font-light uppercase text-[#9CE0FF33]">
         Position
-      </HeaderButton>
+      </p>
     ),
-    cell: ({ row }) => {
-      return (
-        <div className="flex flex-col items-start justify-start font-inter">
-          <p className="text-[14px] text-[#FAFAFA]">{row.original.position}</p>
-        </div>
-      );
-    },
+    cell: ({ row }) => (
+      <p className="text-[14px] font-light text-[#9CE0FF]">
+        {row.original.position}
+      </p>
+    ),
   },
   {
     accessorKey: "type",
     header: ({ column }) => (
-      <HeaderButton
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Type of Order
-      </HeaderButton>
+      <p className="inline-flex items-center gap-1 font-body text-[12px] font-light uppercase text-[#9CE0FF33]">
+        Type
+      </p>
     ),
-    cell: ({ row }) => {
-      return (
-        <div className="flex flex-col items-start justify-start font-inter">
-          <p className="text-[14px] text-[#FAFAFA]">{row.original.type}</p>
-        </div>
-      );
-    },
+    cell: ({ row }) => (
+      <p className="text-[14px] font-light text-[#9CE0FF]">
+        {row.original.type.charAt(0).toUpperCase() + row.original.type.slice(1)}
+      </p>
+    ),
   },
   {
     accessorKey: "apy",
     header: ({ column }) => (
-      <HeaderButton
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
+      <p className="inline-flex items-center gap-1 font-body text-[12px] font-light uppercase text-[#9CE0FF33]">
         APY
-      </HeaderButton>
+      </p>
     ),
-    cell: ({ row }) => {
-      return (
-        <p className="text-[14px] font-light text-[#9CE0FF]">
-          {row.original.apy}%
-        </p>
-      );
-    },
+    cell: ({ row }) => (
+      <p className="text-[14px] font-light text-[#9CE0FF]">
+        {row.original.apy}%
+      </p>
+    ),
   },
   {
     accessorKey: "action",
@@ -112,17 +100,18 @@ export const dashboardColumn: ColumnDef<DashboardTable>[] = [
     ),
     cell: ({ row }) => {
       const type = row.original.type;
-
+      const buttonText = type === "BORROW" ? "Repayment" : "Withdraw";
+      
       return (
         <div>
           <Dialog>
             <DialogTrigger asChild>
               <Button className="text-[14px] text-[#9CE0FF]" variant="primary">
-                {type === "borrow" ? "Repayment" : "Withdraw"}
+                {buttonText}
               </Button>
             </DialogTrigger>
             <DialogContent className="border border-[#9CE0FF] bg-[#070f14] sm:max-w-[550px]">
-              {type === "borrow" ? (
+              {type === "BORROW" ? (
                 <RepaymentModal row={row} />
               ) : (
                 <WithdrawModal row={row} />
