@@ -148,10 +148,10 @@ export async function getDriftOptimizerStats(
   const optimizerStats: OptimizerStats = {
     borrowVolume,
     availableLiquidity:
-      bnToNumber(usdcMarketData.stats.deposits.lendAmountUnmatched, 6) +
-      bnToNumber(solMarketData.stats.deposits.lendAmountUnmatched, 9),
+      bnToNumber(usdcMarketData.stats.totalLiquidityAvailable, 6) +
+      bnToNumber(solMarketData.stats.totalLiquidityAvailable, 9),
     supplyVolume,
-    matchRate: matchRate,
+    matchRate: matchRate * 100,
   };
 
   return optimizerStats;

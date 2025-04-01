@@ -128,7 +128,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       const result = await paystreamProgram.borrowWithCollateralUI(
         marketConfig,
         amount,
-        amount.muln(70).divn(100),
+        amount.muln(120).divn(100),
       );
       console.log(result);
       toast.success("Borrow successful");
