@@ -125,7 +125,11 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       const amount = new BN(Number(inputValue) * decimals);
 
-      const result = await paystreamProgram.borrowWithUI(marketConfig, amount);
+      const result = await paystreamProgram.borrowWithCollateralUI(
+        marketConfig,
+        amount,
+        amount.muln(70).divn(100),
+      );
       console.log(result);
       toast.success("Borrow successful");
     } catch (error) {

@@ -132,11 +132,11 @@ export async function getDriftOptimizerStats(
   const usdcMarketData = marketData;
   const solMarketData = marketData;
 
-  const totalBorrowsUSDC = bnToNumber(usdcMarketData.stats.borrows.total, 6);
-  const totalBorrowsSOL = bnToNumber(solMarketData.stats.borrows.total, 9);
+  const totalBorrowsUSDC = bnToNumber(usdcMarketData.stats.borrows.totalBorrowedP2p, 6);
+  const totalBorrowsSOL = bnToNumber(solMarketData.stats.borrows.totalBorrowedP2p, 9);
 
-  const totalSupplyUSDC = bnToNumber(usdcMarketData.stats.collateral.total, 6);
-  const totalSupplySOL = bnToNumber(solMarketData.stats.collateral.total, 9);
+  const totalSupplyUSDC = bnToNumber(usdcMarketData.stats.deposits.totalSupply, 6);
+  const totalSupplySOL = bnToNumber(solMarketData.stats.deposits.totalSupply, 9);
 
   const solPrice = await getSolanaPrice();
 
@@ -148,8 +148,8 @@ export async function getDriftOptimizerStats(
   const optimizerStats: OptimizerStats = {
     borrowVolume,
     availableLiquidity:
-      bnToNumber(usdcMarketData.stats.deposits.total, 6) +
-      bnToNumber(solMarketData.stats.deposits.total, 9),
+      bnToNumber(usdcMarketData.stats.deposits.lendAmountUnmatched, 6) +
+      bnToNumber(solMarketData.stats.deposits.lendAmountUnmatched, 9),
     supplyVolume,
     matchRate: matchRate,
   };
@@ -202,8 +202,8 @@ function getP2PBorrowPosition(
   decimals: number,
 ): PositionData {
   return {
-    amount: bnToNumber(traderPosition.borrowing.p2pBorrows, decimals),
-    action_amount: traderPosition.borrowing.p2pBorrows,
+    amount: bnToNumber(traderPosition.borrowing.p2pBorrowed, decimals),
+    action_amount: traderPosition.borrowing.p2pBorrowed,
   };
 }
 
