@@ -112,7 +112,7 @@ const Navbar: React.FC = () => {
               </Link>
             ))}
 
-            {/* {isOptimizerPage ? (
+            {isOptimizerPage ? (
               <WalletMultiButton
                 style={{
                   backgroundColor: "#02142B",
@@ -132,9 +132,9 @@ const Navbar: React.FC = () => {
                   cursor: "pointer",
                 }}
               />
-            ) : ( */}
-            <Button variant="primary">Join Waitlist</Button>
-            {/* )} */}
+            ) : (
+              <Button variant="primary">Join Waitlist</Button>
+            )}
           </div>
         )}
 
