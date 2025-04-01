@@ -49,7 +49,16 @@ export default function Stats({
           >
             {stat.title}
           </span>
-          <span className="font-darkerGrotesque text-[32px] font-thin text-white sm:text-lg md:text-lg lg:text-3xl">
+          <span
+            className={cn(
+              "font-darkerGrotesque text-[32px] font-thin text-white sm:text-lg md:text-lg lg:text-3xl",
+              {
+                "!text-lg md:!text-xl": stat.value
+                  .toLowerCase()
+                  .includes("not"),
+              },
+            )}
+          >
             {stat.value}
           </span>
         </div>

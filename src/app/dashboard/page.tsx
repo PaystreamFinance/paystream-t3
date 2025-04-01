@@ -1,22 +1,27 @@
 "use client";
 
 import { NextPage } from "next";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+
+import { AnchorProvider } from "@coral-xyz/anchor";
+import { PaystreamV1Program } from "@meimfhd/paystream-v1";
+import {
+  useAnchorWallet,
+  useConnection,
+  useWallet,
+} from "@solana/wallet-adapter-react";
+import { Loader } from "lucide-react";
+import dynamic from "next/dynamic";
 
 import MaxWidthWrapper from "@/components/max-width-wrapper";
 import { StatsTable } from "@/components/optimizer-page/drift/stats-table";
-import { getDashboardTableData, getStats } from "@/lib/data";
+import { getP2PMatches, getTraderPositions } from "@/lib/contract";
 
 import {
   dashboardColumn,
   type DashboardTable,
 } from "./_components/dashboard-column";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
-import { getTraderPositions, Position, getP2PMatches } from "@/lib/contract";
-import { AnchorProvider } from "@coral-xyz/anchor";
-import { PaystreamV1Program } from "@meimfhd/paystream-v1";
-import dynamic from "next/dynamic";
+
 const WalletMultiButton = dynamic(
   () =>
     import("@solana/wallet-adapter-react-ui").then(
@@ -37,28 +42,33 @@ const DashboardPage: NextPage = () => {
   useEffect(() => {
     const fetchTraderPositions = async () => {
       if (!connected || !publicKey) return;
-      
+
       const positions = await getTraderPositions(
         paystreamProgram,
         publicKey.toBase58(),
       );
 
-      const matches = await getP2PMatches(paystreamProgram, publicKey.toBase58());
+      const matches = await getP2PMatches(
+        paystreamProgram,
+        publicKey.toBase58(),
+      );
 
       // Convert positions to table data format
       const tableData = positions
-        .filter(pos => Number(pos.positionData.amount) > 0)
+        .filter((pos) => Number(pos.positionData.amount) > 0)
         .map((pos, idx) => ({
           id: idx.toString(),
           asset: pos.asset.toLowerCase() as "usdc" | "sol",
           position: pos.positionData.amount.toString(),
-          type: (pos.type === "lending" ? "LEND" : 
-                pos.type === "p2pLending" ? "P2P LEND" : 
-                "BORROW") as "LEND" | "P2P LEND" | "BORROW",
+          type: (pos.type === "lending"
+            ? "LEND"
+            : pos.type === "p2pLending"
+              ? "P2P LEND"
+              : "BORROW") as "LEND" | "P2P LEND" | "BORROW",
           apy: pos.apy?.toString() ?? "N/A",
           action_amount: pos.positionData.action_amount,
         }));
-      
+
       setTableData(tableData);
     };
 
@@ -97,7 +107,14 @@ const DashboardPage: NextPage = () => {
         </div>
 
         <div className="relative min-h-[616px] w-full px-3 pb-[30px] sm:px-[56px]">
-          <StatsTable columns={dashboardColumn} data={tableData} />
+          {!tableData ? (
+            <p className="mt-6 flex w-full items-center justify-center gap-2 text-white">
+              <Loader className="size-4 animate-spin text-[#67DFFF]" /> loading
+              table data...
+            </p>
+          ) : (
+            <StatsTable columns={dashboardColumn} data={tableData} />
+          )}
         </div>
       </main>
     </MaxWidthWrapper>

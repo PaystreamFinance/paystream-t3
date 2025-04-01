@@ -78,8 +78,11 @@ export function StatsTable<TData, TValue>({
             </TableRow>
           ))
         ) : (
-          <TableRow>
-            <TableCell colSpan={columns.length} className="h-24 text-center">
+          <TableRow className="hover:bg-[#1E364B]">
+            <TableCell
+              colSpan={columns.length}
+              className="h-24 text-center text-white/80"
+            >
               No results.
             </TableCell>
           </TableRow>
