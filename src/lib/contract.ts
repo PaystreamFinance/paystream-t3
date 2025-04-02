@@ -122,15 +122,15 @@ export async function getDriftOptimizerStats(
     throw new Error("Market not found");
   }
 
-  const marketData = await paystreamProgram.getMarketDataUI(
+  const usdcMarketData = await paystreamProgram.getMarketDataUI(
     usdcMarket.market,
     usdcMarket.mint,
   );
 
-  console.log(marketData, "marketData");
-
-  const usdcMarketData = marketData;
-  const solMarketData = marketData;
+  const solMarketData = await paystreamProgram.getMarketDataUI(
+    solMarket.market,
+    solMarket.mint,
+  );
 
   const totalBorrowsUSDC = bnToNumber(
     usdcMarketData.stats.borrows.totalBorrowedP2p,
