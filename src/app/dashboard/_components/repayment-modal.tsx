@@ -20,8 +20,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SOL_MINT, USDC_MINT } from "@/constants";
 
-import { WithdrawModalProps } from "./withdraw-modal";
 import { bnToNumber } from "@/lib/contract";
+import { WithdrawModalProps } from "./withdraw-modal";
 
 const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
   const [balance, setBalance] = React.useState<number | null>(null);
@@ -41,8 +41,12 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
   const vaultTitle = row.original.asset.toUpperCase();
 
   const handlePercentageClick = (percentage: number) => {
-    const maxAmount = bnToNumber(row.original.action_amount, vaultTitle === "SOL" ? 9 : 6);
-    const amount = percentage === 100 ? maxAmount : (maxAmount * percentage) / 100;
+    const maxAmount = bnToNumber(
+      row.original.action_amount,
+      vaultTitle === "SOL" ? 9 : 6,
+    );
+    const amount =
+      percentage === 100 ? maxAmount : (maxAmount * percentage) / 100;
 
     const maxDecimals = vaultTitle === "SOL" ? 9 : 6;
     setInputValue(amount.toFixed(maxDecimals));
@@ -64,7 +68,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       const amount = new BN(Number(inputValue) * decimals);
 
-      const result = await paystreamProgram.repayWithUI(
+      const result = await paystreamProgram.repayAndWithdrawCollateralWithUI(
         marketConfig,
         amount,
       );
@@ -163,7 +167,11 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
           </span>
           <div className="ml-auto flex items-center gap-2 font-body">
             <span className="text-sm text-[#BCEBFF80]">
-              Pending: {bnToNumber(row.original.action_amount, vaultTitle === "SOL" ? 9 : 6).toFixed(2)}{" "}
+              Pending:{" "}
+              {bnToNumber(
+                row.original.action_amount,
+                vaultTitle === "SOL" ? 9 : 6,
+              ).toFixed(2)}{" "}
               {vaultTitle}
             </span>
             <span
