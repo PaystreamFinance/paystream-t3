@@ -72,10 +72,8 @@ export async function getTableData(paystreamProgram: PaystreamV1Program) {
 
   const supplyVolumSOL = totalSupplySOL * solPrice;
 
-  const avaialableLiqSOL = bnToNumber(
-    solMarketData.stats.totalLiquidityAvailable,
-    9,
-  );
+  const avaialableLiqSOL =
+    bnToNumber(solMarketData.stats.totalLiquidityAvailable, 9) * solPrice;
 
   const avaialableLiqUSDC = bnToNumber(
     usdcMarketData.stats.totalLiquidityAvailable,

@@ -141,6 +141,9 @@ export async function getDriftOptimizerStats(
     9,
   );
 
+  console.log(totalBorrowsSOL, "totalBorrowsSOL");
+  console.log(totalBorrowsUSDC, "totalBorrowsUSDC");
+
   const totalSupplyUSDC = bnToNumber(
     usdcMarketData.stats.deposits.totalSupply,
     6,
