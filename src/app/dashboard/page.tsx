@@ -32,6 +32,7 @@ const WalletMultiButton = dynamic(
 
 const DashboardPage: NextPage = () => {
   const [tableData, setTableData] = React.useState<DashboardTable[]>([]);
+  const [loading, setLoading] = React.useState(false);
 
   const { publicKey, connected } = useWallet();
   const wallet = useAnchorWallet();
@@ -42,6 +43,8 @@ const DashboardPage: NextPage = () => {
   useEffect(() => {
     const fetchTraderPositions = async () => {
       if (!connected || !publicKey) return;
+
+      setLoading(true);
 
       const positions = await getTraderPositions(
         paystreamProgram,
@@ -70,6 +73,8 @@ const DashboardPage: NextPage = () => {
         }));
 
       setTableData(tableData);
+
+      setLoading(false);
     };
 
     fetchTraderPositions();
@@ -107,7 +112,7 @@ const DashboardPage: NextPage = () => {
         </div>
 
         <div className="relative min-h-[616px] w-full px-3 pb-[30px] sm:px-[56px]">
-          {!tableData ? (
+          {loading ? (
             <p className="mt-6 flex w-full items-center justify-center gap-2 text-white">
               <Loader className="size-4 animate-spin text-[#67DFFF]" /> loading
               table data...
