@@ -58,7 +58,7 @@ export const columns: ColumnDef<OptimizerTable>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex flex-col items-start justify-start font-inter">
-          <p className="text-[14px] text-[#FAFAFA]">${row.original.balance}M</p>
+          <p className="text-[14px] text-[#FAFAFA]">${row.original.balance}</p>
           <p className="text-[12px] text-[#9CE0FF66]">
             {row.original.noOfToken} {row.original.asset}
           </p>
@@ -79,7 +79,7 @@ export const columns: ColumnDef<OptimizerTable>[] = [
       return (
         <div className="flex flex-col items-start justify-start font-inter">
           <p className="text-[14px] text-[#FAFAFA]">
-            ${row.original.avl_liquidity}M
+            ${row.original.avl_liquidity}
           </p>
           <p className="text-[12px] text-[#9CE0FF66]">
             {row.original.avl_liquidity} {row.original.asset}
