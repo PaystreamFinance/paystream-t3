@@ -165,7 +165,7 @@ export async function getDriftOptimizerStats(
     borrowVolume,
     availableLiquidity:
       bnToNumber(usdcMarketData.stats.totalLiquidityAvailable, 6) +
-      bnToNumber(solMarketData.stats.totalLiquidityAvailable, 9),
+      bnToNumber(solMarketData.stats.totalLiquidityAvailable, 9) * solPrice,
     supplyVolume,
     matchRate: matchRate * 100,
   };

@@ -13,6 +13,7 @@ export type OptimizerTable = {
   balance: number;
   noOfToken: number;
   avl_liquidity: number;
+  avl_liquidity_usd: number;
   borrow_apr: number;
   supply_apr: number;
   p2p_apr: number;
@@ -79,7 +80,7 @@ export const columns: ColumnDef<OptimizerTable>[] = [
       return (
         <div className="flex flex-col items-start justify-start font-inter">
           <p className="text-[14px] text-[#FAFAFA]">
-            ${row.original.avl_liquidity}
+            ${row.original.avl_liquidity_usd}
           </p>
           <p className="text-[12px] text-[#9CE0FF66]">
             {row.original.avl_liquidity} {row.original.asset}

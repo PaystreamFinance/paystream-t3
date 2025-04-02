@@ -72,8 +72,10 @@ export async function getTableData(paystreamProgram: PaystreamV1Program) {
 
   const supplyVolumSOL = totalSupplySOL * solPrice;
 
-  const avaialableLiqSOL =
-    bnToNumber(solMarketData.stats.totalLiquidityAvailable, 9) * solPrice;
+  const avaialableLiqSOL = bnToNumber(
+    solMarketData.stats.totalLiquidityAvailable,
+    9,
+  );
 
   const avaialableLiqUSDC = bnToNumber(
     usdcMarketData.stats.totalLiquidityAvailable,
@@ -84,9 +86,10 @@ export async function getTableData(paystreamProgram: PaystreamV1Program) {
     {
       id: "1",
       asset: "sol" as const,
-      balance: supplyVolumSOL,
+      balance: supplyVolumSOL.toFixed(2),
       noOfToken: totalSupplySOL,
       avl_liquidity: avaialableLiqSOL,
+      avl_liquidity_usd: avaialableLiqSOL * solPrice,
       borrow_apr: 3.8,
       supply_apr: 9.1,
       p2p_apr: 8.4,
@@ -94,9 +97,10 @@ export async function getTableData(paystreamProgram: PaystreamV1Program) {
     {
       id: "2",
       asset: "usdc" as const,
-      balance: totalSupplyUSDC,
+      balance: totalSupplyUSDC.toFixed(2),
       noOfToken: totalSupplyUSDC,
       avl_liquidity: avaialableLiqUSDC,
+      avl_liquidity_usd: avaialableLiqUSDC,
       borrow_apr: 4.6,
       supply_apr: 10.01,
       p2p_apr: 7.36,

@@ -2,9 +2,9 @@ import Image from "next/image";
 import React from "react";
 
 import { Button } from "@/components/ui/button";
+import { getStats } from "@/lib/data";
 import Carousel from "./carousel";
 import Stats from "./stats";
-import { getStats } from "@/lib/data";
 const Hero: React.FC = async () => {
   const stats = await getStats();
   return (
