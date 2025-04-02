@@ -91,12 +91,12 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       const amount = new BN(Number(inputValue) * decimals);
 
       // if (supplyType === "p2p") {
-      console.log("test")
-      console.log(marketConfig, "market config")
-      console.log(marketConfig.mint.toBase58(), "mint")
-      console.log(marketConfig.market.toBase58(), "market")
+      console.log("test");
+      console.log(marketConfig, "market config");
+      console.log(marketConfig.mint.toBase58(), "mint");
+      console.log(marketConfig.market.toBase58(), "market");
       const result = await paystreamProgram.lendWithUI(marketConfig, amount);
-      console.log("worked")
+      console.log("worked");
       console.log(result);
       toast.success("Deposit successful");
       // } else if (supplyType === "collateral") {
@@ -129,12 +129,19 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       const amount = new BN(Number(inputValue) * decimals);
 
-      const marketPriceData = await paystreamProgram.getMarketPriceData(marketConfig.market, marketConfig.mint)
+      const marketPriceData = await paystreamProgram.getMarketPriceData(
+        marketConfig.market,
+        marketConfig.mint,
+      );
       // const collateralAmount = paystreamProgram.calculateRemainingBorrowCapacity(marketPriceData, amount, amount)
 
-      const collateralDecimals = vaultTitle === "USDC" ? LAMPORTS_PER_SOL : 1_000_000; // 9 decimals for SOL, 6 for USDC
+      const collateralDecimals =
+        vaultTitle === "USDC" ? LAMPORTS_PER_SOL : 1_000_000; // 9 decimals for SOL, 6 for USDC
 
-      const collateralAmount = paystreamProgram.calculateRequiredCollateral(marketPriceData, amount);
+      const collateralAmount = paystreamProgram.calculateRequiredCollateral(
+        marketPriceData,
+        amount,
+      );
       const result = await paystreamProgram.borrowWithCollateralUI(
         marketConfig,
         amount,
@@ -632,7 +639,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             </span>
 
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
-              80%
+              75%
             </span>
           </div>
           {connected ? (
