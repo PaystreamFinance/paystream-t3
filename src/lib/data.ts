@@ -48,15 +48,15 @@ export async function getTableData(paystreamProgram: PaystreamV1Program) {
     throw new Error("Market not found");
   }
 
-  const marketData = await paystreamProgram.getMarketDataUI(
+  const usdcMarketData = await paystreamProgram.getMarketDataUI(
     usdcMarket.market,
     usdcMarket.mint,
   );
 
-  console.log(marketData, "marketData");
-
-  const usdcMarketData = marketData;
-  const solMarketData = marketData;
+  const solMarketData = await paystreamProgram.getMarketDataUI(
+    solMarket.market,
+    solMarket.mint,
+  );
 
   const totalSupplyUSDC = bnToNumber(
     usdcMarketData.stats.deposits.totalSupply,
