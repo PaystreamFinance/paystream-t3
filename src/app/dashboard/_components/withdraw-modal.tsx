@@ -77,7 +77,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
       console.log(decimals);
       const amount = new BN(Number(inputValue) * decimals);
 
-      const result = await paystreamProgram.repayAndWithdrawCollateralWithUI(
+      const result = await paystreamProgram.withdrawWithUI(
         marketConfig,
         amount,
       );
