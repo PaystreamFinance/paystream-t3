@@ -1,9 +1,9 @@
 "use client";
 
+import { BN } from "@coral-xyz/anchor";
 import { ColumnDef } from "@tanstack/react-table";
 import { ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
-import { BN } from "@coral-xyz/anchor";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -102,7 +102,7 @@ export const dashboardColumn: ColumnDef<DashboardTable>[] = [
     cell: ({ row }) => {
       const type = row.original.type;
       const buttonText = type === "BORROW" ? "Repayment" : "Withdraw";
-      
+
       return (
         <div>
           <Dialog>

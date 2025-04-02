@@ -62,7 +62,7 @@ const DashboardPage: NextPage = () => {
         .map((pos, idx) => ({
           id: idx.toString(),
           asset: pos.asset.toLowerCase() as "usdc" | "sol",
-          position: pos.positionData.amount.toString(),
+          position: pos.positionData.amount.toFixed(2).toString(),
           type: (pos.type === "lending"
             ? "LEND"
             : pos.type === "p2pLending"
