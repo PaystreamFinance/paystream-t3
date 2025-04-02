@@ -21,8 +21,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SOL_MINT, USDC_MINT } from "@/constants";
 
-import { DashboardTable } from "./dashboard-column";
 import { bnToNumber } from "@/lib/contract";
+import { DashboardTable } from "./dashboard-column";
 
 export interface WithdrawModalProps {
   row: Row<DashboardTable>;
@@ -45,6 +45,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
 
   const vaultTitle = row.original.asset.toUpperCase();
 
+  // TODO: support for decimals for multiple tokens, for now its hardcoded: 6 for usdc and 9 for sol
   const handlePercentageClick = (percentage: number) => {
     const maxAmount = bnToNumber(
       row.original.action_amount,
@@ -70,10 +71,10 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
         collateralTokenProgram: marketHeader.collateralTokenProgram,
       };
 
-      console.log(inputValue, "input value")
-      console.log(marketConfig.mint.toBase58(), "market config")
+      console.log(inputValue, "input value");
+      console.log(marketConfig.mint.toBase58(), "market config");
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
-      console.log(decimals)
+      console.log(decimals);
       const amount = new BN(Number(inputValue) * decimals);
 
       const result = await paystreamProgram.withdrawWithUI(
