@@ -138,7 +138,8 @@ export async function getDriftOptimizerStats(
   const totalSupplyUSDC = bnToNumber(usdcMarketData.stats.deposits.totalSupply, 6);
   const totalSupplySOL = bnToNumber(solMarketData.stats.deposits.totalSupply, 9);
 
-  const solPrice = await getSolanaPrice();
+  // const solPrice = await getSolanaPrice();
+  const solPrice = 100;
 
   const borrowVolume = totalBorrowsUSDC + totalBorrowsSOL * solPrice;
   const supplyVolume = totalSupplyUSDC + totalSupplySOL * solPrice;
@@ -179,6 +180,8 @@ function getLendingPosition(
   traderPosition: TraderPositionUI,
   decimals: number,
 ): PositionData {
+  console.log(bnToNumber(traderPosition.lending.deposits, decimals), "deposits")
+  console.log(bnToNumber(traderPosition.lending.collateral.amount, decimals), "collateral")
   return {
     amount: bnToNumber(traderPosition.lending.deposits, decimals),
     action_amount:

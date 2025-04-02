@@ -70,7 +70,10 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
         collateralTokenProgram: marketHeader.collateralTokenProgram,
       };
 
+      console.log(inputValue, "input value")
+      console.log(marketConfig.mint.toBase58(), "market config")
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
+      console.log(decimals)
       const amount = new BN(Number(inputValue) * decimals);
 
       const result = await paystreamProgram.withdrawWithUI(

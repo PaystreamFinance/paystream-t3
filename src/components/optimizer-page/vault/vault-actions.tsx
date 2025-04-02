@@ -77,7 +77,6 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
   const handleSupply = async () => {
     if (!marketHeader || !inputValue) return;
-
     try {
       const marketConfig = {
         market: marketHeader.market,
@@ -91,18 +90,23 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000; // 9 decimals for SOL, 6 for USDC
       const amount = new BN(Number(inputValue) * decimals);
 
-      if (supplyType === "p2p") {
-        const result = await paystreamProgram.lendWithUI(marketConfig, amount);
-        console.log(result);
-        toast.success("Deposit successful");
-      } else if (supplyType === "collateral") {
-        const result = await paystreamProgram.depositWithUI(
-          marketConfig,
-          amount,
-        );
-        console.log(result);
-        toast.success("Deposit successful");
-      }
+      // if (supplyType === "p2p") {
+      console.log("test")
+      console.log(marketConfig, "market config")
+      console.log(marketConfig.mint.toBase58(), "mint")
+      console.log(marketConfig.market.toBase58(), "market")
+      const result = await paystreamProgram.lendWithUI(marketConfig, amount);
+      console.log("worked")
+      console.log(result);
+      toast.success("Deposit successful");
+      // } else if (supplyType === "collateral") {
+      //   const result = await paystreamProgram.depositWithUI(
+      //     marketConfig,
+      //     amount,
+      //   );
+      //   console.log(result);
+      //   toast.success("Deposit successful");
+      // }
     } catch (error) {
       console.error("Error in supply:", error);
       toast.error("Deposit failed");
@@ -125,10 +129,16 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       const amount = new BN(Number(inputValue) * decimals);
 
+      const marketPriceData = await paystreamProgram.getMarketPriceData(marketConfig.market, marketConfig.mint)
+      // const collateralAmount = paystreamProgram.calculateRemainingBorrowCapacity(marketPriceData, amount, amount)
+
+      const collateralDecimals = vaultTitle === "USDC" ? LAMPORTS_PER_SOL : 1_000_000; // 9 decimals for SOL, 6 for USDC
+
+      const collateralAmount = paystreamProgram.calculateRequiredCollateral(marketPriceData, amount);
       const result = await paystreamProgram.borrowWithCollateralUI(
         marketConfig,
         amount,
-        amount.muln(120).divn(100),
+        collateralAmount,
       );
       console.log(result);
       toast.success("Borrow successful");
