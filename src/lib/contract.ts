@@ -132,11 +132,23 @@ export async function getDriftOptimizerStats(
   const usdcMarketData = marketData;
   const solMarketData = marketData;
 
-  const totalBorrowsUSDC = bnToNumber(usdcMarketData.stats.borrows.totalBorrowedP2p, 6);
-  const totalBorrowsSOL = bnToNumber(solMarketData.stats.borrows.totalBorrowedP2p, 9);
+  const totalBorrowsUSDC = bnToNumber(
+    usdcMarketData.stats.borrows.totalBorrowedP2p,
+    6,
+  );
+  const totalBorrowsSOL = bnToNumber(
+    solMarketData.stats.borrows.totalBorrowedP2p,
+    9,
+  );
 
-  const totalSupplyUSDC = bnToNumber(usdcMarketData.stats.deposits.totalSupply, 6);
-  const totalSupplySOL = bnToNumber(solMarketData.stats.deposits.totalSupply, 9);
+  const totalSupplyUSDC = bnToNumber(
+    usdcMarketData.stats.deposits.totalSupply,
+    6,
+  );
+  const totalSupplySOL = bnToNumber(
+    solMarketData.stats.deposits.totalSupply,
+    9,
+  );
 
   // const solPrice = await getSolanaPrice();
   const solPrice = 100;
@@ -180,8 +192,14 @@ function getLendingPosition(
   traderPosition: TraderPositionUI,
   decimals: number,
 ): PositionData {
-  console.log(bnToNumber(traderPosition.lending.deposits, decimals), "deposits")
-  console.log(bnToNumber(traderPosition.lending.collateral.amount, decimals), "collateral")
+  console.log(
+    bnToNumber(traderPosition.lending.deposits, decimals),
+    "deposits",
+  );
+  console.log(
+    bnToNumber(traderPosition.lending.collateral.amount, decimals),
+    "collateral",
+  );
   return {
     amount: bnToNumber(traderPosition.lending.deposits, decimals),
     action_amount:

@@ -31,7 +31,7 @@ export default function DriftHero() {
       const stats = await getDriftStats(paystreamProgram);
       setStats(stats);
 
-      const tableData = await getTableData();
+      const tableData = await getTableData(paystreamProgram);
       setTableData(tableData);
     }
     fetchStats();

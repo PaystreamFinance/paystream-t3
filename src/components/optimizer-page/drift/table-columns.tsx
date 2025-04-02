@@ -11,6 +11,7 @@ export type OptimizerTable = {
   asset: "usdc" | "sol";
 
   balance: number;
+  noOfToken: number;
   avl_liquidity: number;
   borrow_apr: number;
   supply_apr: number;
@@ -29,7 +30,7 @@ export const columns: ColumnDef<OptimizerTable>[] = [
     ),
     cell: ({ row }) => {
       return (
-        <Link 
+        <Link
           href={`/optimizers/drift/${row.original.asset}`}
           className="flex items-center gap-2 hover:opacity-80"
         >
@@ -51,7 +52,7 @@ export const columns: ColumnDef<OptimizerTable>[] = [
       <HeaderButton
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Balance
+        Supply
       </HeaderButton>
     ),
     cell: ({ row }) => {
@@ -59,7 +60,7 @@ export const columns: ColumnDef<OptimizerTable>[] = [
         <div className="flex flex-col items-start justify-start font-inter">
           <p className="text-[14px] text-[#FAFAFA]">${row.original.balance}M</p>
           <p className="text-[12px] text-[#9CE0FF66]">
-            {row.original.balance} {row.original.asset}
+            {row.original.noOfToken} {row.original.asset}
           </p>
         </div>
       );
@@ -149,7 +150,7 @@ const HeaderButton = ({
 }) => {
   return (
     <button
-      className="font-body inline-flex items-center gap-1 text-[12px] font-light uppercase text-[#9CE0FF33]"
+      className="inline-flex items-center gap-1 font-body text-[12px] font-light uppercase text-[#9CE0FF33]"
       onClick={onClick}
     >
       {children}
