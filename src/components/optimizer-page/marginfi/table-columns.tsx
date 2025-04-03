@@ -32,7 +32,7 @@ export const columns: ColumnDef<OptimizerTable>[] = [
     cell: ({ row }) => {
       return (
         <Link
-          href={`/optimizers/drift/${row.original.asset}`}
+          href={`/optimizers/marginfi/${row.original.asset}`}
           className="flex items-center gap-2 hover:opacity-80"
         >
           <Image
