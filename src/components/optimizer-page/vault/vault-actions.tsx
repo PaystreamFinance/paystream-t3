@@ -131,6 +131,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       console.log(marketConfig, "market config");
       console.log(marketConfig.mint.toBase58(), "mint");
       console.log(marketConfig.market.toBase58(), "market");
+
       const result = await paystreamProgram.lendWithUI(marketConfig, amount);
       console.log("worked");
       console.log(result);
@@ -145,7 +146,15 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       // }
     } catch (error) {
       console.error("Error in supply:", error);
-      toast.error("Deposit failed");
+
+      if (
+        error instanceof Error &&
+        error.message.includes("borrowing can't lend")
+      ) {
+        toast.error("Can't borrow or lend in the same market");
+      } else {
+        toast.error("Deposit failed");
+      }
     }
   };
 
