@@ -1,5 +1,6 @@
 import { BN } from "@coral-xyz/anchor";
 import { PaystreamV1Program, TraderPositionUI } from "@meimfhd/paystream-v1";
+import { PublicKey } from "@solana/web3.js";
 
 export interface Position {
   asset: "SOL" | "USDC";
@@ -20,11 +21,18 @@ export async function getTraderPositions(
     throw new Error("Market not found");
   }
 
+  //TODO: change mint address to the actual mint address
   const usdcMarketData = (
-    await paystreamProgram.getMarketDataUI(usdcMarket.market, usdcMarket.mint)
+    await paystreamProgram.getMarketDataUI(
+      usdcMarket.market,
+      new PublicKey("C6BRPhhAkWsQEWMgBu496Da9a4FJqsiAFdpXQuE8iy8H"),
+    )
   ).traders.find((trader) => trader.address === address);
   const solMarketData = (
-    await paystreamProgram.getMarketDataUI(solMarket.market, solMarket.mint)
+    await paystreamProgram.getMarketDataUI(
+      solMarket.market,
+      new PublicKey("GUdhxD7iAaY3h1PSjfPs2m5fYAeNaUAhknNS2CZTmyZh"),
+    )
   ).traders.find((trader) => trader.address === address);
 
   const positions: Position[] = [];
