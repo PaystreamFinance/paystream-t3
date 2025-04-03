@@ -71,8 +71,8 @@ const Navbar: React.FC = () => {
               Testnet Notice
             </h3>
             <p className="font-helvetica mt-2 text-[#EAEAEA]">
-              For testnet Sol price is{" "}
-              <span className="font-bold italic">$100</span> and USDC price is
+              For testnet Sol price is
+              <span className="font-bold italic"> $100</span> and USDC price is
               <span className="font-bold italic">$1</span>
             </p>
           </div>
