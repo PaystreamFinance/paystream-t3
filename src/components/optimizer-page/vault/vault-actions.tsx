@@ -212,7 +212,14 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       toast.success("Borrow successful");
     } catch (error) {
       console.error("Error in borrow:", error);
-      toast.error("Borrow failed");
+      if (
+        error instanceof Error &&
+        error.message.includes("lending can't borrow")
+      ) {
+        toast.error("Can't borrow or lend in the same market");
+      } else {
+        toast.error("Borrow failed");
+      }
     }
   };
 

@@ -251,7 +251,10 @@ export async function getDriftOptimizerStats(
       bnToNumber(solMarketData.stats.totalAmountInP2p, 9) * solPrice;
 
     const totalLendingVolume = supplyVolume - totalCollateral;
-    const matchRate = (totalAmountInP2p / totalLendAmountUnmatched) * 100;
+    const matchRate =
+      totalAmountInP2p > 0 && totalLendAmountUnmatched > 0
+        ? (totalAmountInP2p / totalLendAmountUnmatched) * 100
+        : 0;
 
     logger.info(`Match rate: ${matchRate}`);
     logger.info(`Total lending volume: ${totalLendingVolume}`);

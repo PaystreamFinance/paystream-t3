@@ -63,25 +63,30 @@ const Navbar: React.FC = () => {
   };
 
   React.useEffect(() => {
-    toast.custom(
-      (t) => (
-        <div className={`${t.visible ? "animate-in" : "animate-out"}`}>
-          <div className="border-[0.5px] border-[#e4d8ff] bg-bg-t3 p-4 shadow-lg">
-            <h3 className="font-darkerGrotesque text-lg font-bold text-[#9CE0FF]">
-              Testnet Notice
-            </h3>
-            <p className="font-helvetica mt-2 text-[#EAEAEA]">
-              For testnet Sol price is
-              <span className="font-bold italic"> $100</span> and USDC price is
-              <span className="font-bold italic">$1</span>
-            </p>
+    const showedTestnetNotice = localStorage.getItem("showedTestnetNotice");
+    if (!showedTestnetNotice) {
+      toast.custom(
+        (t) => (
+          <div className={`${t.visible ? "animate-in" : "animate-out"}`}>
+            <div className="border-[0.5px] border-[#e4d8ff] bg-bg-t3 p-4 shadow-lg">
+              <h3 className="font-darkerGrotesque text-lg font-bold text-[#9CE0FF]">
+                Testnet Notice
+              </h3>
+              <p className="font-helvetica mt-2 text-[#EAEAEA]">
+                For testnet Sol price is
+                <span className="font-bold italic"> $100</span> and USDC price
+                is
+                <span className="font-bold italic">$1</span>
+              </p>
+            </div>
           </div>
-        </div>
-      ),
-      {
-        duration: 5000,
-      },
-    );
+        ),
+        {
+          duration: 5000,
+        },
+      );
+      localStorage.setItem("showedTestnetNotice", "true");
+    }
   }, []);
 
   return (
