@@ -17,6 +17,7 @@ import {
   MarketHeaderWithPubkey,
   PaystreamV1Program,
 } from "@meimfhd/paystream-v1";
+import { SOL_HEADER_INDEX, USDC_HEADER_INDEX } from "@/constants";
 
 export interface VaultDataProps {
   vaultTitle: string;
@@ -50,10 +51,10 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
         const headers = await paystreamProgram.getAllMarketHeaders();
         if (vaultTitle === "SOL") {
           // headers[0] is for SOL vault
-          setMarketHeader(headers[0] ?? null);
+          setMarketHeader(headers[SOL_HEADER_INDEX] ?? null);
         } else if (vaultTitle === "USDC") {
           // headers[1] is for USDC vault
-          setMarketHeader(headers[1] ?? null);
+          setMarketHeader(headers[USDC_HEADER_INDEX] ?? null);
         }
       } catch (error) {
         console.error("Error fetching market headers:", error);

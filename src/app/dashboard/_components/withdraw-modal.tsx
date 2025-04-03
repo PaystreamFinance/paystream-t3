@@ -19,7 +19,12 @@ import toast from "react-hot-toast";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { SOL_MINT, USDC_MINT } from "@/constants";
+import {
+  SOL_HEADER_INDEX,
+  SOL_MINT,
+  USDC_HEADER_INDEX,
+  USDC_MINT,
+} from "@/constants";
 
 import { bnToNumber } from "@/lib/contract";
 import { DashboardTable } from "./dashboard-column";
@@ -156,10 +161,10 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
         const headers = await paystreamProgram.getAllMarketHeaders();
         if (vaultTitle === "SOL") {
           // headers[0] is for SOL vault
-          setMarketHeader(headers[0] ?? null);
+          setMarketHeader(headers[SOL_HEADER_INDEX] ?? null);
         } else if (vaultTitle === "USDC") {
           // headers[1] is for USDC vault
-          setMarketHeader(headers[1] ?? null);
+          setMarketHeader(headers[USDC_HEADER_INDEX] ?? null);
         }
       } catch (error) {
         console.error("Error fetching market headers:", error);

@@ -5,6 +5,7 @@ import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import { PaystreamV1Program } from "@meimfhd/paystream-v1";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { bnToNumber, getDriftOptimizerStats } from "./contract";
+import { SOL_HEADER_INDEX, USDC_HEADER_INDEX } from "@/constants";
 
 export async function getDriftStats(paystreamProgram: PaystreamV1Program) {
   const optimizerStats = await getDriftOptimizerStats(paystreamProgram);
@@ -39,8 +40,8 @@ export async function getStats() {
 
 export async function getTableData(paystreamProgram: PaystreamV1Program) {
   const marketHeaderData = await paystreamProgram.getAllMarketHeaders();
-  const solMarket = marketHeaderData[0];
-  const usdcMarket = marketHeaderData[1];
+  const solMarket = marketHeaderData[SOL_HEADER_INDEX];
+  const usdcMarket = marketHeaderData[USDC_HEADER_INDEX];
 
   console.log(marketHeaderData, "marketHeaderData");
 

@@ -7,7 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
-import { SOL_MINT, USDC_MINT } from "@/constants";
+import {
+  SOL_HEADER_INDEX,
+  SOL_MINT,
+  USDC_HEADER_INDEX,
+  USDC_MINT,
+} from "@/constants";
 import { useVaultStateStore } from "@/store/vault-state-store";
 import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import {
@@ -68,10 +73,10 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
         const headers = await paystreamProgram.getAllMarketHeaders();
         if (vaultTitle === "SOL") {
           // headers[0] is for SOL vault
-          setMarketHeader(headers[0] ?? null);
+          setMarketHeader(headers[SOL_HEADER_INDEX] ?? null);
         } else if (vaultTitle === "USDC") {
           // headers[1] is for USDC vault
-          setMarketHeader(headers[1] ?? null);
+          setMarketHeader(headers[USDC_HEADER_INDEX] ?? null);
         }
       } catch (error) {
         console.error("Error fetching market headers:", error);
