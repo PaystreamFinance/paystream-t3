@@ -9,7 +9,7 @@ import { PaystreamV1Program, TraderPositionUI } from "@meimfhd/paystream-v1";
 import { PublicKey } from "@solana/web3.js";
 
 // Simple logger with levels
-const logger = {
+export const logger = {
   debug: (message: string, ...args: any[]) => {
     if (process.env.NODE_ENV !== "production") {
       console.debug(`[DEBUG] ${message}`, ...args);
@@ -196,6 +196,9 @@ export async function getDriftOptimizerStats(
     if (!usdcMarket || !solMarket) {
       throw new Error("Markets not found");
     }
+    // Get SOL price for conversion
+    // const solPrice = await getSolanaPrice();
+    const solPrice = 100;
 
     const usdcMarketData = await paystreamProgram.getMarketDataUI(
       usdcMarket.market,
@@ -226,6 +229,14 @@ export async function getDriftOptimizerStats(
       9,
     );
 
+    /**
+     * @description available for lending in both markets
+     */
+    const totalLendAmountUnmatched =
+      bnToNumber(usdcMarketData.stats.deposits.lendAmountUnmatched, 6) +
+      bnToNumber(solMarketData.stats.deposits.lendAmountUnmatched, 9) *
+        solPrice;
+
     const totalBorrowsUSDC = totalBorrowsUSDCP2p + totalBorrowsUSDCP2pUnmatched;
     const totalBorrowsSOL = totalBorrowsSOLP2p + totalBorrowsSOLP2pUnmatched;
 
@@ -248,9 +259,6 @@ export async function getDriftOptimizerStats(
       9,
     );
 
-    // Get SOL price for conversion
-    const solPrice = await getSolanaPrice();
-
     // Calculate aggregated metrics
     const totalCollateral = totalCollateralUSDC + totalCollateralSOL * solPrice;
     const borrowVolume = totalBorrowsUSDC + totalBorrowsSOL * solPrice;
@@ -260,10 +268,12 @@ export async function getDriftOptimizerStats(
       bnToNumber(solMarketData.stats.totalAmountInP2p, 9) * solPrice;
 
     const totalLendingVolume = supplyVolume - totalCollateral;
-    const matchRate =
-      totalLendingVolume > 0
-        ? (totalAmountInP2p / totalLendingVolume) * 100
-        : 0;
+    const matchRate = (totalAmountInP2p / totalLendAmountUnmatched) * 100;
+
+    logger.info(`Match rate: ${matchRate}`);
+    logger.info(`Total lending volume: ${totalLendingVolume}`);
+    logger.info(`Total amount in P2P: ${totalAmountInP2p}`);
+    logger.info(`Total lend amount unmatched: ${totalLendAmountUnmatched}`);
 
     const availableLiquidity =
       bnToNumber(usdcMarketData.stats.totalLiquidityAvailable, 6) +
