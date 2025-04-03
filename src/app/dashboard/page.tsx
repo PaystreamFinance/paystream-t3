@@ -37,7 +37,9 @@ const DashboardPage: NextPage = () => {
   const { publicKey, connected } = useWallet();
   const wallet = useAnchorWallet();
   const { connection } = useConnection();
-  const provider = new AnchorProvider(connection, wallet!, {});
+  const provider = new AnchorProvider(connection, wallet!, {
+    commitment: "processed",
+  });
   const paystreamProgram = new PaystreamV1Program(provider);
 
   useEffect(() => {

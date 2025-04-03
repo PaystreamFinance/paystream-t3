@@ -39,8 +39,8 @@ export async function getStats() {
 
 export async function getTableData(paystreamProgram: PaystreamV1Program) {
   const marketHeaderData = await paystreamProgram.getAllMarketHeaders();
-  const usdcMarket = marketHeaderData[0];
-  const solMarket = marketHeaderData[1];
+  const solMarket = marketHeaderData[0];
+  const usdcMarket = marketHeaderData[1];
 
   console.log(marketHeaderData, "marketHeaderData");
 

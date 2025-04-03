@@ -18,8 +18,8 @@ importers:
         specifier: ^4.1.2
         version: 4.1.2(react-hook-form@7.54.2(react@18.3.1))
       '@meimfhd/paystream-v1':
-        specifier: 1.0.9
-        version: 1.0.9(@solana/web3.js@1.98.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.7.3)(utf-8-validate@5.0.10)
+        specifier: 1.1.1
+        version: 1.1.1(@solana/web3.js@1.98.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.7.3)(utf-8-validate@5.0.10)
       '@radix-ui/react-accordion':
         specifier: ^1.2.3
         version: 1.2.3(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1555,8 +1555,8 @@ packages:
   '@ledgerhq/logs@6.12.0':
     resolution: {integrity: sha512-ExDoj1QV5eC6TEbMdLUMMk9cfvNKhhv5gXol4SmULRVCx/3iyCPhJ74nsb3S0Vb+/f+XujBEj3vQn5+cwS0fNA==}
 
-  '@meimfhd/paystream-v1@1.0.9':
-    resolution: {integrity: sha512-sjt3BwF0hCpYsfECclSLk6mbTPoxZbYB+5Vg8yqddmmUQbkztM8BM9IDEL5Am+6dLzrEcPU8nh9857UVLhnaNQ==}
+  '@meimfhd/paystream-v1@1.1.1':
+    resolution: {integrity: sha512-J/XQuHM5PabcmiZ7vhkT31d13maqE5PIg8C8heATCHpDQPncVSjcm8DH2a71UTrb+F9c/eR5Gx6oojIPTtk7qg==}
 
   '@metamask/rpc-errors@5.1.1':
     resolution: {integrity: sha512-JjZnDi2y2CfvbohhBl+FOQRzmFlJpybcQlIk37zEX8B96eVSPbH/T8S0p7cSF8IE33IWx6JkD8Ycsd+2TXFxCw==}
@@ -9174,7 +9174,7 @@ snapshots:
 
   '@ledgerhq/logs@6.12.0': {}
 
-  '@meimfhd/paystream-v1@1.0.9(@solana/web3.js@1.98.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.7.3)(utf-8-validate@5.0.10)':
+  '@meimfhd/paystream-v1@1.1.1(@solana/web3.js@1.98.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.7.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@coral-xyz/anchor': 0.31.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@coral-xyz/spl-token': 0.31.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)

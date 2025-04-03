@@ -14,8 +14,8 @@ export async function getTraderPositions(
   address: string,
 ) {
   const marketHeaderData = await paystreamProgram.getAllMarketHeaders();
-  const usdcMarket = marketHeaderData[0];
-  const solMarket = marketHeaderData[1];
+  const solMarket = marketHeaderData[0];
+  const usdcMarket = marketHeaderData[1];
 
   if (!usdcMarket || !solMarket) {
     throw new Error("Market not found");
@@ -23,16 +23,10 @@ export async function getTraderPositions(
 
   //TODO: change mint address to the actual mint address
   const usdcMarketData = (
-    await paystreamProgram.getMarketDataUI(
-      usdcMarket.market,
-      new PublicKey("C6BRPhhAkWsQEWMgBu496Da9a4FJqsiAFdpXQuE8iy8H"),
-    )
+    await paystreamProgram.getMarketDataUI(usdcMarket.market, usdcMarket.mint)
   ).traders.find((trader) => trader.address === address);
   const solMarketData = (
-    await paystreamProgram.getMarketDataUI(
-      solMarket.market,
-      new PublicKey("GUdhxD7iAaY3h1PSjfPs2m5fYAeNaUAhknNS2CZTmyZh"),
-    )
+    await paystreamProgram.getMarketDataUI(solMarket.market, solMarket.mint)
   ).traders.find((trader) => trader.address === address);
 
   const positions: Position[] = [];
@@ -88,8 +82,8 @@ export async function getP2PMatches(
   lenderAddress: string,
 ) {
   const marketHeaderData = await paystreamProgram.getAllMarketHeaders();
-  const usdcMarket = marketHeaderData[0];
-  const solMarket = marketHeaderData[1];
+  const solMarket = marketHeaderData[0];
+  const usdcMarket = marketHeaderData[1];
 
   if (!usdcMarket || !solMarket) {
     throw new Error("Market not found");
@@ -121,8 +115,8 @@ export async function getDriftOptimizerStats(
   paystreamProgram: PaystreamV1Program,
 ) {
   const marketHeaderData = await paystreamProgram.getAllMarketHeaders();
-  const usdcMarket = marketHeaderData[0];
-  const solMarket = marketHeaderData[1];
+  const solMarket = marketHeaderData[0];
+  const usdcMarket = marketHeaderData[1];
 
   console.log(marketHeaderData, "marketHeaderData");
 
@@ -140,6 +134,29 @@ export async function getDriftOptimizerStats(
     solMarket.mint,
   );
 
+  console.log(usdcMarket.market.toBase58(), "usdcMarket");
+  console.log(solMarket.market.toBase58(), "solMarket");
+
+  console.log(usdcMarket.mint.toBase58(), "usdcMarket mint");
+  console.log(solMarket.mint.toBase58(), "solMarket mint");
+
+  console.log(
+    usdcMarketData.stats.borrows.totalBorrowedP2p.toString(),
+    "usdcMarketData totalBorrowedP2p",
+  );
+  console.log(
+    solMarketData.stats.borrows.totalBorrowedP2p.toString(),
+    "solMarketData totalBorrowedP2p",
+  );
+
+  console.log(
+    usdcMarketData.stats.borrows.borrowAmountUnmatched.toString(),
+    "usdcMarketData borrowAmountUnmatched",
+  );
+  console.log(
+    solMarketData.stats.borrows.borrowAmountUnmatched.toString(),
+    "solMarketData borrowAmountUnmatched",
+  );
   const totalBorrowsUSDC = bnToNumber(
     usdcMarketData.stats.borrows.totalBorrowedP2p,
     6,
@@ -167,7 +184,7 @@ export async function getDriftOptimizerStats(
   const borrowVolume = totalBorrowsUSDC + totalBorrowsSOL * solPrice;
   const supplyVolume = totalSupplyUSDC + totalSupplySOL * solPrice;
 
-  const matchRate = borrowVolume / supplyVolume;
+  const matchRate = (borrowVolume / supplyVolume) * 100;
 
   const optimizerStats: OptimizerStats = {
     borrowVolume,

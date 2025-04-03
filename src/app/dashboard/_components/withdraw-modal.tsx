@@ -40,7 +40,9 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
 
-  const provider = new AnchorProvider(connection, wallet!, {});
+  const provider = new AnchorProvider(connection, wallet!, {
+    commitment: "processed",
+  });
   const paystreamProgram = new PaystreamV1Program(provider);
 
   const vaultTitle = row.original.asset.toUpperCase();
@@ -154,10 +156,10 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
         const headers = await paystreamProgram.getAllMarketHeaders();
         if (vaultTitle === "SOL") {
           // headers[0] is for SOL vault
-          setMarketHeader(headers[1] ?? null);
+          setMarketHeader(headers[0] ?? null);
         } else if (vaultTitle === "USDC") {
           // headers[1] is for USDC vault
-          setMarketHeader(headers[0] ?? null);
+          setMarketHeader(headers[1] ?? null);
         }
       } catch (error) {
         console.error("Error fetching market headers:", error);
