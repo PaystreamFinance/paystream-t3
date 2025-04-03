@@ -18,6 +18,8 @@ import {
   PaystreamV1Program,
 } from "@meimfhd/paystream-v1";
 import { SOL_HEADER_INDEX, USDC_HEADER_INDEX } from "@/constants";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export interface VaultDataProps {
   vaultTitle: string;
@@ -102,7 +104,14 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
           <p className="font-darkerGrotesque text-2xl font-[600] text-[#EAEAEA]">
             {vaultTitle} Vault
           </p>
-          <VaultDropdown />
+          <div className="flex items-center gap-2">
+            <Link href="/dashboard">
+              <Button className="w-fit bg-[#9CE0FF0F] font-body text-[#9CE0FF] hover:bg-[#9CE0FF] hover:text-[#02142B]">
+                Dashboard
+              </Button>
+            </Link>
+            <VaultDropdown />
+          </div>
         </div>
         <div className="grid min-h-[247px] w-full grid-cols-2 gap-4">
           <StatsGrid
