@@ -1,3 +1,4 @@
+import { SOL_MINT, USDC_MINT } from "@/constants";
 import { BN } from "@coral-xyz/anchor";
 import { PaystreamV1Program, TraderPositionUI } from "@meimfhd/paystream-v1";
 import { PublicKey } from "@solana/web3.js";
@@ -21,6 +22,17 @@ export async function getTraderPositions(
     throw new Error("Market not found");
   }
 
+  console.log(usdcMarket.market.toBase58(), "usdcMarket");
+  console.log(solMarket.market.toBase58(), "solMarket");
+
+  //TODO: change mint address to the actual mint address
+  console.log("--check mint address--");
+  console.log(usdcMarket.mint.toBase58(), "usdc mint");
+  console.log(solMarket.mint.toBase58(), "sol mint");
+
+  console.log(USDC_MINT, "USDC_MINT");
+  console.log(SOL_MINT, "SOL_MINT");
+
   //TODO: change mint address to the actual mint address
   const usdcMarketData = (
     await paystreamProgram.getMarketDataUI(usdcMarket.market, usdcMarket.mint)
@@ -29,51 +41,55 @@ export async function getTraderPositions(
     await paystreamProgram.getMarketDataUI(solMarket.market, solMarket.mint)
   ).traders.find((trader) => trader.address === address);
 
-  const positions: Position[] = [];
+    const positions: Position[] = [];
 
-  if (usdcMarketData) {
-    positions.push({
-      asset: "USDC",
-      type: "lending",
-      apy: null,
-      positionData: getLendingPosition(usdcMarketData, 6),
-    });
-    positions.push({
-      asset: "USDC",
-      type: "p2pLending",
-      apy: null,
-      positionData: getP2PLendingPosition(usdcMarketData, 6),
-    });
-    positions.push({
-      asset: "USDC",
-      type: "borrows",
-      apy: null,
-      positionData: getP2PBorrowPosition(usdcMarketData, 6),
-    });
+    if (usdcMarketData) {
+      positions.push({
+        asset: "USDC",
+        type: "lending",
+        apy: null,
+        positionData: getLendingPosition(usdcMarketData, 6),
+      });
+      positions.push({
+        asset: "USDC",
+        type: "p2pLending",
+        apy: null,
+        positionData: getP2PLendingPosition(usdcMarketData, 6),
+      });
+      positions.push({
+        asset: "USDC",
+        type: "borrows",
+        apy: null,
+        positionData: getP2PBorrowPosition(usdcMarketData, 6),
+      });
+    }
+
+    if (solMarketData) {
+      positions.push({
+        asset: "SOL",
+        type: "lending",
+        apy: null,
+        positionData: getLendingPosition(solMarketData, 9),
+      });
+      positions.push({
+        asset: "SOL",
+        type: "p2pLending",
+        apy: null,
+        positionData: getP2PLendingPosition(solMarketData, 9),
+      });
+      positions.push({
+        asset: "SOL",
+        type: "borrows",
+        apy: null,
+        positionData: getP2PBorrowPosition(solMarketData, 9),
+      });
+    }
+
+    return positions;
+  } catch (error) {
+    console.log(error, "error");
+    return [];
   }
-
-  if (solMarketData) {
-    positions.push({
-      asset: "SOL",
-      type: "lending",
-      apy: null,
-      positionData: getLendingPosition(solMarketData, 9),
-    });
-    positions.push({
-      asset: "SOL",
-      type: "p2pLending",
-      apy: null,
-      positionData: getP2PLendingPosition(solMarketData, 9),
-    });
-    positions.push({
-      asset: "SOL",
-      type: "borrows",
-      apy: null,
-      positionData: getP2PBorrowPosition(solMarketData, 9),
-    });
-  }
-
-  return positions;
 }
 
 //TODO: incomplete
@@ -123,6 +139,12 @@ export async function getDriftOptimizerStats(
   if (!usdcMarket || !solMarket) {
     throw new Error("Market not found");
   }
+
+  console.log(usdcMarket.market.toBase58(), "usdcMarket");
+  console.log(solMarket.market.toBase58(), "solMarket");
+
+  console.log(usdcMarket.mint.toBase58(), "usdcMarket mint");
+  console.log(solMarket.mint.toBase58(), "solMarket mint");
 
   const usdcMarketData = await paystreamProgram.getMarketDataUI(
     usdcMarket.market,
@@ -178,13 +200,19 @@ export async function getDriftOptimizerStats(
     9,
   );
 
+  //TODO: this is not modular, we should get the sol price from the market
   // const solPrice = await getSolanaPrice();
   const solPrice = 100;
 
+  //TODO: this is not modular, this is oly implemented for USDC and SOL we need to implement for all other tokens too
   const borrowVolume = totalBorrowsUSDC + totalBorrowsSOL * solPrice;
   const supplyVolume = totalSupplyUSDC + totalSupplySOL * solPrice;
 
-  const matchRate = (borrowVolume / supplyVolume) * 100;
+  console.log(borrowVolume, "borrowVolume");
+  console.log(supplyVolume, "supplyVolume");
+
+  const matchRate = borrowVolume / supplyVolume;
+  console.log(matchRate, "matchRate");
 
   const optimizerStats: OptimizerStats = {
     borrowVolume,

@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +21,6 @@ import {
   useWallet,
 } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
@@ -37,8 +37,12 @@ const WalletMultiButton = dynamic(
 export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   const { publicKey, connected } = useWallet();
   const [balance, setBalance] = useState<number | null>(null);
+  const [collateralAmountToShow, setCollateralAmountToShow] = useState<
+    number | null
+  >(null);
   const [inputValue, setInputValue] = useState("");
   const { vaultState, setVaultState } = useVaultStateStore();
+
   const [leverageValue, setLeverageValue] = useState(33);
   const [isDragging, setIsDragging] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
@@ -75,7 +79,33 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     };
 
     fetchMarketHeader();
-  }, []);
+  }, [inputValue, vaultTitle]);
+
+  useEffect(() => {
+    const fetchCollateralAmount = async () => {
+      if (!marketHeader || !inputValue) return;
+
+      const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
+      const amount = new BN(Number(inputValue) * decimals);
+
+      const marketPriceData = await paystreamProgram.getMarketPriceData(
+        marketHeader.market,
+        marketHeader.mint,
+      );
+
+      const collateralAmount = paystreamProgram.calculateRequiredCollateral(
+        marketPriceData,
+        amount,
+      );
+      // we are reversing the collateral amount because if vaultTitle is USDC, then collateral amount is in SOL
+      const collateralDecimals =
+        vaultTitle === "USDC" ? LAMPORTS_PER_SOL : 1_000_000;
+      setCollateralAmountToShow(collateralAmount / collateralDecimals);
+      console.log(collateralAmount, `collateral amount for ${vaultTitle}`);
+    };
+
+    fetchCollateralAmount();
+  }, [marketHeader, inputValue, vaultTitle]);
 
   const handleSupply = async () => {
     if (!marketHeader || !inputValue) return;
@@ -91,7 +121,6 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000; // 9 decimals for SOL, 6 for USDC
       const amount = new BN(Number(inputValue) * decimals);
-
       // if (supplyType === "p2p") {
       console.log("test");
       console.log(marketConfig, "market config");
@@ -131,6 +160,22 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       const amount = new BN(Number(inputValue) * decimals);
 
+      if (vaultTitle === "SOL") {
+        if (marketConfig.mint.toBase58() !== SOL_MINT) {
+          toast.error("Invalid mint");
+          console.log(marketConfig.mint.toBase58(), "mint SOL");
+          console.log(marketConfig.market.toBase58(), "market SOL");
+          return;
+        }
+      } else if (vaultTitle === "USDC") {
+        if (marketConfig.mint.toBase58() !== USDC_MINT) {
+          toast.error("Invalid mint");
+          console.log(marketConfig.mint.toBase58(), "mint USDC");
+          console.log(marketConfig.market.toBase58(), "market USDC");
+          return;
+        }
+      }
+
       const marketPriceData = await paystreamProgram.getMarketPriceData(
         marketConfig.market,
         marketConfig.mint,
@@ -138,7 +183,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       // const collateralAmount = paystreamProgram.calculateRemainingBorrowCapacity(marketPriceData, amount, amount)
 
       const collateralDecimals =
-        vaultTitle === "USDC" ? LAMPORTS_PER_SOL : 1_000_000; // 9 decimals for SOL, 6 for USDC
+        vaultTitle === "USDC" ? 1_000_000 : LAMPORTS_PER_SOL; //  6 for USDC, 9 decimals for SOL
 
       const collateralAmount = paystreamProgram.calculateRequiredCollateral(
         marketPriceData,
@@ -573,6 +618,9 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
                 className="h-6 w-6"
               />
               <span className="font-body text-[20px] font-[500] uppercase text-[#EAEAEA]">
+                {collateralAmountToShow !== null
+                  ? Number(collateralAmountToShow).toFixed(5)
+                  : "--"}{" "}
                 {vaultTitle === "SOL" ? "USDC" : "SOL"}
               </span>
             </div>
