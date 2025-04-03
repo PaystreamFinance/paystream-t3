@@ -1,3 +1,4 @@
+import { SOL_MINT, USDC_MINT } from "@/constants";
 import { BN } from "@coral-xyz/anchor";
 import { PaystreamV1Program, TraderPositionUI } from "@meimfhd/paystream-v1";
 import { PublicKey } from "@solana/web3.js";
@@ -14,6 +15,8 @@ export async function getTraderPositions(
   address: string,
 ) {
   const marketHeaderData = await paystreamProgram.getAllMarketHeaders();
+
+  // USDC market is index 0, SOL market is index 1 (please don't change this 😒)
   const usdcMarket = marketHeaderData[0];
   const solMarket = marketHeaderData[1];
 
@@ -21,65 +24,83 @@ export async function getTraderPositions(
     throw new Error("Market not found");
   }
 
+  console.log(usdcMarket.market.toBase58(), "usdcMarket");
+  console.log(solMarket.market.toBase58(), "solMarket");
+
   //TODO: change mint address to the actual mint address
-  const usdcMarketData = (
-    await paystreamProgram.getMarketDataUI(
-      usdcMarket.market,
-      new PublicKey("C6BRPhhAkWsQEWMgBu496Da9a4FJqsiAFdpXQuE8iy8H"),
-    )
-  ).traders.find((trader) => trader.address === address);
-  const solMarketData = (
-    await paystreamProgram.getMarketDataUI(
-      solMarket.market,
-      new PublicKey("GUdhxD7iAaY3h1PSjfPs2m5fYAeNaUAhknNS2CZTmyZh"),
-    )
-  ).traders.find((trader) => trader.address === address);
+  console.log("--check mint address--");
+  console.log(usdcMarket.mint.toBase58(), "usdc mint");
+  console.log(solMarket.mint.toBase58(), "sol mint");
 
-  const positions: Position[] = [];
+  console.log(USDC_MINT, "USDC_MINT");
+  console.log(SOL_MINT, "SOL_MINT");
 
-  if (usdcMarketData) {
-    positions.push({
-      asset: "USDC",
-      type: "lending",
-      apy: null,
-      positionData: getLendingPosition(usdcMarketData, 6),
-    });
-    positions.push({
-      asset: "USDC",
-      type: "p2pLending",
-      apy: null,
-      positionData: getP2PLendingPosition(usdcMarketData, 6),
-    });
-    positions.push({
-      asset: "USDC",
-      type: "borrows",
-      apy: null,
-      positionData: getP2PBorrowPosition(usdcMarketData, 6),
-    });
+  //TODO: change mint address to the actual mint address
+  try {
+    const usdcMarketData = (
+      await paystreamProgram.getMarketDataUI(
+        usdcMarket.market,
+        // new PublicKey(USDC_MINT),
+        usdcMarket.mint,
+      )
+    ).traders.find((trader) => trader.address === address);
+    const solMarketData = (
+      await paystreamProgram.getMarketDataUI(
+        solMarket.market,
+        // new PublicKey(SOL_MINT),
+        solMarket.mint,
+      )
+    ).traders.find((trader) => trader.address === address);
+
+    const positions: Position[] = [];
+
+    if (usdcMarketData) {
+      positions.push({
+        asset: "USDC",
+        type: "lending",
+        apy: null,
+        positionData: getLendingPosition(usdcMarketData, 6),
+      });
+      positions.push({
+        asset: "USDC",
+        type: "p2pLending",
+        apy: null,
+        positionData: getP2PLendingPosition(usdcMarketData, 6),
+      });
+      positions.push({
+        asset: "USDC",
+        type: "borrows",
+        apy: null,
+        positionData: getP2PBorrowPosition(usdcMarketData, 6),
+      });
+    }
+
+    if (solMarketData) {
+      positions.push({
+        asset: "SOL",
+        type: "lending",
+        apy: null,
+        positionData: getLendingPosition(solMarketData, 9),
+      });
+      positions.push({
+        asset: "SOL",
+        type: "p2pLending",
+        apy: null,
+        positionData: getP2PLendingPosition(solMarketData, 9),
+      });
+      positions.push({
+        asset: "SOL",
+        type: "borrows",
+        apy: null,
+        positionData: getP2PBorrowPosition(solMarketData, 9),
+      });
+    }
+
+    return positions;
+  } catch (error) {
+    console.log(error, "error");
+    return [];
   }
-
-  if (solMarketData) {
-    positions.push({
-      asset: "SOL",
-      type: "lending",
-      apy: null,
-      positionData: getLendingPosition(solMarketData, 9),
-    });
-    positions.push({
-      asset: "SOL",
-      type: "p2pLending",
-      apy: null,
-      positionData: getP2PLendingPosition(solMarketData, 9),
-    });
-    positions.push({
-      asset: "SOL",
-      type: "borrows",
-      apy: null,
-      positionData: getP2PBorrowPosition(solMarketData, 9),
-    });
-  }
-
-  return positions;
 }
 
 //TODO: incomplete
@@ -130,6 +151,12 @@ export async function getDriftOptimizerStats(
     throw new Error("Market not found");
   }
 
+  console.log(usdcMarket.market.toBase58(), "usdcMarket");
+  console.log(solMarket.market.toBase58(), "solMarket");
+
+  console.log(usdcMarket.mint.toBase58(), "usdcMarket mint");
+  console.log(solMarket.mint.toBase58(), "solMarket mint");
+
   const usdcMarketData = await paystreamProgram.getMarketDataUI(
     usdcMarket.market,
     usdcMarket.mint,
@@ -161,13 +188,19 @@ export async function getDriftOptimizerStats(
     9,
   );
 
+  //TODO: this is not modular, we should get the sol price from the market
   // const solPrice = await getSolanaPrice();
   const solPrice = 100;
 
+  //TODO: this is not modular, this is oly implemented for USDC and SOL we need to implement for all other tokens too
   const borrowVolume = totalBorrowsUSDC + totalBorrowsSOL * solPrice;
   const supplyVolume = totalSupplyUSDC + totalSupplySOL * solPrice;
 
+  console.log(borrowVolume, "borrowVolume");
+  console.log(supplyVolume, "supplyVolume");
+
   const matchRate = borrowVolume / supplyVolume;
+  console.log(matchRate, "matchRate");
 
   const optimizerStats: OptimizerStats = {
     borrowVolume,
