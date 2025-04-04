@@ -1,12 +1,13 @@
-import Image from "next/image";
 import React from "react";
 
-import { Button } from "@/components/ui/button";
 import { getStats } from "@/lib/data";
+
 import Carousel from "./carousel";
 import Stats from "./stats";
+
 const Hero: React.FC = async () => {
   const stats = await getStats();
+
   return (
     <>
       <main className="relative flex min-h-[500px] w-full flex-col items-start justify-between border-x border-border-t3 px-6 text-white sm:min-h-[600px] sm:px-0 md:min-h-[700px] lg:min-h-[842px]">

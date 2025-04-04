@@ -1,11 +1,10 @@
-"use client";
-
 import { type DashboardTable } from "@/app/dashboard/_components/dashboard-column";
+import { SOL_HEADER_INDEX, USDC_HEADER_INDEX } from "@/constants";
+import { api } from "@/trpc/server";
 import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import { PaystreamV1Program } from "@meimfhd/paystream-v1";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { bnToNumber, getDriftOptimizerStats } from "./contract";
-import { SOL_HEADER_INDEX, USDC_HEADER_INDEX } from "@/constants";
 
 export async function getDriftStats(paystreamProgram: PaystreamV1Program) {
   const optimizerStats = await getDriftOptimizerStats(paystreamProgram);

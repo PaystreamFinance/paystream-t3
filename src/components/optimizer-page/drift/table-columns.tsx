@@ -1,8 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 

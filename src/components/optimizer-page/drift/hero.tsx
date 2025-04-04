@@ -1,43 +1,35 @@
-"use client";
-
-import { AnchorProvider } from "@coral-xyz/anchor";
-import { PaystreamV1Program } from "@meimfhd/paystream-v1";
-import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
-import { Loader } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
-import { getDriftStats, getTableData } from "@/lib/data";
+import { api } from "@/trpc/server";
 
 import Stats from "../stats";
 import { StatsTable } from "./stats-table";
 import { columns } from "./table-columns";
 
-export default function DriftHero() {
-  const [stats, setStats] = useState<
-    { title: string; value: string }[] | undefined
-  >(undefined);
-  const [tableData, setTableData] = useState<any>(undefined);
-  // const tableData = getTableData();
+export default async function DriftHero() {
+  const optimizerStats = await api.drfit.getOptimizerStats();
+  const tableData = await api.drfit.getTableData();
 
-  const wallet = useAnchorWallet();
-  const { connection } = useConnection();
-  const provider = new AnchorProvider(connection, wallet!, {
-    commitment: "processed",
-  });
-  const paystreamProgram = new PaystreamV1Program(provider);
-
-  useEffect(() => {
-    async function fetchStats() {
-      const stats = await getDriftStats(paystreamProgram);
-      setStats(stats);
-
-      const tableData = await getTableData(paystreamProgram);
-      setTableData(tableData);
-    }
-    fetchStats();
-  }, []);
+  const stats = [
+    {
+      title: "Supply Volume",
+      value: "$ " + optimizerStats.supplyVolume.toFixed(2).toString(),
+    },
+    {
+      title: "Borrow Volume",
+      value: "$ " + optimizerStats.borrowVolume.toFixed(2).toString(),
+    },
+    {
+      title: "Match Rate",
+      value: optimizerStats.matchRate.toFixed(2).toString() + " %",
+    },
+    {
+      title: "Available Liquidity",
+      value: "$ " + optimizerStats?.availableLiquidity.toFixed(2).toString(),
+    },
+  ];
 
   return (
     <main className="relative flex min-h-[1064px] w-full flex-col items-center justify-center border-x border-b border-border-t3">
@@ -45,18 +37,6 @@ export default function DriftHero() {
         <div className="relative mx-auto h-[300px] w-full max-w-[300px] p-[1px] md:h-[141px] md:w-full md:max-w-none">
           <div className="absolute inset-0 z-0 bg-[linear-gradient(-45deg,#67DFFF,#844DFF,#C689B2,#F5DF9D)]" />
           <div className="relative z-10 flex h-full w-full items-center justify-start bg-bg-t3 bg-[url('/drift/banner-sm.svg')] bg-no-repeat p-[30px] md:h-[138px] md:bg-[url('/drift/banner.svg')]">
-            {/* <div className="pointer-events-none absolute inset-0 select-none">
-              <Image
-                src="/optimizers/driftbanner.svg"
-                alt="Drift Banner"
-                fill
-                loading="eager"
-                className="object-cover"
-              />
-            </div> */}
-
-            {/* <DriftBanner /> */}
-            {/* Content */}
             <div className="flex h-full flex-col gap-3">
               <h3 className="font-darkerGrotesque text-4xl leading-[0.8] text-white">
                 Drift Optimizer
@@ -70,14 +50,7 @@ export default function DriftHero() {
         </div>
       </div>
       <div className="relative w-full px-3 py-[30px] sm:px-[46px]">
-        {!stats ? (
-          <p className="mt-6 flex w-full items-center justify-center gap-2 text-white">
-            <Loader className="size-4 animate-spin text-[#67DFFF]" /> loading
-            stats...
-          </p>
-        ) : (
-          <Stats stats={stats} underline />
-        )}
+        <Stats stats={stats} underline />
       </div>
 
       <div className="mb-5 flex w-full items-center justify-end px-3 sm:px-[46px]">
@@ -108,14 +81,7 @@ export default function DriftHero() {
       </div>
 
       <div className="relative min-h-[616px] w-full px-3 pb-[30px] sm:px-[56px]">
-        {!tableData ? (
-          <p className="mt-6 flex w-full items-center justify-center gap-2 text-white">
-            <Loader className="size-4 animate-spin text-[#67DFFF]" /> loading
-            table data...
-          </p>
-        ) : (
-          <StatsTable columns={columns} data={tableData} />
-        )}
+        <StatsTable columns={columns} data={tableData} />
       </div>
     </main>
   );

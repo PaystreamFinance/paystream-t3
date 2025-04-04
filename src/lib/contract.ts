@@ -308,7 +308,7 @@ interface PositionData {
   action_amount: BN;
 }
 
-function getLendingPosition(
+export function getLendingPosition(
   traderPosition: TraderPositionUI,
   decimals: number,
 ): PositionData {
@@ -320,7 +320,7 @@ function getLendingPosition(
   };
 }
 
-function getP2PLendingPosition(
+export function getP2PLendingPosition(
   traderPosition: TraderPositionUI,
   decimals: number,
 ): PositionData {
@@ -330,7 +330,7 @@ function getP2PLendingPosition(
   };
 }
 
-function getP2PBorrowPosition(
+export function getP2PBorrowPosition(
   traderPosition: TraderPositionUI,
   decimals: number,
 ): PositionData {
