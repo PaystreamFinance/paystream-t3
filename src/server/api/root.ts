@@ -11,7 +11,7 @@ import { postRouter } from "./routers/post";
  */
 export const appRouter = createTRPCRouter({
   post: postRouter,
-  drfit: driftRouter,
+  drift: driftRouter,
   dashboard: dashboardRouter,
 });
 

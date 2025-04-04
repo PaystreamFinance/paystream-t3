@@ -20,7 +20,7 @@ export interface VaultDataProps {
 export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
   const { publicKey } = useWallet();
 
-  const { data: userData } = api.drfit.getUserData.useQuery({
+  const { data: userData } = api.drift.getUserData.useQuery({
     publicKey: publicKey?.toString()!,
     vaultTitle: vaultTitle as "USDC" | "SOL",
   });

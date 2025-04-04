@@ -14,6 +14,7 @@ import {
   USDC_MINT,
 } from "@/constants";
 import { useVaultStateStore } from "@/store/vault-state-store";
+import { api } from "@/trpc/react";
 import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import {
   _PaystreamV1Idl,
@@ -66,6 +67,20 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     commitment: "processed",
   });
   const paystreamProgram = new PaystreamV1Program(provider);
+
+  const utils = api.useUtils();
+
+  const { data } = api.drift.getUserData.useQuery(
+    {
+      publicKey: publicKey?.toString()!,
+      vaultTitle: vaultTitle as "USDC" | "SOL",
+    },
+    {
+      refetchOnWindowFocus: true,
+      enabled: !!publicKey,
+      refetchInterval: 10000,
+    },
+  );
 
   useEffect(() => {
     const fetchMarketHeader = async () => {
@@ -133,9 +148,17 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       console.log(marketConfig.market.toBase58(), "market");
 
       const result = await paystreamProgram.lendWithUI(marketConfig, amount);
-      console.log("worked");
-      console.log(result);
-      toast.success("Deposit successful");
+
+      if (result) {
+        await utils.drift.getUserData.invalidate({
+          publicKey: publicKey?.toString()!,
+          vaultTitle: vaultTitle as "USDC" | "SOL",
+        });
+
+        console.log(result);
+        toast.success("Deposit successful");
+      }
+
       // } else if (supplyType === "collateral") {
       //   const result = await paystreamProgram.depositWithUI(
       //     marketConfig,
