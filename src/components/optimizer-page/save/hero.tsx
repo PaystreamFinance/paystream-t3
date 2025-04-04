@@ -14,7 +14,7 @@ import Stats from "../stats";
 import { StatsTable } from "./stats-table";
 import { columns } from "./table-columns";
 
-export default function MarginfiHero() {
+export default function SaveHero() {
   const [stats, setStats] = useState<
     { title: string; value: string }[] | undefined
   >(undefined);
@@ -41,13 +41,13 @@ export default function MarginfiHero() {
     <main className="relative flex min-h-[1064px] w-full flex-col items-center justify-center border-x border-b border-border-t3">
       <div className="relative w-full gap-4 overflow-hidden px-3 pt-[30px] sm:px-[46px]">
         <div className="relative mx-auto h-[300px] w-full max-w-[300px] p-[1px] md:h-[141px] md:w-full md:max-w-none">
-          <div className="absolute inset-0 z-0 bg-[linear-gradient(-45deg,#DAE85F,#0B0F0E)]" />
+          <div className="absolute inset-0 z-0 bg-[linear-gradient(-45deg,#FB5724,#08043D)]" />
           <div className="relative z-10 flex h-full w-full items-center justify-start bg-bg-t3 bg-no-repeat p-[30px] md:h-[138px]">
-            <div className="absolute inset-0 bg-[linear-gradient(-45deg,#DAE85F,#0B0F0E)] opacity-20"></div>
+            <div className="absolute inset-0 bg-[linear-gradient(-45deg,#FB5724,#08043D)] opacity-20"></div>
             {/* <div className="pointer-events-none absolute inset-0 select-none">
               <Image
-                src="/optimizers/marginfi/banner.svg"
-                alt="Marginfi Banner"
+                src="/optimizers/save/banner.svg"
+                alt="Save Banner"
                 fill
                 loading="eager"
                 className="object-cover"
@@ -58,10 +58,10 @@ export default function MarginfiHero() {
             {/* Content */}
             <div className="flex h-full flex-col gap-3">
               <h3 className="font-darkerGrotesque text-4xl leading-[0.8] text-white">
-                Marginfi Optimizer
+                Save Optimizer
               </h3>
               <p className="max-w-[341px] font-darkerGrotesque text-[16px] font-normal leading-tight text-white/70">
-                An optimized gateway to Marginfi with the same liquidity and
+                An optimized gateway to Save with the same liquidity and risk
                 risk parameters.
               </p>
             </div>

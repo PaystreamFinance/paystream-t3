@@ -39,7 +39,7 @@ const Hero: React.FC = () => {
 
         <div className="z-10 -mt-[16rem] flex w-full flex-col items-center justify-center">
           <h1 className="text-center text-[64px] font-thin leading-[1.1] text-[#EAEAEA]">
-            Smarter lending, <br />{" "}
+            Vishal Boss, <br />{" "}
             <span className="font-ibmPlexSerif font-normal italic">
               {" "}
               Easier borrowing
