@@ -1,101 +1,41 @@
 "use client";
 
-import VaultActions from "./vault-actions";
-import { VaultGraph } from "./graph";
-
-import StatsGrid, { StatsGridHorizontal } from "./stats-grid";
-import VaultDropdown from "./vault-dropdown";
-import { useEffect, useState } from "react";
-import {
-  useAnchorWallet,
-  useConnection,
-  useWallet,
-} from "@solana/wallet-adapter-react";
-import { AnchorProvider } from "@coral-xyz/anchor";
-import {
-  MarketHeader,
-  MarketHeaderWithPubkey,
-  PaystreamV1Program,
-} from "@meimfhd/paystream-v1";
-import { SOL_HEADER_INDEX, USDC_HEADER_INDEX } from "@/constants";
-import { Button } from "@/components/ui/button";
+import { useWallet } from "@solana/wallet-adapter-react";
 import Link from "next/link";
+import React from "react";
+
+import { Button } from "@/components/ui/button";
+import { api } from "@/trpc/react";
+
+import { VaultGraph } from "./graph";
+import StatsGrid, { StatsGridHorizontal } from "./stats-grid";
+import VaultActions from "./vault-actions";
+import VaultDropdown from "./vault-dropdown";
 
 export interface VaultDataProps {
   vaultTitle: string;
   icon: string;
 }
 
-interface UserData {
-  myPositions: string;
-  apy: string;
-  projectedEarnings: string;
-}
-
 export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
-  const { publicKey, connected } = useWallet();
-  const wallet = useAnchorWallet();
+  const { publicKey } = useWallet();
 
-  const { connection } = useConnection();
-  const provider = new AnchorProvider(connection, wallet!, {
-    commitment: "processed",
+  const { data: userData } = api.drfit.getUserData.useQuery({
+    publicKey: publicKey!,
+    vaultTitle: vaultTitle as "USDC" | "SOL",
   });
-  const paystreamProgram = new PaystreamV1Program(provider);
 
-  const [marketHeader, setMarketHeader] =
-    useState<MarketHeaderWithPubkey | null>(null);
-
-  const [userData, setUserData] = useState<UserData | null>(null);
-
-  useEffect(() => {
-    const fetchMarketHeader = async () => {
-      try {
-        const headers = await paystreamProgram.getAllMarketHeaders();
-        if (vaultTitle === "SOL") {
-          // headers[0] is for SOL vault
-          setMarketHeader(headers[SOL_HEADER_INDEX] ?? null);
-        } else if (vaultTitle === "USDC") {
-          // headers[1] is for USDC vault
-          setMarketHeader(headers[USDC_HEADER_INDEX] ?? null);
-        }
-      } catch (error) {
-        console.error("Error fetching market headers:", error);
-      }
-    };
-
-    fetchMarketHeader();
-  }, []);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userData = await paystreamProgram.getTraderPosition(
-          marketHeader?.market!,
-          publicKey!,
-        );
-        const decimals = vaultTitle === "USDC" ? 6 : 9;
-        const apy = vaultTitle === "USDC" ? 7.3637 : 8.4;
-        const onVaultLendsNum =
-          Number(userData?.onVaultLends?.toString() ?? "0") /
-          Math.pow(10, decimals);
-        const inP2pLendsNum =
-          Number(userData?.inP2pLends?.toString() ?? "0") /
-          Math.pow(10, decimals);
-
-        console.log(`Vault Lends ${vaultTitle}:`, onVaultLendsNum.toFixed(2));
-        console.log(`P2P Lends ${vaultTitle}:`, inP2pLendsNum.toFixed(2));
-
-        setUserData({
-          myPositions: onVaultLendsNum.toFixed(2),
-          apy: apy.toString(),
-          projectedEarnings: (onVaultLendsNum * (1 + apy / 100)).toFixed(2),
-        });
-      } catch (error) {
-        console.info("Error fetching user data:", error);
-      }
-    };
-    fetchUserData();
-  }, [marketHeader, connected, publicKey]);
+  if (!publicKey) {
+    return (
+      <main className="relative flex min-h-[1064px] w-full flex-col items-center justify-start border-x border-b border-border-t3">
+        <div className="relative flex w-full items-center justify-center gap-4 overflow-hidden px-[46px] pt-[46px]">
+          <p className="font-darkerGrotesque text-2xl font-[600] text-[#EAEAEA]">
+            Connect your wallet.
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="relative flex min-h-[1064px] w-full flex-col items-center justify-start border-x border-b border-border-t3">
@@ -116,9 +56,9 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
         <div className="grid min-h-[247px] w-full grid-cols-2 gap-4">
           <StatsGrid
             stats={{
-              myPosition: userData?.myPositions ?? "--",
-              apy: userData?.apy ?? "--",
-              projectedEarnings: userData?.projectedEarnings ?? "--",
+              myPosition: userData?.myPositions ?? "-",
+              apy: userData?.apy ?? "-",
+              projectedEarnings: userData?.projectedEarnings ?? "-",
             }}
           />
           <VaultActions vaultTitle={vaultTitle} icon={icon} />
@@ -130,7 +70,7 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
             apy: "Not available for testnet",
           }}
         />
-        <VaultGraph dataUser={{ position: userData?.myPositions ?? "--" }} />
+        <VaultGraph dataUser={{ position: userData?.myPositions ?? "-" }} />
       </div>
     </main>
   );

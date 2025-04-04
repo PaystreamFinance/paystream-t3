@@ -1,17 +1,15 @@
+import { PaystreamV1Program } from "@meimfhd/paystream-v1";
 import { z } from "zod";
 
-import { AnchorProvider, type Wallet } from "@coral-xyz/anchor";
-import { PaystreamV1Program } from "@meimfhd/paystream-v1";
-import { Connection } from "@solana/web3.js";
-
-import { DashboardTable } from "@/app/dashboard/_components/dashboard-column";
-import { SOL_HEADER_INDEX, USDC_HEADER_INDEX } from "@/constants";
+import { type DashboardTable } from "@/app/dashboard/_components/dashboard-column";
+import { DECIMALS, SOL_HEADER_INDEX, USDC_HEADER_INDEX } from "@/constants";
 import {
   getLendingPosition,
   getP2PBorrowPosition,
   getP2PLendingPosition,
   type Position,
 } from "@/lib/contract";
+import { createProvider, POSITION_TYPE_MAP } from "@/lib/utils";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 
 export const dashboardRouter = createTRPCRouter({
@@ -22,14 +20,8 @@ export const dashboardRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input }) => {
-      const address = input.publicKey;
-
-      const connection = new Connection(process.env.RPC_URL!);
-
-      const provider = new AnchorProvider(connection, {} as Wallet, {
-        commitment: "processed",
-      });
-
+      const { publicKey: address } = input;
+      const provider = createProvider();
       const paystreamProgram = new PaystreamV1Program(provider);
 
       const marketHeaderData = await paystreamProgram.getAllMarketHeaders();
@@ -40,77 +32,60 @@ export const dashboardRouter = createTRPCRouter({
         throw new Error("Markets not found");
       }
 
-      const usdcMarketData = (
-        await paystreamProgram.getMarketDataUI(
-          usdcMarket.market,
-          usdcMarket.mint,
-        )
-      ).traders.find((trader) => trader.address === address);
-      const solMarketData = (
-        await paystreamProgram.getMarketDataUI(solMarket.market, solMarket.mint)
-      ).traders.find((trader) => trader.address === address);
+      // get market data for both markets
+      const [usdcMarketDataFull, solMarketDataFull] = await Promise.all([
+        paystreamProgram.getMarketDataUI(usdcMarket.market, usdcMarket.mint),
+        paystreamProgram.getMarketDataUI(solMarket.market, solMarket.mint),
+      ]);
+
+      const usdcMarketData = usdcMarketDataFull.traders.find(
+        (trader) => trader.address === address,
+      );
+      const solMarketData = solMarketDataFull.traders.find(
+        (trader) => trader.address === address,
+      );
 
       const positions: Position[] = [];
 
-      if (usdcMarketData) {
-        positions.push({
-          asset: "USDC",
-          type: "lending",
-          apy: null,
-          positionData: getLendingPosition(usdcMarketData, 6),
-        });
-        positions.push({
-          asset: "USDC",
-          type: "p2pLending",
-          apy: null,
-          positionData: getP2PLendingPosition(usdcMarketData, 6),
-        });
-        positions.push({
-          asset: "USDC",
-          type: "borrows",
-          apy: null,
-          positionData: getP2PBorrowPosition(usdcMarketData, 6),
-        });
-      }
+      // fn to add positions for a given asset
+      const addPositionsForAsset = (
+        marketData: any,
+        asset: "SOL" | "USDC",
+        decimals: number,
+      ) => {
+        if (!marketData) return;
 
-      if (solMarketData) {
-        positions.push({
-          asset: "SOL",
-          type: "lending",
-          apy: null,
-          positionData: getLendingPosition(solMarketData, 9),
-        });
-        positions.push({
-          asset: "SOL",
-          type: "p2pLending",
-          apy: null,
-          positionData: getP2PLendingPosition(solMarketData, 9),
-        });
-        positions.push({
-          asset: "SOL",
-          type: "borrows",
-          apy: null,
-          positionData: getP2PBorrowPosition(solMarketData, 9),
-        });
-      }
+        const positionTypes = [
+          { type: "lending", getPosition: getLendingPosition },
+          { type: "p2pLending", getPosition: getP2PLendingPosition },
+          { type: "borrows", getPosition: getP2PBorrowPosition },
+        ] as const;
 
+        positionTypes.forEach(({ type, getPosition }) => {
+          positions.push({
+            asset,
+            type,
+            apy: null,
+            positionData: getPosition(marketData, decimals),
+          });
+        });
+      };
+
+      addPositionsForAsset(usdcMarketData, "USDC", DECIMALS.USDC);
+      addPositionsForAsset(solMarketData, "SOL", DECIMALS.SOL);
+
+      // filter positions with positive amounts and transform to table data
       if (positions.length > 0) {
-        const tableData = positions
+        return positions
           .filter((pos) => Number(pos.positionData.amount) > 0)
           .map((pos, idx) => ({
             id: idx.toString(),
             asset: pos.asset.toLowerCase() as "usdc" | "sol",
-            position: pos.positionData.amount.toFixed(2).toString(),
-            type: (pos.type === "lending"
-              ? "LEND"
-              : pos.type === "p2pLending"
-                ? "P2P LEND"
-                : "BORROW") as "LEND" | "P2P LEND" | "BORROW",
+            position: pos.positionData.amount.toFixed(2),
+            type: POSITION_TYPE_MAP[pos.type] as "LEND" | "P2P LEND" | "BORROW",
             apy: pos.apy?.toString() ?? "N/A",
             action_amount: pos.positionData.action_amount,
-          }));
-
-        return tableData as DashboardTable[];
+          })) as DashboardTable[];
       }
 
       return [];

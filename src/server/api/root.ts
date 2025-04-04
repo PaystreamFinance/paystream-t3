@@ -1,7 +1,7 @@
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 
 import { dashboardRouter } from "./routers/dashboard";
-import { drfitRouter } from "./routers/drift";
+import { driftRouter } from "./routers/drift";
 import { postRouter } from "./routers/post";
 
 /**
@@ -11,7 +11,7 @@ import { postRouter } from "./routers/post";
  */
 export const appRouter = createTRPCRouter({
   post: postRouter,
-  drfit: drfitRouter,
+  drfit: driftRouter,
   dashboard: dashboardRouter,
 });
 

@@ -1,7 +1,7 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
+import dynamic from "next/dynamic";
 
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
@@ -345,7 +345,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             </span>
             <div className="ml-auto flex items-center gap-2 font-body">
               <span className="text-sm text-[#BCEBFF80]">
-                Balance: {balance !== null ? balance.toFixed(2) : "--"}{" "}
+                Balance: {balance !== null ? balance.toFixed(2) : "-"}{" "}
                 {vaultTitle}
               </span>
               <span
@@ -391,7 +391,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             </span>
 
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
-              ---
+              --
             </span>
           </div>
           <div className="flex items-center justify-between gap-2">
@@ -400,7 +400,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             </span>
 
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
-              ---
+              --
             </span>
           </div>
 
@@ -583,7 +583,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             </span>
             <div className="ml-auto flex items-center gap-2 font-body">
               <span className="text-sm text-[#BCEBFF80]">
-                Balance: {balance !== null ? balance.toFixed(2) : "--"}{" "}
+                Balance: {balance !== null ? balance.toFixed(2) : "-"}{" "}
                 {vaultTitle}
               </span>
               <span
@@ -641,7 +641,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               <span className="font-body text-[20px] font-[500] uppercase text-[#EAEAEA]">
                 {collateralAmountToShow !== null
                   ? Number(collateralAmountToShow).toFixed(5)
-                  : "--"}{" "}
+                  : "-"}{" "}
                 {vaultTitle === "SOL" ? "USDC" : "SOL"}
               </span>
             </div>
