@@ -2,7 +2,7 @@ import {
   MarketHeaderWithPubkey,
   PaystreamV1Program,
 } from "@meimfhd/paystream-v1";
-import { type PublicKey } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import { z } from "zod";
 
 import { type OptimizerTable } from "@/components/optimizer-page/drift/table-columns";
@@ -22,11 +22,12 @@ export const driftRouter = createTRPCRouter({
     .input(
       z.object({
         vaultTitle: z.enum(["SOL", "USDC"]),
-        publicKey: z.custom<PublicKey>(),
+        publicKey: z.string(),
       }),
     )
     .query(async ({ input }) => {
       const { vaultTitle, publicKey } = input;
+
       const provider = createProvider();
       const paystreamProgram = new PaystreamV1Program(provider);
 
@@ -49,7 +50,7 @@ export const driftRouter = createTRPCRouter({
 
       const userData = await paystreamProgram.getTraderPosition(
         marketHeader?.market!,
-        publicKey,
+        new PublicKey(publicKey),
       );
 
       if (!userData) {

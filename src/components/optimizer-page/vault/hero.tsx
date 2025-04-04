@@ -21,7 +21,7 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
   const { publicKey } = useWallet();
 
   const { data: userData } = api.drfit.getUserData.useQuery({
-    publicKey: publicKey!,
+    publicKey: publicKey?.toString()!,
     vaultTitle: vaultTitle as "USDC" | "SOL",
   });
 
