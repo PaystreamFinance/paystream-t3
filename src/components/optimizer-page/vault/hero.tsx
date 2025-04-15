@@ -129,6 +129,7 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
             liquidity: "Not available for testnet",
             apy: "Not available for testnet",
           }}
+          underline={false}
         />
         <VaultGraph dataUser={{ position: userData?.myPositions ?? "--" }} />
       </div>

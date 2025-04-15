@@ -75,7 +75,7 @@ export default function KaminoHero() {
             stats...
           </p>
         ) : (
-          <Stats stats={stats} underline />
+          <Stats stats={stats} />
         )}
       </div>
 

@@ -76,7 +76,7 @@ export default function DriftHero() {
             stats...
           </p>
         ) : (
-          <Stats stats={stats} underline />
+          <Stats stats={stats} />
         )}
       </div>
 

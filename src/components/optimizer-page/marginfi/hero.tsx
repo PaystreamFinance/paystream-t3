@@ -75,7 +75,7 @@ export default function MarginfiHero() {
             stats...
           </p>
         ) : (
-          <Stats stats={stats} underline />
+          <Stats stats={stats} />
         )}
       </div>
 

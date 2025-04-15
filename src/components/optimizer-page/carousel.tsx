@@ -20,9 +20,9 @@ export default function Carousel() {
   /** @dev Change the cards data to add/remove cards */
   const cardsData: CarouselCard[] = [
     { variant: "drift" },
+    { variant: "marginfi" },
     { variant: "kamino" },
     { variant: "save" },
-    { variant: "marginfi" },
   ];
 
   // Track scroll position and update active index
