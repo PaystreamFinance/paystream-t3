@@ -28,8 +28,8 @@ const LoadingAnimationTwo: React.FC<LoadingAnimationProps> = ({
   }, [loading, showSuccess]);
   return (
     <svg
-      width="913"
-      height="913"
+      width="250"
+      height="250"
       viewBox="0 0 913 913"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

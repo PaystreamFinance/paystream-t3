@@ -30,6 +30,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { VaultDataProps } from "./hero";
+import LoadingOverlay from "@/components/loading-overlay";
 
 const WalletMultiButton = dynamic(
   () =>
@@ -47,6 +48,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   >(null);
   const [inputValue, setInputValue] = useState("");
   const { vaultState, setVaultState } = useVaultStateStore();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [leverageValue, setLeverageValue] = useState(33);
   const [isDragging, setIsDragging] = useState(false);
@@ -115,6 +117,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   const handleSupply = async () => {
     if (!marketHeader || !inputValue) return;
     try {
+      setIsLoading(true);
       const marketConfig = {
         market: marketHeader.market,
         collateralMarket: marketHeader.collateralMarket,
@@ -155,6 +158,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       } else {
         toast.error("Deposit failed");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -162,6 +167,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     if (!marketHeader || !inputValue) return;
 
     try {
+      setIsLoading(true);
       const marketConfig = {
         market: marketHeader.market,
         collateralMarket: marketHeader.collateralMarket,
@@ -220,6 +226,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       } else {
         toast.error("Borrow failed");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -227,6 +235,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     if (!marketHeader || !inputValue) return;
 
     try {
+      setIsLoading(true);
       const marketConfig = {
         market: marketHeader.market,
         collateralMarket: marketHeader.collateralMarket,
@@ -248,6 +257,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     } catch (error) {
       console.error("Error in withdraw:", error);
       toast.error("Withdrawal failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -337,6 +348,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
   return (
     <>
+      <LoadingOverlay isLoading={isLoading} />
       {vaultState === "lend" && (
         <div className="flex flex-col gap-4 bg-[#9CE0FF05] p-[12px]">
           <div className="flex items-center justify-between gap-2">
