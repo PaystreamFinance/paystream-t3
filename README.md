@@ -84,9 +84,9 @@ Contract Name: ```drift```
 Account Structure
 The protocol operates with these primary account types:
 
-User Account - Stores individual lending/borrowing positions
-UserStats Account - Tracks user activity and transaction history
-State Account - Maintains global protocol parameters
+- User Account - Stores individual lending/borrowing positions
+- UserStats Account - Tracks user activity and transaction history
+- State Account - Maintains global protocol parameters
 
 ### Local Setup
 
