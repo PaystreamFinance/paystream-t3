@@ -64,8 +64,7 @@ The Paystream protocol supports the following operations:
 
 ## Technical Documentation
 
-The protocol documentation is available in the [Docs ](https://maushish-guide.notion.site/Paystream-14fe89e3279f80c883f5e12574e00922?pvs=74)
- directory of this repository. Key components include:
+The protocol documentation is available in the [Docs ](https://maushish-guide.notion.site/Paystream-14fe89e3279f80c883f5e12574e00922?pvs=74). Key components include:
 
 - Market architecture
 - Lending/borrowing mechanisms
@@ -88,6 +87,71 @@ The protocol operates with these primary account types:
 - UserStats Account - Tracks user activity and transaction history
 - State Account - Maintains global protocol parameters
 
+## API Documentation
+
+### Market Operations
+
+#### Market Initialization and Management
+- `initializeMarket(mint, marketId, feeRecipient, tokenProgram, market, collateralMarket, collateralTokenProgram, collateralMint, conversionRateWithPricePrecision, preInstructions?)`: Initialize a new market
+- `updateMarketHeader(market, mint, feeRecipient, enableP2pLending, updateMarketStatus, conversionRateWithPricePrecision)`: Update market configuration
+- `getMarketHeader(market, mint)`: Get market header information
+- `getAllMarketHeaders()`: Get all market headers
+- `getMarketHeaderUI(marketPublicKey, mint)`: Get market header information in UI-friendly format
+- `getMarketDataUI(marketPublicKey, mint)`: Get market data in UI-friendly format
+
+#### Market Data Queries
+- `getMarket(marketPublicKey)`: Get market data
+- `getMarketPriceData(lendingMarket, mint)`: Get market price data
+- `getVaultBalance(market, mint)`: Get vault balance for a market
+- `getTokenDecimals(mint)`: Get token decimals
+
+### Trading Operations
+
+#### Seat Management
+- `requestSeat(market, mint, trader)`: Request a trading seat
+- `approveSeat(market, mint, trader)`: Approve a seat request
+- `allocateSeat(market, mint, trader)`: Allocate a seat to a trader
+- `getSeat(market, mint, trader)`: Get seat information
+- `getAllSeatsForTrader(trader)`: Get all seats for a specific trader
+- `getAllSeats()`: Get all seats
+
+#### Position Management
+- `getTraderPosition(marketPublicKey, trader)`: Get trader's position
+- `getAllSeatsForTrader(trader)`: Get all seats for a trader
+
+### Lending and Borrowing Operations
+
+#### Core Operations
+- `deposit(market, mint, amount)`: Deposit tokens
+- `depositIx(market, mint, amount)`: Get deposit instruction
+- `withdraw(market, mint, amount, preInstructions?)`: Withdraw tokens
+- `lend(market, mint, amount)`: Lend tokens
+- `borrow(market, mint, amount, preInstructions?)`: Borrow tokens
+- `repay(market, mint, amount)`: Repay borrowed tokens
+- `repayIx(market, mint, amount)`: Get repay instruction
+- `markAsCollateral(market, mint, amount)`: Mark tokens as collateral
+
+#### UI-Friendly Operations
+- `depositWithUI(config, amount)`: UI-friendly deposit
+- `withdrawWithUI(config, amount)`: UI-friendly withdraw
+- `lendWithUI(config, amount)`: UI-friendly lend
+- `borrowWithUI(config, amount)`: UI-friendly borrow
+- `borrowWithCollateralUI(config, amount, collateralAmount)`: UI-friendly borrow with collateral
+- `repayWithUI(config, amount)`: UI-friendly repay
+- `repayAndWithdrawCollateralWithUI(config, amount)`: UI-friendly repay and withdraw collateral
+- `markAsCollateralWithUI(config, amount)`: UI-friendly mark as collateral
+
+### Utility Functions
+
+#### Calculations
+- `calculateRemainingBorrowCapacity(priceData, collateralAmount, borrowedAmount)`: Calculate remaining borrow capacity
+- `calculateRequiredCollateral(priceData, desiredBorrowAmount)`: Calculate required collateral
+- `calculateUSDValue(amount, price, decimals)`: Calculate USD value
+
+#### PDAs (Program Derived Addresses)
+- `getMarketHeaderPda(market, mint)`: Get market header PDA
+- `getMarketVaultPda(market, mint)`: Get market vault PDA
+- `getSeatPda(marketHeader, trader)`: Get seat PDA
 ### Local Setup
 
 1. Clone this repository
