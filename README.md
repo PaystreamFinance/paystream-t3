@@ -1,6 +1,6 @@
 # Paystream-devnet P2P Engine
 
-[![Paystream Protocol](https://img.shields.io/badge/Paystream-Protocol-blue)](https://paystream-landing.vercel.app/)
+[![Paystream Protocol](https://img.shields.io/badge/Paystream-Protocol-blue)](https://testnet.paystream.finance/optimizers/marginfi)
 [![Devnet](https://img.shields.io/badge/Network-Devnet-orange)](https://solana.com/)
 
 ## Overview
