@@ -59,7 +59,7 @@ The Paystream protocol supports the following operations:
 
 ## Architecture Diagrams
 
-[View Protocol Architecture Diagrams on Excalidraw](https://excalidraw.com/)
+[View Protocol Architecture Diagrams ](https://maushish-guide.notion.site/Paystream-14fe89e3279f80c883f5e12574e00922?pvs=74)
 
 ## Technical Documentation
 
