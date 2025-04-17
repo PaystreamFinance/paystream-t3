@@ -1,29 +1,95 @@
-# Create T3 App
+# Paystream-devnet P2P Engine
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+[![Paystream Protocol](https://img.shields.io/badge/Paystream-Protocol-blue)](https://paystream-landing.vercel.app/)
+[![Devnet](https://img.shields.io/badge/Network-Devnet-orange)](https://solana.com/)
 
-## What's next? How do I make an app with this?
+## Overview
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+Paystream is a peer-to-peer lending protocol built on Solana that allows users to lend and borrow assets directly. This repository contains the development environment and tools necessary to interact with the Paystream protocol on Solana's devnet.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
 
-## Learn More
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+## Demo
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+Check out our live demo: [Paystream Devnet Engine](https://paystream-landing.vercel.app/optimizers/marginfi)
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+https://github.com/user-attachments/assets/6b950061-0c0c-47ca-8744-e5c4cc15c710
 
-## How do I deploy this?
+## Getting Started
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+### Prerequisites
+
+- Solana wallet (e.g., Phantom, Solflare)
+- Basic understanding of DeFi lending protocols
+- Familiarity with Solana blockchain
+
+### Devnet Access
+
+To interact with the Paystream protocol on devnet, use the following whitelisted wallet:
+
+**Secret Key:**
+```
+9fGzRVVoVQRRnPPZtpSqjt5t7fRtfg5ooh5tYqgqe3zkmALiaFiUTcwk67mT3uCJ6fhRbPjXmTuSmX8SpkKP7N7
+```
+
+**Important:** Ensure that the network in your wallet is set to **Devnet**. This wallet has been pre-funded with devnet tokens for testing purposes.
+
+## Protocol Flow
+
+The Paystream protocol supports the following operations:
+
+1. **Lending** - Provide assets to the protocol to earn interest
+2. **Borrowing** - Borrow assets from the protocol (with appropriate collateral)
+3. **Repayment** - Repay borrowed assets plus interest
+4. **Withdrawal** - Withdraw your lent assets and accrued interest
+
+### Important Rules
+
+- Users cannot be both a lender and a borrower in the same market
+- Repayments and withdrawals are managed through the dashboard window
+- The dashboard can be accessed from within the vault or from the optimizer window
+
+## Testing Flow Example
+
+1. Lend USDC to the protocol
+2. Borrow SOL against your USDC collateral
+3. Repay your SOL debt
+4. Withdraw your USDC lent funds
+
+## Architecture Diagrams
+
+[View Protocol Architecture Diagrams on Excalidraw](https://excalidraw.com/)
+
+## Technical Documentation
+
+The protocol documentation is available in the `/docs` directory of this repository. Key components include:
+
+- Market architecture
+- Lending/borrowing mechanisms
+- Interest rate models
+- Liquidation procedures
+- Security features
+
+## Development
+
+### Local Setup
+
+1. Clone this repository
+2. Install dependencies
+3. Configure your environment for devnet
+4. Run the test suite
+
+### Testing
+
+The repository includes comprehensive tests for all protocol functions. To run tests:
+
+```bash
+npm run test
+```
+
+
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
