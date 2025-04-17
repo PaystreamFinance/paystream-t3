@@ -72,6 +72,19 @@ The protocol documentation is available in the `/docs` directory of this reposit
 - Security features
 
 ## Development
+Contract Information for Testers
+Protocol Contract Details
+
+Program ID: ``` dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH (Solana Devnet)```
+Protocol Version: ``` 2.117.0```
+Contract Name: ```drift```
+
+Account Structure
+The protocol operates with these primary account types:
+
+User Account - Stores individual lending/borrowing positions
+UserStats Account - Tracks user activity and transaction history
+State Account - Maintains global protocol parameters
 
 ### Local Setup
 
