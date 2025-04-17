@@ -57,13 +57,15 @@ The Paystream protocol supports the following operations:
 3. Repay your SOL debt
 4. Withdraw your USDC lent funds
 
-## Architecture Diagrams
+## Architecture Diagram
 
-[View Protocol Architecture Diagrams ](https://maushish-guide.notion.site/Paystream-14fe89e3279f80c883f5e12574e00922?pvs=74)
+![image](https://github.com/user-attachments/assets/324b4146-7493-4e3a-b8a1-8a31584cc0ae)
+
 
 ## Technical Documentation
 
-The protocol documentation is available in the `/docs` directory of this repository. Key components include:
+The protocol documentation is available in the [Docs ](https://maushish-guide.notion.site/Paystream-14fe89e3279f80c883f5e12574e00922?pvs=74)
+ directory of this repository. Key components include:
 
 - Market architecture
 - Lending/borrowing mechanisms
