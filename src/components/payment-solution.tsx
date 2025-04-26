@@ -112,7 +112,7 @@ const PaymentSolution: React.FC = () => {
                 Your capital never sleeps.
               </h5>
               <p className="text-sm font-normal leading-[1.4] text-[#BCEBFF99] md:text-base md:leading-[17.6px]">
-                Instead of relying solely on volatile DEX fees, your funds are
+                Instead of relying solely on Utilization rates and interest-based curves, your funds are
                 matched with borrowers directly at optimized rates. If no match
                 is found, they continue earning through Kamino and Marginfi,
                 ensuring that your capital never sleeps.
