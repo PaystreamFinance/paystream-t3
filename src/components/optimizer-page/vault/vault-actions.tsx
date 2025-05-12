@@ -718,7 +718,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
           </div> */}
           <div className="flex items-center justify-between gap-2">
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
-              Loan-to-value Ratio
+              LTV
             </span>
 
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
