@@ -3,18 +3,46 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
+import { AnchorProvider } from "@coral-xyz/anchor";
+import { PaystreamV1Program } from "@meimfhd/paystream-v1";
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { Button } from "@/components/ui/button";
 import { getStats } from "@/lib/data";
 import Carousel from "./carousel";
+
+import { Loader } from "lucide-react";
 import Stats from "./stats";
+import { getDriftStats, getTableData } from "@/lib/data";
+import { StatsTable } from "./drift/stats-table";
+import { columns } from "./drift/table-columns";
 
 const Hero: React.FC = () => {
   const [stats, setStats] = useState<{ title: string; value: string }[]>([]);
+
+  const [tableData, setTableData] = useState<any>(undefined);
+
+  const wallet = useAnchorWallet();
+  const { connection } = useConnection();
+  const provider = new AnchorProvider(connection, wallet!, {
+    commitment: "processed",
+  });
+  const paystreamProgram = new PaystreamV1Program(provider);
 
   useEffect(() => {
     async function fetchStats() {
       const data = await getStats();
       setStats(data);
+    }
+    fetchStats();
+  }, []);
+
+  useEffect(() => {
+    async function fetchStats() {
+      const stats = await getDriftStats(paystreamProgram);
+      setStats(stats);
+
+      const tableData = await getTableData(paystreamProgram);
+      setTableData(tableData);
     }
     fetchStats();
   }, []);
@@ -39,8 +67,18 @@ const Hero: React.FC = () => {
         </div>
 
         {/* Stats for desktop view */}
-        <div className="hidden w-full md:block">
+        {/* <div className="hidden w-full md:block">
           <Stats stats={stats} />
+        </div> */}
+        <div className="hidden w-full md:block">
+          {!stats ? (
+            <p className="mt-6 flex w-full items-center justify-center gap-2 text-white">
+              <Loader className="size-4 animate-spin text-[#67DFFF]" /> loading
+              stats...
+            </p>
+          ) : (
+            <Stats stats={stats} />
+          )}
         </div>
       </main>
     </>

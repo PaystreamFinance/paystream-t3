@@ -52,14 +52,7 @@ const Footer: React.FC = () => {
               <Link href="#">Docs</Link>
             </div>
             <div className="flex w-full flex-row items-center justify-start gap-6 text-[#BCEBFF99]">
-              <Image
-                src="/social/x-com.svg"
-                alt="Twitter"
-                width={24}
-                height={24}
-                className="cursor-pointer"
-              />
-              <Image
+              {/* <Image
                 src="/social/linkedin.svg"
                 alt="LinkedIn"
                 width={24}
@@ -72,17 +65,22 @@ const Footer: React.FC = () => {
                 width={24}
                 height={24}
                 className="cursor-pointer"
-              />
-              <Image
-                src="/social/telegram.svg"
-                alt="Telegram"
-                width={24}
-                height={24}
-                className="cursor-pointer"
-              />
+              /> */}
+              <Link href="https://x.com/Paystreamlabs" target="_blank">
+                <Image
+                  src="/social/x-com.svg"
+                  alt="Twitter"
+                  width={24}
+                  height={24}
+                  className="cursor-pointer"
+                />
+              </Link>
             </div>
           </div>
-          <div className="flex flex-col items-center justify-between p-6">
+          <Link
+            href={"https://t.me/paystreamfi"}
+            className="flex flex-col items-center justify-between p-6"
+          >
             <div className="flex w-full flex-row items-start justify-start gap-7 text-[#BCEBFF99]">
               <p>Smarter Lending, Easier Borrowing</p>
             </div>
@@ -96,7 +94,7 @@ const Footer: React.FC = () => {
               />
               <p>Chat with us</p>
             </div>
-          </div>
+          </Link>
         </div>
 
         <div className="pointer-events-none absolute bottom-0 h-[326px] w-full select-none">

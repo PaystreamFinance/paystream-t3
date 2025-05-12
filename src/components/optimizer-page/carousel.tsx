@@ -9,6 +9,7 @@ type CardVariant = "drift" | "kamino" | "save" | "marginfi";
 
 interface CarouselCard {
   variant: CardVariant;
+  commingSoon: boolean;
 }
 
 export default function Carousel() {
@@ -19,10 +20,10 @@ export default function Carousel() {
 
   /** @dev Change the cards data to add/remove cards */
   const cardsData: CarouselCard[] = [
-    { variant: "drift" },
-    { variant: "marginfi" },
-    { variant: "kamino" },
-    { variant: "save" },
+    { variant: "drift", commingSoon: false },
+    { variant: "marginfi", commingSoon: true },
+    { variant: "kamino", commingSoon: true },
+    { variant: "save", commingSoon: true },
   ];
 
   // Track scroll position and update active index
@@ -142,7 +143,10 @@ export default function Carousel() {
         <div className="flex w-full flex-col gap-4">
           {cardsData.map((card, index) => (
             <div key={index} className="w-full">
-              <OptimizersCard variant={card.variant} />
+              <OptimizersCard
+                variant={card.variant}
+                commingSoon={card.variant === "drift" ? false : true}
+              />
             </div>
           ))}
         </div>
