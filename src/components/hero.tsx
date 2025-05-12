@@ -6,6 +6,7 @@ import React from "react";
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { WaitlistDialog } from "./waitlist-dialog";
 
 const Hero: React.FC = () => {
   return (
@@ -76,11 +77,7 @@ const Hero: React.FC = () => {
             with the perfect rates.
           </p>
 
-          <Link href="https://app.paystream.finance" target="_blank">
-            <Button variant="shady" className="mt-7">
-             We are live 
-            </Button>
-          </Link>
+          <WaitlistDialog />
         </div>
       </main>
     </>
