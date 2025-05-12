@@ -57,7 +57,7 @@ const Footer: React.FC = () => {
               </Link>
             </div>
             <div className="mb-auto flex w-full flex-row items-end justify-end gap-6 text-[#BCEBFF99] lg:mt-auto lg:items-start lg:justify-start">
-              <Link href="https://x.com/Paystream_" target="_blank">
+              <Link href="https://x.com/Paystreamlabs" target="_blank">
                 <Image
                   src="/social/x-com.svg"
                   alt="Twitter"
