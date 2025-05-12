@@ -76,9 +76,9 @@ const Hero: React.FC = () => {
             with the perfect rates.
           </p>
 
-          <Link href="https://forms.gle/XiB5bhjWbp6uY9Ss8" target="_blank">
+          <Link href="https://app.paystream.finance" target="_blank">
             <Button variant="shady" className="mt-7">
-              Join Waitlist
+             We are live 
             </Button>
           </Link>
         </div>
