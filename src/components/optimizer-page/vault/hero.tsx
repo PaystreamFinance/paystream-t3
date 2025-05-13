@@ -37,10 +37,6 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
   const wallet = useAnchorWallet();
 
   const { connection } = useConnection();
-  const provider = new AnchorProvider(connection, wallet!, {
-    commitment: "processed",
-  });
-  const paystreamProgram = new PaystreamV1Program(provider);
 
   const [marketHeader, setMarketHeader] =
     useState<MarketHeaderWithPubkey | null>(null);
@@ -48,6 +44,13 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
   const [userData, setUserData] = useState<UserData | null>(null);
 
   useEffect(() => {
+    if (!wallet || !connection) return;
+
+    const provider = new AnchorProvider(connection, wallet, {
+      commitment: "processed",
+    });
+
+    const paystreamProgram = new PaystreamV1Program(provider);
     const fetchMarketHeader = async () => {
       try {
         const headers = await paystreamProgram.getAllMarketHeaders();
@@ -64,9 +67,16 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
     };
 
     fetchMarketHeader();
-  }, []);
+  }, [wallet, connection, vaultTitle]);
 
   useEffect(() => {
+    if (!wallet || !connection) return;
+
+    const provider = new AnchorProvider(connection, wallet, {
+      commitment: "processed",
+    });
+
+    const paystreamProgram = new PaystreamV1Program(provider);
     const fetchUserData = async () => {
       try {
         const userData = await paystreamProgram.getTraderPosition(
@@ -95,7 +105,7 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
       }
     };
     fetchUserData();
-  }, [marketHeader, connected, publicKey]);
+  }, [marketHeader, connected, publicKey, wallet, connection, vaultTitle]);
 
   return (
     <main className="relative flex min-h-[1064px] w-full flex-col items-center justify-start border-x border-b border-border-t3">

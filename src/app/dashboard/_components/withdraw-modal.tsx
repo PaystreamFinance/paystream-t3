@@ -66,7 +66,12 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
   };
 
   const handleWithdraw = async () => {
-    if (!marketHeader || !inputValue) return;
+    if (!marketHeader || !inputValue || !wallet || !connection) return;
+
+    const provider = new AnchorProvider(connection, wallet, {
+      commitment: "processed",
+    });
+    const paystreamProgram = new PaystreamV1Program(provider);
 
     try {
       const marketConfig = {
@@ -85,7 +90,9 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
       const amount = new BN(Number(inputValue) * decimals);
 
       const result = await paystreamProgram.withdrawWithUI(
-        marketConfig,
+        marketHeader.mint,
+        marketHeader.market,
+        "drift",
         amount,
       );
       console.log(result);

@@ -39,12 +39,14 @@ const DashboardPage: NextPage = () => {
   const { publicKey, connected } = useWallet();
   const wallet = useAnchorWallet();
   const { connection } = useConnection();
-  const provider = new AnchorProvider(connection, wallet!, {
-    commitment: "processed",
-  });
-  const paystreamProgram = new PaystreamV1Program(provider);
 
   useEffect(() => {
+    if (!wallet || !connection) return;
+
+    const provider = new AnchorProvider(connection, wallet, {
+      commitment: "processed",
+    });
+    const paystreamProgram = new PaystreamV1Program(provider);
     const fetchTraderPositions = async () => {
       if (!connected || !publicKey) return;
 
@@ -82,7 +84,7 @@ const DashboardPage: NextPage = () => {
     };
 
     fetchTraderPositions();
-  }, [connected, publicKey]);
+  }, [connected, publicKey, wallet, connection]);
 
   return (
     <MaxWidthWrapper>

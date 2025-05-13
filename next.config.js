@@ -3,8 +3,13 @@
  * for Docker builds.
  */
 import "./src/env.js";
-
+import NodePolyfillPlugin from "node-polyfill-webpack-plugin";
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+  webpack: (config) => {
+    config.plugins.push(new NodePolyfillPlugin());
+    return config;
+  },
+};
 
 export default config;

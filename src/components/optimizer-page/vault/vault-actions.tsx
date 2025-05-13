@@ -16,9 +16,8 @@ import {
 import { useVaultStateStore } from "@/store/vault-state-store";
 import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import {
-  _PaystreamV1Idl,
-  MarketHeaderWithPubkey,
   PaystreamV1Program,
+  MarketHeaderWithPubkey,
 } from "@meimfhd/paystream-v1";
 import {
   useAnchorWallet,
@@ -65,12 +64,13 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const provider = new AnchorProvider(connection, wallet!, {
-    commitment: "processed",
-  });
-  const paystreamProgram = new PaystreamV1Program(provider);
-
   useEffect(() => {
+    if (!wallet || !connection) return;
+
+    const provider = new AnchorProvider(connection, wallet, {
+      commitment: "processed",
+    });
+    const paystreamProgram = new PaystreamV1Program(provider);
     const fetchMarketHeader = async () => {
       try {
         const headers = await paystreamProgram.getAllMarketHeaders();
@@ -87,9 +87,15 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     };
 
     fetchMarketHeader();
-  }, [inputValue, vaultTitle]);
+  }, [wallet, connection, vaultTitle]);
 
   useEffect(() => {
+    if (!wallet || !connection) return;
+
+    const provider = new AnchorProvider(connection, wallet, {
+      commitment: "processed",
+    });
+    const paystreamProgram = new PaystreamV1Program(provider);
     const fetchCollateralAmount = async () => {
       if (!marketHeader || !inputValue) return;
 
@@ -104,6 +110,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       const collateralAmount = paystreamProgram.calculateRequiredCollateral(
         marketPriceData,
         amount,
+        marketHeader.ltvRatio,
       );
       // we are reversing the collateral amount because if vaultTitle is USDC, then collateral amount is in SOL
       const collateralDecimals =
@@ -113,10 +120,15 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     };
 
     fetchCollateralAmount();
-  }, [marketHeader, inputValue, vaultTitle]);
+  }, [marketHeader, inputValue, vaultTitle, wallet, connection]);
 
   const handleSupply = async () => {
-    if (!marketHeader || !inputValue) return;
+    if (!marketHeader || !inputValue || !wallet || !connection) return;
+
+    const provider = new AnchorProvider(connection, wallet, {
+      commitment: "processed",
+    });
+    const paystreamProgram = new PaystreamV1Program(provider);
     try {
       setIsLoading(true);
       const marketConfig = {
@@ -136,7 +148,12 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       console.log(marketConfig.mint.toBase58(), "mint");
       console.log(marketConfig.market.toBase58(), "market");
 
-      const result = await paystreamProgram.lendWithUI(marketConfig, amount);
+      const result = await paystreamProgram.lendWithUI(
+        marketHeader.mint,
+        marketHeader.market,
+        "drift",
+        amount,
+      );
       console.log("worked");
       console.log(result);
       toast.success("Deposit successful");
@@ -165,7 +182,12 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   };
 
   const handleBorrow = async () => {
-    if (!marketHeader || !inputValue) return;
+    if (!marketHeader || !inputValue || !wallet || !connection) return;
+
+    const provider = new AnchorProvider(connection, wallet, {
+      commitment: "processed",
+    });
+    const paystreamProgram = new PaystreamV1Program(provider);
 
     try {
       setIsLoading(true);
@@ -209,9 +231,12 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       const collateralAmount = paystreamProgram.calculateRequiredCollateral(
         marketPriceData,
         amount,
+        marketHeader.ltvRatio,
       );
       const result = await paystreamProgram.borrowWithCollateralUI(
-        marketConfig,
+        marketHeader.mint,
+        marketHeader.market,
+        "drift",
         amount,
         collateralAmount,
       );
@@ -261,7 +286,12 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   };
 
   const handleWithdraw = async () => {
-    if (!marketHeader || !inputValue) return;
+    if (!marketHeader || !inputValue || !wallet || !connection) return;
+
+    const provider = new AnchorProvider(connection, wallet, {
+      commitment: "processed",
+    });
+    const paystreamProgram = new PaystreamV1Program(provider);
 
     try {
       setIsLoading(true);
@@ -278,7 +308,9 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       const amount = new BN(Number(inputValue) * decimals);
 
       const result = await paystreamProgram.withdrawWithUI(
-        marketConfig,
+        marketHeader.mint,
+        marketHeader.market,
+        "drift",
         amount,
       );
       console.log(result);

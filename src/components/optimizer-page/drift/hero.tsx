@@ -23,13 +23,15 @@ export default function DriftHero() {
 
   const wallet = useAnchorWallet();
   const { connection } = useConnection();
-  const provider = new AnchorProvider(connection, wallet!, {
-    commitment: "processed",
-  });
-  const paystreamProgram = new PaystreamV1Program(provider);
 
   useEffect(() => {
     async function fetchStats() {
+      if (!wallet) return;
+      if (!connection) return;
+      const provider = new AnchorProvider(connection, wallet!, {
+        commitment: "processed",
+      });
+      const paystreamProgram = new PaystreamV1Program(provider);
       const stats = await getDriftStats(paystreamProgram);
       setStats(stats);
 
@@ -37,7 +39,7 @@ export default function DriftHero() {
       setTableData(tableData);
     }
     fetchStats();
-  }, []);
+  }, [wallet, connection]);
 
   return (
     <main className="relative flex min-h-[1064px] w-full flex-col items-center justify-center border-x border-b border-border-t3">

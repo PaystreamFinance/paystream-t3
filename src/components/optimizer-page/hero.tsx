@@ -23,10 +23,6 @@ const Hero: React.FC = () => {
 
   const wallet = useAnchorWallet();
   const { connection } = useConnection();
-  const provider = new AnchorProvider(connection, wallet!, {
-    commitment: "processed",
-  });
-  const paystreamProgram = new PaystreamV1Program(provider);
 
   useEffect(() => {
     async function fetchStats() {
@@ -37,6 +33,13 @@ const Hero: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    if (!wallet) return;
+    if (!connection) return;
+    const provider = new AnchorProvider(connection, wallet!, {
+      commitment: "processed",
+    });
+
+    const paystreamProgram = new PaystreamV1Program(provider);
     async function fetchStats() {
       const stats = await getDriftStats(paystreamProgram);
       setStats(stats);
@@ -45,7 +48,7 @@ const Hero: React.FC = () => {
       setTableData(tableData);
     }
     fetchStats();
-  }, []);
+  }, [wallet, connection]);
 
   return (
     <>
