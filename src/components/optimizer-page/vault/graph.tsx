@@ -92,37 +92,45 @@ export function VaultGraph({ dataUser }: { dataUser: { position: string } }) {
   const data = getChartData();
 
   return (
-    <Card className="w-full border-none bg-transparent">
-      <CardHeader>
-        <div className="grid grid-cols-2">
-          <div className="flex flex-col items-start justify-center gap-1 px-8 py-6">
-            <span className="font-darkerGrotesque text-[20px] font-[500] text-[#BCEBFF80]">
-              Total Supply
-            </span>
-            <span className="font-darkerGrotesque text-[32px] font-[400] text-[#EAEAEA]">
-              {dataUser.position}
-            </span>
-          </div>
-          <div className="flex items-start justify-end gap-1 px-8 py-6">
-            <Button
-              variant="outline"
-              className={`w-fit border-border-t3 bg-transparent font-body text-[#BCEBFF80] hover:bg-[#BCEBFF] ${
-                vaultState === "lend" ? "bg-[#BCEBFF] text-[#02142B]" : ""
-              }`}
-              onClick={() => setVaultState("lend")}
-            >
-              Lend
-            </Button>
-            <Button
-              variant="outline"
-              className={`w-fit border-border-t3 bg-transparent font-body text-[#BCEBFF80] hover:bg-[#BCEBFF] ${
-                vaultState === "borrow" ? "bg-[#BCEBFF] text-[#02142B]" : ""
-              }`}
-              onClick={() => setVaultState("borrow")}
-            >
-              Borrow
-            </Button>
-            {/* <Button
+    <div className="relative w-full">
+      <div className="bg-bg-t3/50 absolute inset-0 z-[69] backdrop-blur-sm">
+        <div className="flex size-full items-center justify-center">
+          <span className="font-darkerGrotesque text-[20px] font-[500] text-[#BCEBFF80]">
+            Graph is under construction 🚧
+          </span>
+        </div>
+      </div>
+      <Card className="w-full border-none bg-transparent">
+        <CardHeader>
+          <div className="grid grid-cols-2">
+            <div className="flex flex-col items-start justify-center gap-1 px-8 py-6">
+              <span className="font-darkerGrotesque text-[20px] font-[500] text-[#BCEBFF80]">
+                Total Supply
+              </span>
+              <span className="font-darkerGrotesque text-[32px] font-[400] text-[#EAEAEA]">
+                {dataUser.position}
+              </span>
+            </div>
+            <div className="flex items-start justify-end gap-1 px-8 py-6">
+              <Button
+                variant="outline"
+                className={`w-fit border-border-t3 bg-transparent font-body text-[#BCEBFF80] hover:bg-[#BCEBFF] ${
+                  vaultState === "lend" ? "bg-[#BCEBFF] text-[#02142B]" : ""
+                }`}
+                onClick={() => setVaultState("lend")}
+              >
+                Lend
+              </Button>
+              <Button
+                variant="outline"
+                className={`w-fit border-border-t3 bg-transparent font-body text-[#BCEBFF80] hover:bg-[#BCEBFF] ${
+                  vaultState === "borrow" ? "bg-[#BCEBFF] text-[#02142B]" : ""
+                }`}
+                onClick={() => setVaultState("borrow")}
+              >
+                Borrow
+              </Button>
+              {/* <Button
               variant="outline"
               className={`w-fit border-border-t3 bg-transparent font-body text-[#BCEBFF80] hover:bg-[#BCEBFF] ${
                 vaultState === "withdraw" ? "bg-[#BCEBFF] text-[#02142B]" : ""
@@ -131,48 +139,49 @@ export function VaultGraph({ dataUser }: { dataUser: { position: string } }) {
             >
               Withdraw
             </Button> */}
-            <VaultDropdownMonth />
+              <VaultDropdownMonth />
+            </div>
           </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <AreaChart
-            data={data}
-            margin={{
-              left: 12,
-              right: 12,
-            }}
-          >
-            <CartesianGrid vertical={false} horizontal={false} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            <YAxis dataKey="day" tickLine={false} axisLine={false} />
-            <Tooltip
-              cursor={{
-                stroke: "#9CE0FF01",
-                strokeDasharray: "5 5",
-                strokeWidth: 1,
-                strokeOpacity: 0.7,
+        </CardHeader>
+        <CardContent>
+          <ChartContainer config={chartConfig}>
+            <AreaChart
+              data={data}
+              margin={{
+                left: 12,
+                right: 12,
               }}
-              content={<ChartTooltipContent indicator="dot" hideLabel />}
-            />
-            <Area
-              dataKey="apy"
-              type="linear"
-              fill="#9CE0FF"
-              fillOpacity={0.4}
-              stroke="#9CE0FF"
-            />
-          </AreaChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter>lol</CardFooter>
-    </Card>
+            >
+              <CartesianGrid vertical={false} horizontal={false} />
+              <XAxis
+                dataKey="month"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                tickFormatter={(value) => value.slice(0, 3)}
+              />
+              <YAxis dataKey="day" tickLine={false} axisLine={false} />
+              <Tooltip
+                cursor={{
+                  stroke: "#9CE0FF01",
+                  strokeDasharray: "5 5",
+                  strokeWidth: 1,
+                  strokeOpacity: 0.7,
+                }}
+                content={<ChartTooltipContent indicator="dot" hideLabel />}
+              />
+              <Area
+                dataKey="apy"
+                type="linear"
+                fill="#9CE0FF"
+                fillOpacity={0.4}
+                stroke="#9CE0FF"
+              />
+            </AreaChart>
+          </ChartContainer>
+        </CardContent>
+        <CardFooter>lol</CardFooter>
+      </Card>
+    </div>
   );
 }

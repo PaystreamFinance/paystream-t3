@@ -31,6 +31,7 @@ import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { VaultDataProps } from "./hero";
 import LoadingOverlay from "@/components/loading-overlay";
+import Link from "next/link";
 
 const WalletMultiButton = dynamic(
   () =>
@@ -47,7 +48,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     number | null
   >(null);
   const [inputValue, setInputValue] = useState("");
-  const { vaultState, setVaultState } = useVaultStateStore();
+  const vaultState = useVaultStateStore((state) => state.vaultState);
   const [isLoading, setIsLoading] = useState(false);
 
   const [leverageValue, setLeverageValue] = useState(33);
@@ -223,6 +224,34 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
         error.message.includes("lending can't borrow")
       ) {
         toast.error("Can't borrow or lend in the same market");
+      } else if (
+        error instanceof Error &&
+        error.message.includes(
+          "expected this account to be already initialized",
+        )
+      ) {
+        toast.custom(
+          (t) => (
+            <div className={`${t.visible ? "animate-in" : "animate-out"}`}>
+              <div className="border-[0.5px] border-[#e4d8ff] bg-bg-t3 p-4 shadow-lg">
+                <h3 className="font-darkerGrotesque text-lg font-bold text-[#9CE0FF]">
+                  Seat is not allocated to this wallet
+                </h3>
+                <p className="font-helvetica mt-2 text-[#EAEAEA]">
+                  Join the waitlist to get a seat
+                </p>
+                <Link href="https://t.me/paystreamfi" target="_blank">
+                  <Button variant="shady" className="mt-4 w-full">
+                    Join waitlist
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          ),
+          {
+            duration: 5000,
+          },
+        );
       } else {
         toast.error("Borrow failed");
       }
@@ -341,6 +370,9 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   const handleBorrowClick = () => {
     if (!inputValue) {
       inputRef.current?.focus();
+      return;
+    }
+    if (false) {
       return;
     }
     handleBorrow();
@@ -723,6 +755,15 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
               75%
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-2">
+            <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
+              LLTV
+            </span>
+            {}
+            <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
+              69%
             </span>
           </div>
           {connected ? (

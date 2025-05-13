@@ -10,7 +10,7 @@ import {
   useConnection,
   useWallet,
 } from "@solana/wallet-adapter-react";
-import { Loader } from "lucide-react";
+import { Loader, Plus } from "lucide-react";
 import dynamic from "next/dynamic";
 
 import MaxWidthWrapper from "@/components/max-width-wrapper";
@@ -21,6 +21,8 @@ import {
   dashboardColumn,
   type DashboardTable,
 } from "./_components/dashboard-column";
+import { Button } from "@/components/ui/button";
+import OptimizersDropdown from "./_components/optimzers-dropdown";
 
 const WalletMultiButton = dynamic(
   () =>
@@ -90,7 +92,8 @@ const DashboardPage: NextPage = () => {
             Dashboard
           </h3>
 
-          <div>
+          <div className="flex items-center gap-2">
+            <OptimizersDropdown />
             <WalletMultiButton
               style={{
                 backgroundColor: "#02142B",
