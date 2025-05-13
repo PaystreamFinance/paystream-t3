@@ -18,6 +18,7 @@ import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import {
   PaystreamV1Program,
   MarketHeaderWithPubkey,
+  PRICE_PRECISION,
 } from "@meimfhd/paystream-v1";
 import {
   useAnchorWallet,
@@ -218,7 +219,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
           return;
         }
       }
-
+      console.log(marketConfig, "market config");
       const marketPriceData = await paystreamProgram.getMarketPriceData(
         marketConfig.market,
         marketConfig.mint,
@@ -227,12 +228,22 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
       const collateralDecimals =
         vaultTitle === "USDC" ? 1_000_000 : LAMPORTS_PER_SOL; //  6 for USDC, 9 decimals for SOL
+      console.log(marketPriceData, "market price data");
 
       const collateralAmount = paystreamProgram.calculateRequiredCollateral(
-        marketPriceData,
+        {
+          collateralPriceInBorrowMint: new BN(PRICE_PRECISION).div(100),
+          borrowPriceInCollateralMint: new BN(PRICE_PRECISION).mul(100),
+          collateralDecimals: 6,
+          borrowDecimals: 9,
+          ltvRatio: marketPriceData.ltvRatio,
+          liquidationThreshold: marketPriceData.liquidationThreshold,
+        },
         amount,
         marketHeader.ltvRatio,
       );
+      console.log(collateralAmount, "collateral amount");
+
       const result = await paystreamProgram.borrowWithCollateralUI(
         marketHeader.mint,
         marketHeader.market,
@@ -240,6 +251,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
         amount,
         collateralAmount,
       );
+
       console.log(result);
       toast.success("Borrow successful");
     } catch (error) {
