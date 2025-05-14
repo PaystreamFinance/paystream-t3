@@ -47,12 +47,8 @@ const DashboardPage: NextPage = () => {
     paystreamProgram,
     provider,
   } = useMarketData(
-    new anchor.web3.PublicKey(
-      "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-    ),
-    new anchor.web3.PublicKey(
-      "So11111111111111111111111111111111111111112"
-    ),
+    new anchor.web3.PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
+    new anchor.web3.PublicKey("So11111111111111111111111111111111111111112"),
     new anchor.web3.PublicKey("79f7C4TQ4hV3o8tjq1DJ4d5EnDGcnNApZ8mESti6oCt2"),
     new anchor.web3.PublicKey("E2kejpm5EmsKZVjB5Ge2YmjsjiwfWE4rfhqPhLZZ7TRd"),
   );
@@ -63,15 +59,15 @@ const DashboardPage: NextPage = () => {
       if (loading || error) {
         console.log("Loading", loading, "Error", error);
         return;
-      };
-      
+      }
+
       // Don't proceed if we don't have all required data
       if (!provider || !usdcMarketData || !solMarketData) return;
 
       try {
         setLoading(true);
-        
-        const positions =  getTraderPositions(
+
+        const positions = getTraderPositions(
           provider.wallet.publicKey.toBase58(),
           usdcMarketData,
           solMarketData,
@@ -108,7 +104,13 @@ const DashboardPage: NextPage = () => {
     };
 
     // Only fetch if we have the required data and we're not in a loading state
-    if (!loadingMarketData && provider && usdcMarketData && solMarketData && !loading) {
+    if (
+      !loadingMarketData &&
+      provider &&
+      usdcMarketData &&
+      solMarketData &&
+      !loading
+    ) {
       fetchTraderPositions();
     }
   }, [provider, usdcMarketData, solMarketData, error]); // Only re-run when these core dependencies change

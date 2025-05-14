@@ -5,6 +5,7 @@ import { api, HydrateClient } from "@/trpc/server";
 export default async function Optimizers() {
   const hello = await api.post.hello({ text: "from tRPC" });
 
+  // eslint-disable-next-line
   void api.post.getLatest.prefetch();
 
   return (

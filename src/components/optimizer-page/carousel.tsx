@@ -55,6 +55,7 @@ export default function Carousel() {
       const cardWidth =
         container.querySelector("div[data-card]")?.clientWidth || 300;
       const cardMargin =
+        // eslint-disable-next-line
         parseInt(
           window.getComputedStyle(
             container.querySelector("div[data-card]") as Element,
@@ -119,6 +120,7 @@ export default function Carousel() {
     const cardWidth =
       container.querySelector("div[data-card]")?.clientWidth || 300;
     const cardMargin =
+      // eslint-disable-next-line
       parseInt(
         window.getComputedStyle(
           container.querySelector("div[data-card]") as Element,

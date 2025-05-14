@@ -104,8 +104,10 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       });
       const paystreamProgram = new PaystreamV1Program(provider);
       const marketConfig = await paystreamProgram.getMarketConfig(
-        marketHeader.market,
         marketHeader.mint,
+        marketHeader.market,
+        marketHeader.collateralMint,
+        marketHeader.collateralMarket,
       );
       setMarketConfig(marketConfig);
     };
@@ -163,8 +165,10 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     try {
       setIsLoading(true);
       const marketConfig = await paystreamProgram.getMarketConfig(
-        marketHeader.market,
+        marketHeader.collateralMint,
+        marketHeader.collateralMarket,
         marketHeader.mint,
+        marketHeader.market,
       );
 
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000; // 9 decimals for SOL, 6 for USDC
@@ -175,12 +179,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       console.log(marketConfig.mint.toBase58(), "mint");
       console.log(marketConfig.market.toBase58(), "market");
 
-      const result = await paystreamProgram.lendWithUI(
-        marketHeader.mint,
-        marketHeader.market,
-        "drift",
-        amount,
-      );
+      const result = await paystreamProgram.lendWithUI(marketConfig, amount);
       console.log("worked");
       console.log(result);
       toast.success("Deposit successful");
@@ -227,6 +226,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       //   collateralTokenProgram: marketHeader.collateralTokenProgram,
       // };
       const marketConfig = await paystreamProgram.getMarketConfig(
+        marketHeader.collateralMint,
+        marketHeader.collateralMarket,
         marketHeader.mint,
         marketHeader.market,
       );
@@ -266,11 +267,10 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       console.log(collateralAmount.toString(), "collateral amount");
 
       const result = await paystreamProgram.borrowWithCollateralUI(
-        marketHeader.mint,
-        marketHeader.market,
-        "drift",
+        marketConfig,
         amount,
         collateralAmount,
+        true,
       );
 
       console.log(result);
@@ -328,22 +328,20 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
     try {
       setIsLoading(true);
-      const marketConfig = {
-        market: marketHeader.market,
-        collateralMarket: marketHeader.collateralMarket,
-        mint: marketHeader.mint,
-        collateralMint: marketHeader.collateralMint,
-        tokenProgram: marketHeader.tokenProgram,
-        collateralTokenProgram: marketHeader.collateralTokenProgram,
-      };
+      // const marketConfig = {
+      //   market: marketHeader.market,
+      //   collateralMarket: marketHeader.collateralMarket,
+      //   mint: marketHeader.mint,
+      //   collateralMint: marketHeader.collateralMint,
+      //   tokenProgram: marketHeader.tokenProgram,
+      //   collateralTokenProgram: marketHeader.collateralTokenProgram,
+      // };
 
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       const amount = new BN(Number(inputValue) * decimals);
 
       const result = await paystreamProgram.withdrawWithUI(
-        marketHeader.mint,
-        marketHeader.market,
-        "drift",
+        marketConfig!,
         amount,
       );
       console.log(result);
@@ -417,10 +415,11 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   };
 
   const handleSupplyClick = () => {
-    if (!inputValue) {
-      inputRef.current?.focus();
-      return;
-    }
+    // if (!inputValue) {
+    //   inputRef.current?.focus();
+    //   return;
+    // }
+    console.log("supply clicked");
     handleSupply();
   };
 
@@ -437,9 +436,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       inputRef.current?.focus();
       return;
     }
-    if (false) {
-      return;
-    }
+
     handleBorrow();
   };
 

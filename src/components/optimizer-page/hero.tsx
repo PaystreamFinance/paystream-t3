@@ -32,6 +32,8 @@ const Hero: React.FC = () => {
     error,
     paystreamProgram,
     provider,
+    usdcProtocolMetrics,
+    solProtocolMetrics,
   } = useMarketData(
     new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
     new PublicKey("So11111111111111111111111111111111111111112"),
@@ -39,13 +41,18 @@ const Hero: React.FC = () => {
     new PublicKey("E2kejpm5EmsKZVjB5Ge2YmjsjiwfWE4rfhqPhLZZ7TRd"),
   );
   useEffect(() => {
-  
     async function fetchStats() {
       if (!usdcMarketData || !solMarketData || !priceData) return;
       const stats = getDriftStats(usdcMarketData, solMarketData, priceData);
       setStats(stats);
 
-      const tableData = getTableData(usdcMarketData, solMarketData, priceData);
+      const tableData = getTableData(
+        usdcMarketData,
+        solMarketData,
+        priceData,
+        usdcProtocolMetrics!,
+        solProtocolMetrics!,
+      );
       setTableData(tableData);
     }
     fetchStats();

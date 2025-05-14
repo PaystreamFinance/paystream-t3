@@ -77,10 +77,10 @@ const Features: React.FC = () => {
           </div>
           <hr className="h-px w-full rounded-full border-border-t3" />
           <p className="text-sm leading-[17.28px] tracking-[-1%] text-[#FFFFFF3D] sm:text-base">
-            Your capital never sits idle. When P2P matches aren't available,
-            your funds automatically earn from established protocols. It's like
-            having a smart manager for your crypto, always finding the best
-            opportunities.
+            Your capital never sits idle. When P2P matches aren&apos;t
+            available, your funds automatically earn from established protocols.
+            It&apos;s like having a smart manager for your crypto, always
+            finding the best opportunities.
           </p>
         </div>
         <div className="flex w-full justify-center md:justify-start">

@@ -2,6 +2,7 @@ import {
   MarketConfig,
   MarketDataUI,
   MarketPriceData,
+  PaystreamMetrics,
   PaystreamV1Program,
 } from "@meimfhd/paystream-v1";
 import { useEffect, useState } from "react";
@@ -24,16 +25,23 @@ export function useMarketData(
   priceData: MarketPriceData | null;
   loading: boolean;
   error: string | null;
+  usdcProtocolMetrics: PaystreamMetrics<"drift"> | null;
+  solProtocolMetrics: PaystreamMetrics<"drift"> | null;
   paystreamProgram: PaystreamV1Program | null;
 } {
   const { paystreamProgram, provider } = usePaystreamProgram();
   const [config, setConfig] = useState<MarketConfig | null>(null);
-  const [usdcMarketData, setUsdcMarketData] = useState<MarketDataUI | null>(null);
-  const [solMarketData, setSolMarketData] =
-    useState<MarketDataUI | null>(null);
+  const [usdcMarketData, setUsdcMarketData] = useState<MarketDataUI | null>(
+    null,
+  );
+  const [solMarketData, setSolMarketData] = useState<MarketDataUI | null>(null);
   const [priceData, setPriceData] = useState<MarketPriceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [usdcProtocolMetrics, setUsdcProtocolMetrics] =
+    useState<PaystreamMetrics<"drift"> | null>(null);
+  const [solProtocolMetrics, setSolProtocolMetrics] =
+    useState<PaystreamMetrics<"drift"> | null>(null);
 
   useEffect(() => {
     if (!paystreamProgram || !provider) {
@@ -47,6 +55,12 @@ export function useMarketData(
         collateralMint,
         market,
         collateralMarket,
+      );
+      const solConfig = await paystreamProgram.getMarketConfig(
+        collateralMint,
+        mint,
+        collateralMarket,
+        market,
       );
 
       if (!config) {
@@ -68,6 +82,26 @@ export function useMarketData(
         throw new Error("Market data not found");
       }
 
+      const usdcProtocolMetrics = await paystreamProgram.getProtocolMetrics(
+        config,
+        marketData,
+      );
+      if (!usdcProtocolMetrics) {
+        setError("USDC protocol metrics not found");
+        setLoading(false);
+        throw new Error("USDC protocol metrics not found");
+      }
+      setUsdcProtocolMetrics(usdcProtocolMetrics);
+      const solProtocolMetrics = await paystreamProgram.getProtocolMetrics(
+        solConfig,
+        collateralMarketData,
+      );
+      if (!solProtocolMetrics) {
+        setError("SOL protocol metrics not found");
+        setLoading(false);
+        throw new Error("SOL protocol metrics not found");
+      }
+      setSolProtocolMetrics(solProtocolMetrics);
       logger.info("Setting market data");
       if (marketData.marketId.toString() === "0") {
         setUsdcMarketData(marketData);
@@ -106,6 +140,8 @@ export function useMarketData(
     priceData,
     loading,
     error,
+    usdcProtocolMetrics,
+    solProtocolMetrics,
     paystreamProgram: paystreamProgram,
   };
 }

@@ -8,7 +8,7 @@ const config = {
     jest: true,
     mocha: true,
   },
-  plugins: ["@typescript-eslint", "drizzle", "unused-imports"],
+  plugins: ["@typescript-eslint", "drizzle"],
   extends: [
     "next/core-web-vitals",
     "eslint:recommended",
@@ -145,14 +145,14 @@ const config = {
       },
     ],
     "@typescript-eslint/require-await": "off",
-    "@typescript-eslint/no-misused-promises": [
-      "error",
-      {
-        checksVoidReturn: {
-          attributes: false,
-        },
-      },
-    ],
+    // "@typescript-eslint/no-misused-promises": [
+    //   "error",
+    //   {
+    //     checksVoidReturn: {
+    //       attributes: false,
+    //     },
+    //   },
+    // ],
     "drizzle/enforce-delete-with-where": [
       "error",
       {

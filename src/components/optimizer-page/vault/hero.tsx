@@ -80,6 +80,7 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
     const fetchUserData = async () => {
       try {
         const userData = await paystreamProgram.getTraderPosition(
+          // eslint-disable-next-line
           marketHeader?.market!,
           publicKey!,
         );

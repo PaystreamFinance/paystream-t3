@@ -3,7 +3,7 @@ import React from "react";
 const Flexible: React.FC = () => {
   return (
     <div className="relative flex w-full flex-col items-center justify-center">
-      <h1 className="font-ibmPlexSerif w-full pb-32 text-center text-4xl font-normal tracking-[-1%] text-[#BCEBFF]">
+      <h1 className="w-full pb-32 text-center font-ibmPlexSerif text-4xl font-normal tracking-[-1%] text-[#BCEBFF]">
         PayStream makes payments{" "}
         <span className="text-[36px] font-medium italic leading-[30.8px]">
           flexible
@@ -68,9 +68,9 @@ const Flexible: React.FC = () => {
           </h3>
 
           <p className="w-full max-w-[335px] text-end text-lg leading-[19.8px] text-[#BCEBFF99]">
-            Design your own payment curve for unique scenarios. Whether it's
-            complex vesting schedules or dynamic repayment plans, you have full
-            control. [0.5% fee applies for custom curves]
+            Design your own payment curve for unique scenarios. Whether
+            it&apos;s complex vesting schedules or dynamic repayment plans, you
+            have full control. [0.5% fee applies for custom curves]
           </p>
         </div>
       </div>
