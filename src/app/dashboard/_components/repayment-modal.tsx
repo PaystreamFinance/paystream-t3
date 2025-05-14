@@ -2,6 +2,7 @@
 
 import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import {
+  MarketConfig,
   MarketHeaderWithPubkey,
   PaystreamV1Program,
 } from "@meimfhd/paystream-v1";
@@ -27,6 +28,7 @@ import {
 
 import { bnToNumber } from "@/lib/contract";
 import { WithdrawModalProps } from "./withdraw-modal";
+import { useMarketData } from "@/hooks/useMarketData";
 
 const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
   const [balance, setBalance] = React.useState<number | null>(null);
@@ -39,6 +41,13 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
   const { publicKey, connected } = useWallet();
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
+
+  const { config } = useMarketData(
+    new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
+    new PublicKey("So11111111111111111111111111111111111111112"),
+    new PublicKey("79f7C4TQ4hV3o8tjq1DJ4d5EnDGcnNApZ8mESti6oCt2"),
+    new PublicKey("E2kejpm5EmsKZVjB5Ge2YmjsjiwfWE4rfhqPhLZZ7TRd"),
+  );
 
   const provider = new AnchorProvider(connection, wallet!, {
     commitment: "processed",
@@ -63,20 +72,20 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
     if (!marketHeader || !inputValue) return;
 
     try {
-      const marketConfig = {
-        market: marketHeader.market,
-        collateralMarket: marketHeader.collateralMarket,
-        mint: marketHeader.mint,
-        collateralMint: marketHeader.collateralMint,
-        tokenProgram: marketHeader.tokenProgram,
-        collateralTokenProgram: marketHeader.collateralTokenProgram,
-      };
+      // const marketConfig = {
+      //   market: marketHeader.market,
+      //   collateralMarket: marketHeader.collateralMarket,
+      //   mint: marketHeader.mint,
+      //   collateralMint: marketHeader.collateralMint,
+      //   tokenProgram: marketHeader.tokenProgram,
+      //   collateralTokenProgram: marketHeader.collateralTokenProgram,
+      // };
 
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       const amount = new BN(Number(inputValue) * decimals);
 
       const result = await paystreamProgram.repayAndWithdrawCollateralWithUI(
-        marketConfig,
+        config!,
         amount,
       );
       console.log(result);

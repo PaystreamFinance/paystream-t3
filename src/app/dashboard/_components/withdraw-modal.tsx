@@ -28,6 +28,7 @@ import {
 
 import { bnToNumber } from "@/lib/contract";
 import { DashboardTable } from "./dashboard-column";
+import { useMarketData } from "@/hooks/useMarketData";
 
 export interface WithdrawModalProps {
   row: Row<DashboardTable>;
@@ -64,6 +65,12 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
     const maxDecimals = vaultTitle === "SOL" ? 9 : 6;
     setInputValue(amount.toFixed(maxDecimals));
   };
+  const { config } = useMarketData(
+    new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
+    new PublicKey("So11111111111111111111111111111111111111112"),
+    new PublicKey("79f7C4TQ4hV3o8tjq1DJ4d5EnDGcnNApZ8mESti6oCt2"),
+    new PublicKey("E2kejpm5EmsKZVjB5Ge2YmjsjiwfWE4rfhqPhLZZ7TRd"),
+  );
 
   const handleWithdraw = async () => {
     if (!marketHeader || !inputValue || !wallet || !connection) return;
@@ -74,27 +81,22 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
     const paystreamProgram = new PaystreamV1Program(provider);
 
     try {
-      const marketConfig = {
-        market: marketHeader.market,
-        collateralMarket: marketHeader.collateralMarket,
-        mint: marketHeader.mint,
-        collateralMint: marketHeader.collateralMint,
-        tokenProgram: marketHeader.tokenProgram,
-        collateralTokenProgram: marketHeader.collateralTokenProgram,
-      };
+      // const marketConfig = {
+      //   market: marketHeader.market,
+      //   collateralMarket: marketHeader.collateralMarket,
+      //   mint: marketHeader.mint,
+      //   collateralMint: marketHeader.collateralMint,
+      //   tokenProgram: marketHeader.tokenProgram,
+      //   collateralTokenProgram: marketHeader.collateralTokenProgram,
+      // };
 
       console.log(inputValue, "input value");
-      console.log(marketConfig.mint.toBase58(), "market config");
+      console.log(config!.mint.toBase58(), "market config");
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       console.log(decimals);
       const amount = new BN(Number(inputValue) * decimals);
 
-      const result = await paystreamProgram.withdrawWithUI(
-        marketHeader.mint,
-        marketHeader.market,
-        "drift",
-        amount,
-      );
+      const result = await paystreamProgram.withdrawWithUI(config!, amount);
       console.log(result);
       toast.success("Withdrawal successful");
     } catch (error) {

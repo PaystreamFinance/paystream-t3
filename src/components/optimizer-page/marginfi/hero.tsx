@@ -13,6 +13,8 @@ import { getDriftStats, getTableData } from "@/lib/data";
 import Stats from "../stats";
 import { StatsTable } from "./stats-table";
 import { columns } from "./table-columns";
+import { PublicKey } from "@solana/web3.js";
+import { useMarketData } from "@/hooks/useMarketData";
 
 export default function MarginfiHero() {
   const [stats, setStats] = useState<
@@ -21,21 +23,42 @@ export default function MarginfiHero() {
   const [tableData, setTableData] = useState<any>(undefined);
   // const tableData = getTableData();
 
-  const wallet = useAnchorWallet();
-  const { connection } = useConnection();
-  const provider = new AnchorProvider(connection, wallet!, {});
-  const paystreamProgram = new PaystreamV1Program(provider);
+  // const wallet = useAnchorWallet();
+  // const { connection } = useConnection();
+  // const provider = new AnchorProvider(connection, wallet!, {});
+  // const paystreamProgram = new PaystreamV1Program(provider);
 
-  useEffect(() => {
-    async function fetchStats() {
-      const stats = await getDriftStats(paystreamProgram);
-      setStats(stats);
+  // const {
+  //   usdcMarketData,
+  //   solMarketData,
+  //   priceData,
+  //   loading,
+  //   error,
+  //   usdcProtocolMetrics,
+  //   solProtocolMetrics,
+  // } = useMarketData(
+  //   new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
+  //   new PublicKey("So11111111111111111111111111111111111111112"),
+  //   new PublicKey("79f7C4TQ4hV3o8tjq1DJ4d5EnDGcnNApZ8mESti6oCt2"),
+  //   new PublicKey("E2kejpm5EmsKZVjB5Ge2YmjsjiwfWE4rfhqPhLZZ7TRd"),
+  // );
 
-      const tableData = await getTableData(paystreamProgram);
-      setTableData(tableData);
-    }
-    fetchStats();
-  }, []);
+  // useEffect(() => {
+  //   async function fetchStats() {
+  //     const stats = getDriftStats(usdcMarketData!, solMarketData!, priceData!);
+  //     setStats(stats);
+
+  //     const tableData = getTableData(
+  //       usdcMarketData!,
+  //       solMarketData!,
+  //       priceData!,
+  //       usdcProtocolMetrics!,
+  //       solProtocolMetrics!,
+  //     );
+  //     setTableData(tableData);
+  //   }
+  //   fetchStats();
+  // }, []);
 
   return (
     <main className="relative flex min-h-[1064px] w-full flex-col items-center justify-center border-x border-b border-border-t3">

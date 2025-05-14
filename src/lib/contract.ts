@@ -268,7 +268,7 @@ function getLendingPosition(
 ): PositionData {
   if (
     !traderPosition.lending ||
-    traderPosition.lending.deposits.eq(new BN(0))
+    traderPosition.lending.p2pLends.eq(new BN(0))
   ) {
     return {
       amount: 0,
@@ -276,9 +276,9 @@ function getLendingPosition(
     };
   }
   return {
-    amount: bnToNumber(traderPosition.lending.deposits, decimals),
+    amount: bnToNumber(traderPosition.lending.p2pLends, decimals),
     action_amount:
-      traderPosition.lending.deposits -
+      traderPosition.lending.p2pLends -
       traderPosition.lending.collateral.amount,
   };
 }

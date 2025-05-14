@@ -21,35 +21,30 @@ export default function SaveHero() {
     { title: string; value: string }[] | undefined
   >(undefined);
   const [tableData, setTableData] = useState<any>(undefined);
-  const { usdcMarketData, solMarketData, priceData, loading, error, paystreamProgram, provider } = useMarketData(
-    new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
-    new PublicKey("So11111111111111111111111111111111111111112"),
-    new PublicKey("79f7C4TQ4hV3o8tjq1DJ4d5EnDGcnNApZ8mESti6oCt2"),
-    new PublicKey("E2kejpm5EmsKZVjB5Ge2YmjsjiwfWE4rfhqPhLZZ7TRd"),
-  );
+  // const {
+  //   usdcMarketData,
+  //   solMarketData,
+  //   priceData,
+  //   loading,
+  //   error,
+  //   paystreamProgram,
+  //   provider,
+  // } = useMarketData(
+  //   new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
+  //   new PublicKey("So11111111111111111111111111111111111111112"),
+  //   new PublicKey("79f7C4TQ4hV3o8tjq1DJ4d5EnDGcnNApZ8mESti6oCt2"),
+  //   new PublicKey("E2kejpm5EmsKZVjB5Ge2YmjsjiwfWE4rfhqPhLZZ7TRd"),
+  // );
 
-  useEffect(() => {
-    async function fetchStats() {
-      if (!usdcMarketData || !solMarketData || !priceData) return;
-      
-      const stats = getDriftStats(
-        usdcMarketData,
-        solMarketData,
-        priceData
-      );
-      setStats(stats);
+  // useEffect(() => {
+  //   async function fetchStats() {
+  //     if (!usdcMarketData || !solMarketData || !priceData) return;
+  //   }
 
-      const tableData = getTableData(
-        usdcMarketData,
-        solMarketData,
-        priceData
-      );
-      setTableData(tableData);
-    }
-    if (!loading && !error && usdcMarketData && solMarketData && priceData) {
-      fetchStats();
-    }
-  }, [loading, error, usdcMarketData, solMarketData, priceData]);
+  //   if (!loading && !error && usdcMarketData && solMarketData && priceData) {
+  //     fetchStats();
+  //   }
+  // }, [loading, error, usdcMarketData, solMarketData, priceData]);
 
   return (
     <main className="relative flex min-h-[1064px] w-full flex-col items-center justify-center border-x border-b border-border-t3">
