@@ -18,8 +18,8 @@ importers:
         specifier: ^4.1.2
         version: 4.1.2(react-hook-form@7.54.2(react@18.3.1))
       '@meimfhd/paystream-v1':
-        specifier: 0.4.0-beta.9
-        version: 0.4.0-beta.9(@switchboard-xyz/common@3.2.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(mocha@11.2.2)(ts-node@10.9.2(@types/node@20.17.19)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10)
+        specifier: 0.4.0-beta.11
+        version: 0.4.0-beta.11(@switchboard-xyz/common@3.2.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(mocha@11.2.2)(ts-node@10.9.2(@types/node@20.17.19)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10)
       '@radix-ui/react-accordion':
         specifier: ^1.2.3
         version: 1.2.3(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1608,8 +1608,8 @@ packages:
   '@ledgerhq/logs@6.12.0':
     resolution: {integrity: sha512-ExDoj1QV5eC6TEbMdLUMMk9cfvNKhhv5gXol4SmULRVCx/3iyCPhJ74nsb3S0Vb+/f+XujBEj3vQn5+cwS0fNA==}
 
-  '@meimfhd/paystream-v1@0.4.0-beta.9':
-    resolution: {integrity: sha512-OIMaLbXuB0suEqpTEbYL+IcQaljZfx0QcOzjQyRVzDP/vnKXkAY8kmnjzHtJhJGwa66xTWqINvNWFJ77+tu28A==}
+  '@meimfhd/paystream-v1@0.4.0-beta.11':
+    resolution: {integrity: sha512-m8yvYls6lJol8e0u6mzJqXHlOtuuHPV1nlORLTP7X6uyihvoS274zFSsyyfho7ZbuAbWnJV/wi9TEgOQptIb4A==}
 
   '@metamask/rpc-errors@5.1.1':
     resolution: {integrity: sha512-JjZnDi2y2CfvbohhBl+FOQRzmFlJpybcQlIk37zEX8B96eVSPbH/T8S0p7cSF8IE33IWx6JkD8Ycsd+2TXFxCw==}
@@ -9953,13 +9953,17 @@ snapshots:
 
   '@ledgerhq/logs@6.12.0': {}
 
-  '@meimfhd/paystream-v1@0.4.0-beta.9(@switchboard-xyz/common@3.2.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(mocha@11.2.2)(ts-node@10.9.2(@types/node@20.17.19)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10)':
+  '@meimfhd/paystream-v1@0.4.0-beta.11(@switchboard-xyz/common@3.2.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(mocha@11.2.2)(ts-node@10.9.2(@types/node@20.17.19)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@coral-xyz/anchor': 0.31.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@coral-xyz/anchor-v0.29': '@coral-xyz/anchor@0.29.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)'
       '@coral-xyz/spl-token': 0.31.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)
       '@drift-labs/sdk': 2.118.0-beta.3(@switchboard-xyz/common@3.2.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.7.3)(utf-8-validate@5.0.10)
       '@metaplex-foundation/beet': 0.7.2
       '@metaplex-foundation/beet-solana': 0.4.1(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)
+      '@pythnetwork/client': 2.5.3(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)
+      '@pythnetwork/price-service-sdk': 1.7.1
+      '@pythnetwork/pyth-solana-receiver': 0.7.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)
       '@solana/spl-token': 0.4.13(@solana/web3.js@1.98.2(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.7.3)(utf-8-validate@5.0.10)
       '@solana/web3.js': 1.98.2(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)
       bs58: 5.0.0

@@ -13,6 +13,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import Logo from "./logo";
 import MaxWidthWrapper from "./max-width-wrapper";
 import toast from "react-hot-toast";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { PrivacyDialog } from "./optimizer-page/privacy-dialog";
 
 const WalletMultiButton = dynamic(
   () =>
@@ -53,14 +55,28 @@ const mobileMenuItems = [
 ];
 
 const Navbar: React.FC = () => {
+  const { publicKey } = useWallet();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isMobile = useIsMobile();
   const pathname = usePathname();
   const isOptimizerPage = pathname?.startsWith("/optimizer");
+  const [togglePrivacy, setTogglePrivacy] = React.useState<boolean>(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  React.useEffect(() => {
+    if (publicKey !== null) {
+      const showPrivacy = localStorage.getItem("showPrivacy");
+      if (!showPrivacy) {
+        setTogglePrivacy(true);
+        localStorage.setItem("showPrivacy", "true");
+      } else {
+        setTogglePrivacy(false);
+      }
+    }
+  }, [publicKey]);
 
   React.useEffect(() => {
     const showedTestnetNotice = localStorage.getItem("showedTestnetNotice");
@@ -93,6 +109,7 @@ const Navbar: React.FC = () => {
     <div className="border-b border-border-t3">
       <MaxWidthWrapper className="flex items-center justify-between border-x border-border-t3 px-6 py-5">
         <Logo />
+        <PrivacyDialog open={togglePrivacy} onOpenChange={setTogglePrivacy} />
 
         {/* Mobile Menu Button */}
         {isMobile && (

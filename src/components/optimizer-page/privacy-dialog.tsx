@@ -11,19 +11,20 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
-export function WaitlistDialog() {
+export function PrivacyDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   //  "https://app.paystream.finance";
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant="shady" className="mt-7">
-          We are live
-        </Button>
-      </AlertDialogTrigger>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="rounded-none border-none bg-bg-t3">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-white">
-            Are you absolutely sure?
+            Privacy dialog
           </AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. This will permanently delete your
@@ -31,7 +32,6 @@ export function WaitlistDialog() {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

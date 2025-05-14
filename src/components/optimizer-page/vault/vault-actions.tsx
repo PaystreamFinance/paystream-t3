@@ -19,6 +19,7 @@ import {
   PaystreamV1Program,
   MarketHeaderWithPubkey,
   PRICE_PRECISION,
+  MarketConfig,
 } from "@meimfhd/paystream-v1";
 import {
   useAnchorWallet,
@@ -50,6 +51,10 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   const [inputValue, setInputValue] = useState("");
   const vaultState = useVaultStateStore((state) => state.vaultState);
   const [isLoading, setIsLoading] = useState(false);
+  const [marketConfig, setMarketConfig] = useState<MarketConfig | null>(null);
+  const [paystreamProgram, setPaystreamProgram] = useState<
+    PaystreamV1Program | undefined
+  >(undefined);
 
   const [leverageValue, setLeverageValue] = useState(33);
   const [isDragging, setIsDragging] = useState(false);
@@ -91,28 +96,53 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   }, [wallet, connection, vaultTitle]);
 
   useEffect(() => {
+    const fetchMarketConfig = async () => {
+      if (!marketHeader || !wallet || !connection) return;
+
+      const provider = new AnchorProvider(connection, wallet, {
+        commitment: "processed",
+      });
+      const paystreamProgram = new PaystreamV1Program(provider);
+      const marketConfig = await paystreamProgram.getMarketConfig(
+        marketHeader.market,
+        marketHeader.mint,
+      );
+      setMarketConfig(marketConfig);
+    };
+
+    fetchMarketConfig();
+  }, [marketHeader, wallet, connection]);
+
+  useEffect(() => {
     if (!wallet || !connection) return;
 
     const provider = new AnchorProvider(connection, wallet, {
       commitment: "processed",
     });
     const paystreamProgram = new PaystreamV1Program(provider);
+    setPaystreamProgram(paystreamProgram);
+  }, [wallet, connection]);
+
+  useEffect(() => {
+    if (!wallet || !connection) return;
+    if (!paystreamProgram) return;
+
     const fetchCollateralAmount = async () => {
       if (!marketHeader || !inputValue) return;
+      if (!marketConfig) return;
 
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       const amount = new BN(Number(inputValue) * decimals);
 
-      const marketPriceData = await paystreamProgram.getMarketPriceData(
-        marketHeader.market,
-        marketHeader.mint,
-      );
+      const marketPriceData =
+        await paystreamProgram.getMarketPriceData(marketConfig);
 
-      const collateralAmount = paystreamProgram.calculateRequiredCollateral(
-        marketPriceData,
-        amount,
-        marketHeader.ltvRatio,
-      );
+      const collateralAmount =
+        await paystreamProgram.calculateRequiredCollateral(
+          marketConfig,
+          amount,
+          marketHeader.ltvRatio,
+        );
       // we are reversing the collateral amount because if vaultTitle is USDC, then collateral amount is in SOL
       const collateralDecimals =
         vaultTitle === "USDC" ? LAMPORTS_PER_SOL : 1_000_000;
@@ -132,14 +162,10 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     const paystreamProgram = new PaystreamV1Program(provider);
     try {
       setIsLoading(true);
-      const marketConfig = {
-        market: marketHeader.market,
-        collateralMarket: marketHeader.collateralMarket,
-        mint: marketHeader.mint,
-        collateralMint: marketHeader.collateralMint,
-        tokenProgram: marketHeader.tokenProgram,
-        collateralTokenProgram: marketHeader.collateralTokenProgram,
-      };
+      const marketConfig = await paystreamProgram.getMarketConfig(
+        marketHeader.market,
+        marketHeader.mint,
+      );
 
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000; // 9 decimals for SOL, 6 for USDC
       const amount = new BN(Number(inputValue) * decimals);
@@ -192,15 +218,18 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
     try {
       setIsLoading(true);
-      const marketConfig = {
-        market: marketHeader.market,
-        collateralMarket: marketHeader.collateralMarket,
-        mint: marketHeader.mint,
-        collateralMint: marketHeader.collateralMint,
-        tokenProgram: marketHeader.tokenProgram,
-        collateralTokenProgram: marketHeader.collateralTokenProgram,
-      };
-
+      // const marketConfig = {
+      //   market: marketHeader.market,
+      //   collateralMarket: marketHeader.collateralMarket,
+      //   mint: marketHeader.mint,
+      //   collateralMint: marketHeader.collateralMint,
+      //   tokenProgram: marketHeader.tokenProgram,
+      //   collateralTokenProgram: marketHeader.collateralTokenProgram,
+      // };
+      const marketConfig = await paystreamProgram.getMarketConfig(
+        marketHeader.mint,
+        marketHeader.market,
+      );
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       const amount = new BN(Number(inputValue) * decimals);
 
@@ -220,29 +249,21 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
         }
       }
       console.log(marketConfig, "market config");
-      const marketPriceData = await paystreamProgram.getMarketPriceData(
-        marketConfig.market,
-        marketConfig.mint,
-      );
+      const marketPriceData =
+        await paystreamProgram.getMarketPriceData(marketConfig);
       // const collateralAmount = paystreamProgram.calculateRemainingBorrowCapacity(marketPriceData, amount, amount)
 
       const collateralDecimals =
         vaultTitle === "USDC" ? 1_000_000 : LAMPORTS_PER_SOL; //  6 for USDC, 9 decimals for SOL
       console.log(marketPriceData, "market price data");
 
-      const collateralAmount = paystreamProgram.calculateRequiredCollateral(
-        {
-          collateralPriceInBorrowMint: new BN(PRICE_PRECISION).div(100),
-          borrowPriceInCollateralMint: new BN(PRICE_PRECISION).mul(100),
-          collateralDecimals: 6,
-          borrowDecimals: 9,
-          ltvRatio: marketPriceData.ltvRatio,
-          liquidationThreshold: marketPriceData.liquidationThreshold,
-        },
-        amount,
-        marketHeader.ltvRatio,
-      );
-      console.log(collateralAmount, "collateral amount");
+      const collateralAmount =
+        await paystreamProgram.calculateRequiredCollateral(
+          marketConfig,
+          amount,
+          marketConfig.ltvRatio,
+        );
+      console.log(collateralAmount.toString(), "collateral amount");
 
       const result = await paystreamProgram.borrowWithCollateralUI(
         marketHeader.mint,
