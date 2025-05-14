@@ -2,13 +2,27 @@
 
 import { type DashboardTable } from "@/app/dashboard/_components/dashboard-column";
 import { AnchorProvider, BN } from "@coral-xyz/anchor";
-import { PaystreamV1Program } from "@meimfhd/paystream-v1";
+import {
+  MarketDataUI,
+  MarketPriceData,
+  PaystreamMetrics,
+  PaystreamV1Program,
+  ProtocolMetrics,
+} from "@meimfhd/paystream-v1";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { bnToNumber, getDriftOptimizerStats } from "./contract";
 import { SOL_HEADER_INDEX, USDC_HEADER_INDEX } from "@/constants";
 
-export async function getDriftStats(paystreamProgram: PaystreamV1Program) {
-  const optimizerStats = await getDriftOptimizerStats(paystreamProgram);
+export function getDriftStats(
+  usdcMarketData: MarketDataUI,
+  solMarketData: MarketDataUI,
+  priceData: MarketPriceData,
+) {
+  const optimizerStats = getDriftOptimizerStats(
+    usdcMarketData,
+    solMarketData,
+    priceData,
+  );
 
   return [
     {
@@ -29,7 +43,7 @@ export async function getDriftStats(paystreamProgram: PaystreamV1Program) {
     },
   ];
 }
-export async function getStats() {
+export function getStats() {
   return [
     { title: "Supply Volume", value: "Not available in testnet" },
     { title: "Borrow Volume", value: "Not available in testnet" },
@@ -38,27 +52,13 @@ export async function getStats() {
   ];
 }
 
-export async function getTableData(paystreamProgram: PaystreamV1Program) {
-  const marketHeaderData = await paystreamProgram.getAllMarketHeaders();
-  const solMarket = marketHeaderData[SOL_HEADER_INDEX];
-  const usdcMarket = marketHeaderData[USDC_HEADER_INDEX];
-
-  console.log(marketHeaderData, "marketHeaderData");
-
-  if (!usdcMarket || !solMarket) {
-    throw new Error("Market not found");
-  }
-
-  const usdcMarketData = await paystreamProgram.getMarketDataUI(
-    usdcMarket.market,
-    usdcMarket.mint,
-  );
-
-  const solMarketData = await paystreamProgram.getMarketDataUI(
-    solMarket.market,
-    solMarket.mint,
-  );
-
+export function getTableData(
+  usdcMarketData: MarketDataUI,
+  solMarketData: MarketDataUI,
+  priceData: MarketPriceData,
+  usdcProtocolMetrics: PaystreamMetrics<"drift">,
+  solProtocolMetrics: PaystreamMetrics<"drift">,
+) {
   const totalSupplyUSDC = bnToNumber(
     usdcMarketData.stats.deposits.totalSupply,
     6,
@@ -87,29 +87,33 @@ export async function getTableData(paystreamProgram: PaystreamV1Program) {
     {
       id: "1",
       asset: "sol" as const,
-      balance: supplyVolumSOL.toFixed(2),
-      noOfToken: totalSupplySOL.toFixed(2),
+      supply_volume: bnToNumber(solProtocolMetrics.totalDepositsOnVault, 6),
+      no_of_token: totalSupplySOL.toFixed(2),
       avl_liquidity: avaialableLiqSOL.toFixed(2),
       avl_liquidity_usd: (avaialableLiqSOL * solPrice).toFixed(2),
-      borrow_apr: 3.8,
-      supply_apr: 9.1,
-      p2p_apr: 8.4,
+      borrow_apr: bnToNumber(solProtocolMetrics.protocolMetrics.borrowRate, 4),
+      supply_apr: bnToNumber(solProtocolMetrics.protocolMetrics.depositRate, 4),
+      p2p_apr: bnToNumber(solProtocolMetrics.midRateApy, 4),
     },
     {
       id: "2",
       asset: "usdc" as const,
-      balance: totalSupplyUSDC.toFixed(2),
-      noOfToken: totalSupplyUSDC.toFixed(2),
+      deposit_volume: bnToNumber(usdcProtocolMetrics.totalDepositsOnVault, 6),
+      supply_volume: bnToNumber(usdcProtocolMetrics.totalDepositsOnVault, 6),
+      no_of_token: totalSupplyUSDC.toFixed(2),
       avl_liquidity: avaialableLiqUSDC.toFixed(2),
       avl_liquidity_usd: avaialableLiqUSDC.toFixed(2),
-      borrow_apr: 4.6,
-      supply_apr: 10.01,
-      p2p_apr: 7.36,
+      borrow_apr: bnToNumber(usdcProtocolMetrics.protocolMetrics.borrowRate, 4),
+      supply_apr: bnToNumber(
+        usdcProtocolMetrics.protocolMetrics.depositRate,
+        4,
+      ),
+      p2p_apr: bnToNumber(usdcProtocolMetrics.midRateApy, 4),
     },
   ];
 }
 
-export async function getDashboardTableData() {
+export function getDashboardTableData() {
   return [
     {
       id: "1",

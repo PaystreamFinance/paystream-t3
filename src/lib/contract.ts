@@ -1,82 +1,89 @@
-import {
-  SOL_HEADER_INDEX,
-  SOL_MINT,
-  USDC_HEADER_INDEX,
-  USDC_MINT,
-} from "@/constants";
 import { BN } from "@coral-xyz/anchor";
-import { PaystreamV1Program, TraderPositionUI } from "@meimfhd/paystream-v1";
-import { PublicKey } from "@solana/web3.js";
+import {
+  MarketDataUI,
+  MarketPriceData,
+  TraderPositionUI,
+} from "@meimfhd/paystream-v1";
 import { logger } from "./utils";
 
 export interface Position {
   asset: "SOL" | "USDC";
-  type: "lending" | "p2pLending" | "borrows";
+  type: "lending" | "p2pLending" | "p2pBorrowing" | "pendingBorrowing";
   apy: number | null;
   positionData: PositionData;
 }
 
-export async function getTraderPositions(
-  paystreamProgram: PaystreamV1Program,
+export function getTraderPositions(
   address: string,
-) {
+  usdcMarket: MarketDataUI,
+  solMarket: MarketDataUI,
+): Position[] {
   try {
-    const marketHeaderData = await paystreamProgram.getAllMarketHeaders();
-    const solMarket = marketHeaderData[SOL_HEADER_INDEX];
-    const usdcMarket = marketHeaderData[USDC_HEADER_INDEX];
+    const usdcTrader = usdcMarket.traders.find(
+      (trader) => trader.address === address,
+    );
 
-    if (!usdcMarket || !solMarket) {
-      throw new Error("Markets not found");
+    const solTrader = solMarket.traders.find(
+      (trader) => trader.address === address,
+    );
+
+    if (!usdcTrader && !solTrader) {
+      return [];
     }
-
-    const usdcMarketData = (
-      await paystreamProgram.getMarketDataUI(usdcMarket.market, usdcMarket.mint)
-    ).traders.find((trader) => trader.address === address);
-    const solMarketData = (
-      await paystreamProgram.getMarketDataUI(solMarket.market, solMarket.mint)
-    ).traders.find((trader) => trader.address === address);
 
     const positions: Position[] = [];
 
-    if (usdcMarketData) {
+    if (usdcMarket && usdcTrader) {
       positions.push({
         asset: "USDC",
         type: "lending",
         apy: null,
-        positionData: getLendingPosition(usdcMarketData, 6),
+        positionData: getLendingPosition(usdcTrader, 6),
       });
       positions.push({
         asset: "USDC",
         type: "p2pLending",
         apy: null,
-        positionData: getP2PLendingPosition(usdcMarketData, 6),
+        positionData: getP2PLendingPosition(usdcTrader, 6),
       });
       positions.push({
         asset: "USDC",
-        type: "borrows",
+        type: "p2pBorrowing",
         apy: null,
-        positionData: getP2PBorrowPosition(usdcMarketData, 6),
+        positionData: getP2PBorrowPosition(usdcTrader, 6),
+      });
+      positions.push({
+        asset: "USDC",
+        type: "pendingBorrowing",
+        apy: null,
+        positionData: getPendingBorrowPosition(usdcTrader, 6),
       });
     }
 
-    if (solMarketData) {
+    if (solMarket && solTrader) {
       positions.push({
         asset: "SOL",
         type: "lending",
         apy: null,
-        positionData: getLendingPosition(solMarketData, 9),
+        positionData: getLendingPosition(solTrader, 9),
       });
       positions.push({
         asset: "SOL",
         type: "p2pLending",
         apy: null,
-        positionData: getP2PLendingPosition(solMarketData, 9),
+        positionData: getP2PLendingPosition(solTrader, 9),
       });
       positions.push({
         asset: "SOL",
-        type: "borrows",
+        type: "p2pBorrowing",
         apy: null,
-        positionData: getP2PBorrowPosition(solMarketData, 9),
+        positionData: getP2PBorrowPosition(solTrader, 9),
+      });
+      positions.push({
+        asset: "SOL",
+        type: "pendingBorrowing",
+        apy: null,
+        positionData: getPendingBorrowPosition(solTrader, 9),
       });
     }
 
@@ -97,38 +104,20 @@ export interface MatchData {
   id: number;
 }
 
-export async function getP2PMatches(
-  paystreamProgram: PaystreamV1Program,
-  lenderAddress: string,
-): Promise<MatchData[]> {
+export function getP2PMatches(
+  address: string,
+  usdcMarket: MarketDataUI,
+  solMarket: MarketDataUI,
+): MatchData[] {
   try {
-    const marketHeaderData = await paystreamProgram.getAllMarketHeaders();
-    const solMarket = marketHeaderData[SOL_HEADER_INDEX];
-    const usdcMarket = marketHeaderData[USDC_HEADER_INDEX];
-
-    if (!usdcMarket || !solMarket) {
-      throw new Error("Markets not found");
-    }
-
-    const matches: MatchData[] = [];
-
-    // Get USDC market matches
-    const usdcMarketData = await paystreamProgram.getMarketDataUI(
-      usdcMarket.market,
-      usdcMarket.mint,
+    const usdcMatches = usdcMarket.matches.filter(
+      (match) => match.lender === address || match.borrower === address,
     );
 
-    // Get SOL market matches
-    const solMarketData = await paystreamProgram.getMarketDataUI(
-      solMarket.market,
-      solMarket.mint,
-    );
-
-    // Process USDC matches
-    usdcMarketData.matches
-      .filter((match) => match.lender === lenderAddress)
-      .forEach((match) => {
-        matches.push({
+    const usdcMatchesData: MatchData[] = [];
+    if (usdcMatches) {
+      usdcMatches.forEach((match) => {
+        usdcMatchesData.push({
           lender: match.lender,
           borrower: match.borrower,
           asset: "USDC",
@@ -138,12 +127,18 @@ export async function getP2PMatches(
           id: match.id,
         });
       });
+    }
 
     // Process SOL matches
-    solMarketData.matches
-      .filter((match) => match.lender === lenderAddress)
-      .forEach((match) => {
-        matches.push({
+    const solMatches = solMarket.matches.filter(
+      (match) => match.lender === address || match.borrower === address,
+    );
+
+    const solMatchesData: MatchData[] = [];
+
+    if (solMatches) {
+      solMatches.forEach((match) => {
+        solMatchesData.push({
           lender: match.lender,
           borrower: match.borrower,
           asset: "SOL",
@@ -153,8 +148,9 @@ export async function getP2PMatches(
           id: match.id,
         });
       });
+    }
 
-    return matches;
+    return [...usdcMatchesData, ...solMatchesData];
   } catch (error) {
     logger.error("Error getting P2P matches:", error);
     throw error;
@@ -168,77 +164,61 @@ export interface OptimizerStats {
   matchRate: number;
 }
 
-export async function getDriftOptimizerStats(
-  paystreamProgram: PaystreamV1Program,
-) {
+export function getDriftOptimizerStats(
+  usdcMarket: MarketDataUI,
+  solMarket: MarketDataUI,
+  priceData: MarketPriceData,
+): OptimizerStats {
   try {
-    const marketHeaderData = await paystreamProgram.getAllMarketHeaders();
-    const solMarket = marketHeaderData[SOL_HEADER_INDEX];
-    const usdcMarket = marketHeaderData[USDC_HEADER_INDEX];
-
-    if (!usdcMarket || !solMarket) {
-      throw new Error("Markets not found");
+    let usdcPrice: number;
+    let solPrice: number;
+    console.log(usdcMarket, solMarket);
+    if (usdcMarket.marketId.toString() === "0") {
+      usdcPrice = priceData.originalMarketPrice;
+      solPrice = priceData.originalCollateralPrice;
+    } else {
+      usdcPrice = priceData.originalMarketPrice;
+      solPrice = priceData.originalCollateralPrice;
     }
-    // Get SOL price for conversion
-    // const solPrice = await getSolanaPrice();
-    const solPrice = 100;
-
-    const usdcMarketData = await paystreamProgram.getMarketDataUI(
-      usdcMarket.market,
-      usdcMarket.mint,
-    );
-
-    const solMarketData = await paystreamProgram.getMarketDataUI(
-      solMarket.market,
-      solMarket.mint,
-    );
-
     // Calculate borrow metrics
     const totalBorrowsUSDCP2p = bnToNumber(
-      usdcMarketData.stats.borrows.totalBorrowedP2p,
+      usdcMarket.stats.borrows.totalBorrowedP2p,
       6,
     );
     const totalBorrowsSOLP2p = bnToNumber(
-      solMarketData.stats.borrows.totalBorrowedP2p,
+      solMarket.stats.borrows.totalBorrowedP2p,
       9,
     );
 
     const totalBorrowsUSDCP2pUnmatched = bnToNumber(
-      usdcMarketData.stats.borrows.borrowAmountUnmatched,
+      usdcMarket.stats.borrows.borrowAmountUnmatched,
       6,
     );
     const totalBorrowsSOLP2pUnmatched = bnToNumber(
-      solMarketData.stats.borrows.borrowAmountUnmatched,
+      solMarket.stats.borrows.borrowAmountUnmatched,
       9,
     );
 
-    /**
-     * @description available for lending in both markets
-     */
     const totalLendAmountUnmatched =
-      bnToNumber(usdcMarketData.stats.deposits.lendAmountUnmatched, 6) +
-      bnToNumber(solMarketData.stats.deposits.lendAmountUnmatched, 9) *
-        solPrice;
+      bnToNumber(usdcMarket.stats.deposits.lendAmountUnmatched, 6) +
+      bnToNumber(solMarket.stats.deposits.lendAmountUnmatched, 9);
 
     const totalBorrowsUSDC = totalBorrowsUSDCP2p + totalBorrowsUSDCP2pUnmatched;
     const totalBorrowsSOL = totalBorrowsSOLP2p + totalBorrowsSOLP2pUnmatched;
 
     // Calculate supply metrics
     const totalSupplyUSDC = bnToNumber(
-      usdcMarketData.stats.deposits.totalSupply,
+      usdcMarket.stats.deposits.totalSupply,
       6,
     );
-    const totalSupplySOL = bnToNumber(
-      solMarketData.stats.deposits.totalSupply,
-      9,
-    );
+    const totalSupplySOL = bnToNumber(solMarket.stats.deposits.totalSupply, 9);
 
     const totalCollateralUSDC = bnToNumber(
-      usdcMarketData.stats.deposits.collateral,
+      usdcMarket.stats.deposits.collateral,
       6,
     );
     const totalCollateralSOL = bnToNumber(
-      solMarketData.stats.deposits.collateral,
+      solMarket.stats.deposits.collateral,
       9,
     );
 
@@ -247,8 +227,8 @@ export async function getDriftOptimizerStats(
     const borrowVolume = totalBorrowsUSDC + totalBorrowsSOL * solPrice;
     const supplyVolume = totalSupplyUSDC + totalSupplySOL * solPrice;
     const totalAmountInP2p =
-      bnToNumber(usdcMarketData.stats.totalAmountInP2p, 6) +
-      bnToNumber(solMarketData.stats.totalAmountInP2p, 9) * solPrice;
+      bnToNumber(usdcMarket.stats.totalAmountInP2p, 6) +
+      bnToNumber(solMarket.stats.totalAmountInP2p, 9) * solPrice;
 
     const totalLendingVolume = supplyVolume - totalCollateral;
     const matchRate =
@@ -262,44 +242,18 @@ export async function getDriftOptimizerStats(
     logger.info(`Total lend amount unmatched: ${totalLendAmountUnmatched}`);
 
     const availableLiquidity =
-      bnToNumber(usdcMarketData.stats.totalLiquidityAvailable, 6) +
-      bnToNumber(solMarketData.stats.totalLiquidityAvailable, 9) * solPrice;
+      bnToNumber(usdcMarket.stats.totalLiquidityAvailable, 6) +
+      bnToNumber(solMarket.stats.totalLiquidityAvailable, 9) * solPrice;
 
-    const optimizerStats: OptimizerStats = {
+    return {
       borrowVolume,
       availableLiquidity,
       supplyVolume,
       matchRate,
     };
-
-    return optimizerStats;
   } catch (error) {
     logger.error("Error getting drift optimizer stats:", error);
     throw error;
-  }
-}
-
-async function getSolanaPrice(): Promise<number> {
-  try {
-    const response = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd",
-    );
-
-    if (!response.ok) {
-      throw new Error(`API responded with status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    if (!data.solana || !data.solana.usd) {
-      throw new Error("Invalid response format from price API");
-    }
-
-    return data.solana.usd;
-  } catch (error) {
-    logger.error("Error fetching Solana price:", error);
-    // Return a default fallback price
-    return 0;
   }
 }
 
@@ -312,6 +266,15 @@ function getLendingPosition(
   traderPosition: TraderPositionUI,
   decimals: number,
 ): PositionData {
+  if (
+    !traderPosition.lending ||
+    traderPosition.lending.deposits.eq(new BN(0))
+  ) {
+    return {
+      amount: 0,
+      action_amount: new BN(0),
+    };
+  }
   return {
     amount: bnToNumber(traderPosition.lending.deposits, decimals),
     action_amount:
@@ -324,6 +287,15 @@ function getP2PLendingPosition(
   traderPosition: TraderPositionUI,
   decimals: number,
 ): PositionData {
+  if (
+    !traderPosition.lending ||
+    traderPosition.lending.p2pLends.eq(new BN(0))
+  ) {
+    return {
+      amount: 0,
+      action_amount: new BN(0),
+    };
+  }
   return {
     amount: bnToNumber(traderPosition.lending.p2pLends, decimals),
     action_amount: traderPosition.lending.p2pLends,
@@ -334,12 +306,44 @@ function getP2PBorrowPosition(
   traderPosition: TraderPositionUI,
   decimals: number,
 ): PositionData {
+  if (
+    !traderPosition.borrowing ||
+    traderPosition.borrowing.p2pBorrowed.eq(new BN(0))
+  ) {
+    return {
+      amount: 0,
+      action_amount: new BN(0),
+    };
+  }
   return {
     amount: bnToNumber(traderPosition.borrowing.p2pBorrowed, decimals),
     action_amount: traderPosition.borrowing.p2pBorrowed,
   };
 }
 
-export const bnToNumber = (bn: BN, decimals: number = 9): number => {
+function getPendingBorrowPosition(
+  traderPosition: TraderPositionUI,
+  decimals: number,
+): PositionData {
+  if (
+    !traderPosition.borrowing ||
+    traderPosition.borrowing.borrowPending.eq(new BN(0))
+  ) {
+    return {
+      amount: 0,
+      action_amount: new BN(0),
+    };
+  }
+  return {
+    amount: bnToNumber(traderPosition.borrowing.borrowPending, decimals),
+    action_amount: traderPosition.borrowing.borrowPending,
+  };
+}
+
+export const bnToNumber = (
+  bn: BN | undefined | null,
+  decimals: number = 9,
+): number => {
+  if (!bn) return 0;
   return Number(bn) / Math.pow(10, decimals);
 };

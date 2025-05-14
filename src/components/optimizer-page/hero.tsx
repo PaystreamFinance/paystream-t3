@@ -15,40 +15,41 @@ import Stats from "./stats";
 import { getDriftStats, getTableData } from "@/lib/data";
 import { StatsTable } from "./drift/stats-table";
 import { columns } from "./drift/table-columns";
+import { useMarketData } from "@/hooks/useMarketData";
+import { PublicKey } from "@solana/web3.js";
 
 const Hero: React.FC = () => {
-  const [stats, setStats] = useState<{ title: string; value: string }[]>([]);
+  const [stats, setStats] =
+    useState<{ title: string; value: string }[]>(getStats());
 
   const [tableData, setTableData] = useState<any>(undefined);
 
-  const wallet = useAnchorWallet();
-  const { connection } = useConnection();
-
+  const {
+    usdcMarketData,
+    solMarketData,
+    priceData,
+    loading,
+    error,
+    paystreamProgram,
+    provider,
+  } = useMarketData(
+    new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
+    new PublicKey("So11111111111111111111111111111111111111112"),
+    new PublicKey("79f7C4TQ4hV3o8tjq1DJ4d5EnDGcnNApZ8mESti6oCt2"),
+    new PublicKey("E2kejpm5EmsKZVjB5Ge2YmjsjiwfWE4rfhqPhLZZ7TRd"),
+  );
   useEffect(() => {
+  
     async function fetchStats() {
-      const data = await getStats();
-      setStats(data);
-    }
-    fetchStats();
-  }, []);
-
-  useEffect(() => {
-    if (!wallet) return;
-    if (!connection) return;
-    const provider = new AnchorProvider(connection, wallet!, {
-      commitment: "processed",
-    });
-
-    const paystreamProgram = new PaystreamV1Program(provider);
-    async function fetchStats() {
-      const stats = await getDriftStats(paystreamProgram);
+      if (!usdcMarketData || !solMarketData || !priceData) return;
+      const stats = getDriftStats(usdcMarketData, solMarketData, priceData);
       setStats(stats);
 
-      const tableData = await getTableData(paystreamProgram);
+      const tableData = getTableData(usdcMarketData, solMarketData, priceData);
       setTableData(tableData);
     }
     fetchStats();
-  }, [wallet, connection]);
+  }, [usdcMarketData, solMarketData, priceData]);
 
   return (
     <>
