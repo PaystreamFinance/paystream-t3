@@ -20,7 +20,7 @@ const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
     }
   }, [loading]);
   return (
-    <div className="relative">
+    <div className="relative z-[69696969]">
       <svg
         width="913"
         height="913"

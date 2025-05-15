@@ -19,7 +19,8 @@ export function useMarketData(
   collateralMarket: PublicKey,
 ): {
   provider: AnchorProvider | null;
-  config: MarketConfig | null;
+  usdcConfig: MarketConfig | null;
+  solConfig: MarketConfig | null;
   usdcMarketData: MarketDataUI | null;
   solMarketData: MarketDataUI | null;
   priceData: MarketPriceData | null;
@@ -30,7 +31,8 @@ export function useMarketData(
   paystreamProgram: PaystreamV1Program | null;
 } {
   const { paystreamProgram, provider } = usePaystreamProgram();
-  const [config, setConfig] = useState<MarketConfig | null>(null);
+  const [usdcConfig, setUsdcConfig] = useState<MarketConfig | null>(null);
+  const [solConfig, setSolConfig] = useState<MarketConfig | null>(null);
   const [usdcMarketData, setUsdcMarketData] = useState<MarketDataUI | null>(
     null,
   );
@@ -50,31 +52,33 @@ export function useMarketData(
 
     const fetchMarketData = async () => {
       // Get market config
-      const config = await paystreamProgram.getMarketConfig(
+      const usdcConfig = await paystreamProgram.getMarketConfig(
         mint,
         collateralMint,
         market,
         collateralMarket,
       );
+      setUsdcConfig(usdcConfig);
       const solConfig = await paystreamProgram.getMarketConfig(
         collateralMint,
         mint,
         collateralMarket,
         market,
       );
-
-      if (!config) {
+      setSolConfig(solConfig);
+      if (!usdcConfig || !solConfig) {
         setError("Market config not found");
         setLoading(false);
         throw new Error("Market config not found");
       }
 
       logger.info("Setting config");
-      setConfig(config);
+      setUsdcConfig(usdcConfig);
+      setSolConfig(solConfig);
 
       // Get market data
       const { marketData, collateralMarketData, priceData } =
-        await paystreamProgram.getMarketDataUI(config);
+        await paystreamProgram.getMarketDataUI(usdcConfig);
 
       if (!marketData || !collateralMarketData || !priceData) {
         setError("Market data not found");
@@ -83,7 +87,7 @@ export function useMarketData(
       }
 
       const usdcProtocolMetrics = await paystreamProgram.getProtocolMetrics(
-        config,
+        usdcConfig,
         marketData,
       );
       if (!usdcProtocolMetrics) {
@@ -134,7 +138,8 @@ export function useMarketData(
 
   return {
     provider,
-    config,
+    usdcConfig,
+    solConfig,
     usdcMarketData,
     solMarketData,
     priceData,
