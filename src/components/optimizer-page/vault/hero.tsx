@@ -1,28 +1,29 @@
 "use client";
 
-import VaultActions from "./vault-actions";
 import { VaultGraph } from "./graph";
+import VaultActions from "./vault-actions";
 
-import StatsGrid, { StatsGridHorizontal } from "./stats-grid";
-import VaultDropdown from "./vault-dropdown";
-import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { SOL_HEADER_INDEX, USDC_HEADER_INDEX } from "@/constants";
+import { useMarketData } from "@/hooks/useMarketData";
+import { getDriftStats, getTableData } from "@/lib/data";
+import { useVaultStateStore } from "@/store/vault-state-store";
+import { AnchorProvider } from "@coral-xyz/anchor";
+import {
+  MarketHeader,
+  type MarketHeaderWithPubkey,
+  PaystreamV1Program,
+} from "@meimfhd/paystream-v1";
 import {
   useAnchorWallet,
   useConnection,
   useWallet,
 } from "@solana/wallet-adapter-react";
-import { AnchorProvider } from "@coral-xyz/anchor";
-import {
-  MarketHeader,
-  MarketHeaderWithPubkey,
-  PaystreamV1Program,
-} from "@meimfhd/paystream-v1";
-import { SOL_HEADER_INDEX, USDC_HEADER_INDEX } from "@/constants";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { useMarketData } from "@/hooks/useMarketData";
 import { PublicKey } from "@solana/web3.js";
-import { getDriftStats } from "@/lib/data";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import StatsGrid, { StatsGridHorizontal } from "./stats-grid";
+import VaultDropdown from "./vault-dropdown";
 
 export interface VaultDataProps {
   vaultTitle: string;
@@ -33,6 +34,7 @@ interface UserData {
   myPositions: string;
   apy: string;
   projectedEarnings: string;
+  p2pApy?: string;
 }
 
 export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
@@ -65,6 +67,8 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
     new PublicKey("CCQXHfu51HEpiaegMU2kyYZK7dw1NhNbAX6cV44gZDJ8"),
     new PublicKey("GSjnD3XA1ezr7Xew3PZKPJdKGhjWEGefFFxXJhsfrX5e"),
   );
+
+  const { vaultState } = useVaultStateStore();
 
   useEffect(() => {
     if (vaultTitle === "SOL") {
@@ -128,14 +132,53 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
 
     const paystreamProgram = new PaystreamV1Program(provider);
     const fetchUserData = async () => {
+      if (!usdcMarketData || !solMarketData || !priceData) return;
+
       try {
+        const tableData = getTableData(
+          usdcMarketData,
+          solMarketData,
+          priceData,
+          usdcProtocolMetrics!,
+          solProtocolMetrics!,
+        );
+
+        const usdcData = tableData?.filter(
+          (item: any) => item.asset === "usdc",
+        );
+        const solData = tableData?.filter((item: any) => item.asset === "sol");
+
+        console.log(solData, "solData");
+        console.log(usdcData, "usdcData");
+
+        let apy;
+        let p2pApy;
+
+        if (vaultState === "lend") {
+          apy =
+            vaultTitle === "USDC"
+              ? usdcData[0]?.supply_apr
+              : solData[0]?.supply_apr;
+          p2pApy =
+            vaultTitle === "USDC" ? usdcData[0]?.p2p_apr : solData[0]?.p2p_apr;
+        }
+
+        if (vaultState === "borrow") {
+          apy =
+            vaultTitle === "USDC"
+              ? usdcData[0]?.borrow_apr
+              : solData[0]?.borrow_apr;
+          p2pApy =
+            vaultTitle === "USDC" ? usdcData[0]?.p2p_apr : solData[0]?.p2p_apr;
+        }
+
         const userData = await paystreamProgram.getTraderPosition(
           // eslint-disable-next-line
           marketHeader?.market!,
           publicKey!,
         );
+
         const decimals = vaultTitle === "USDC" ? 6 : 9;
-        const apy = vaultTitle === "USDC" ? 7.3637 : 8.4;
         const onVaultLendsNum =
           Number(userData?.onVaultLends?.toString() ?? "0") /
           Math.pow(10, decimals);
@@ -148,15 +191,39 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
 
         setUserData({
           myPositions: onVaultLendsNum.toFixed(2),
-          apy: apy.toString(),
-          projectedEarnings: (onVaultLendsNum * (1 + apy / 100)).toFixed(2),
+          apy: apy?.toString() ?? "0",
+          projectedEarnings: apy
+            ? (onVaultLendsNum * (1 + apy / 100)).toFixed(2)
+            : "0",
+          p2pApy: p2pApy?.toString() ?? "0",
+        });
+
+        setStats({
+          totalDeposits:
+            solMarketData?.stats.deposits.collateralInUSD.toString() ?? "--",
+          liquidity:
+            solMarketData?.stats.totalLiquidityAvailable.toString() ?? "--",
+          apy: p2pApy?.toString() ?? "--",
         });
       } catch (error) {
         console.info("Error fetching user data:", error);
       }
     };
     fetchUserData();
-  }, [marketHeader, connected, publicKey, wallet, connection, vaultTitle]);
+  }, [
+    marketHeader,
+    connected,
+    publicKey,
+    wallet,
+    connection,
+    vaultTitle,
+    vaultState,
+    usdcMarketData,
+    solMarketData,
+    priceData,
+    usdcProtocolMetrics,
+    solProtocolMetrics,
+  ]);
 
   return (
     <main className="relative flex min-h-[1064px] w-full flex-col items-center justify-start border-x border-b border-border-t3">

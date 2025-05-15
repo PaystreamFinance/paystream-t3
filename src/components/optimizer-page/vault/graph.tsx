@@ -22,7 +22,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
@@ -93,7 +93,7 @@ export function VaultGraph({ dataUser }: { dataUser: { position: string } }) {
 
   return (
     <div className="relative w-full">
-      <div className="bg-bg-t3/50 absolute inset-0 z-[69] backdrop-blur-sm">
+      <div className="bg-bg-t3/50 absolute inset-0 z-10 backdrop-blur-sm">
         <div className="flex size-full items-center justify-center">
           <span className="font-darkerGrotesque text-[20px] font-[500] text-[#BCEBFF80]">
             Graph is under construction 🚧

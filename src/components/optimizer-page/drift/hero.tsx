@@ -2,7 +2,11 @@
 
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { PaystreamV1Program } from "@meimfhd/paystream-v1";
-import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import {
+  useAnchorWallet,
+  useConnection,
+  useWallet,
+} from "@solana/wallet-adapter-react";
 import { Loader } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -10,16 +14,18 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getDriftStats, getTableData } from "@/lib/data";
 
+import { useMarketData } from "@/hooks/useMarketData";
+import { PublicKey } from "@solana/web3.js";
 import Stats from "../stats";
 import { StatsTable } from "./stats-table";
 import { columns } from "./table-columns";
-import { PublicKey } from "@solana/web3.js";
-import { useMarketData } from "@/hooks/useMarketData";
 
 export default function DriftHero() {
   const [stats, setStats] = useState<
     { title: string; value: string }[] | undefined
   >(undefined);
+
+  const { connected } = useWallet();
 
   const [tableData, setTableData] = useState<any>(undefined);
   const {
@@ -58,6 +64,14 @@ export default function DriftHero() {
       fetchStats();
     }
   }, [loading, error, usdcMarketData, solMarketData, priceData]);
+
+  if (!connected) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <p className="text-white">Please connect your wallet</p>
+      </div>
+    );
+  }
 
   return (
     <main className="relative flex min-h-[1064px] w-full flex-col items-center justify-center border-x border-b border-border-t3">

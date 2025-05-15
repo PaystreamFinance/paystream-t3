@@ -1,9 +1,9 @@
-import { useState } from "react";
-import TxnAnimation from "../components/txn-animation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { motion } from "motion/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { motion } from "motion/react";
+import { useState } from "react";
+import TxnAnimation from "../components/txn-animation";
 
 export default function AnimationDemo() {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -31,7 +31,7 @@ export default function AnimationDemo() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+    <div className="z-50 flex min-h-screen flex-col items-center justify-center bg-background p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
