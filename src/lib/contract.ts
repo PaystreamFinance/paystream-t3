@@ -2,6 +2,8 @@ import { BN } from "@coral-xyz/anchor";
 import {
   MarketDataUI,
   MarketPriceData,
+  PaystreamMetrics,
+  ProtocolMetrics,
   TraderPositionUI,
 } from "@meimfhd/paystream-v1";
 import { logger } from "./utils";
@@ -10,13 +12,15 @@ export interface Position {
   asset: "SOL" | "USDC";
   type: "lending" | "p2pLending" | "p2pBorrowing" | "pendingBorrowing";
   apy: number | null;
-  positionData: PositionData;
+  positionData: PositionData | null;
 }
 
 export function getTraderPositions(
   address: string,
   usdcMarket: MarketDataUI,
   solMarket: MarketDataUI,
+  usdcProtocolMetrics: PaystreamMetrics<"drift">,
+  solProtocolMetrics: PaystreamMetrics<"drift">,
 ): Position[] {
   try {
     const usdcTrader = usdcMarket.traders.find(
@@ -37,25 +41,25 @@ export function getTraderPositions(
       positions.push({
         asset: "USDC",
         type: "lending",
-        apy: null,
+        apy: bnToNumber(usdcProtocolMetrics.protocolMetrics.depositRate, 4),
         positionData: getLendingPosition(usdcTrader, 6),
       });
       positions.push({
         asset: "USDC",
         type: "p2pLending",
-        apy: null,
+        apy: bnToNumber(usdcProtocolMetrics.midRateApy, 4),
         positionData: getP2PLendingPosition(usdcTrader, 6),
       });
       positions.push({
         asset: "USDC",
         type: "p2pBorrowing",
-        apy: null,
+        apy: bnToNumber(usdcProtocolMetrics.midRateApy, 4),
         positionData: getP2PBorrowPosition(usdcTrader, 6),
       });
       positions.push({
         asset: "USDC",
         type: "pendingBorrowing",
-        apy: null,
+        apy: 0,
         positionData: getPendingBorrowPosition(usdcTrader, 6),
       });
     }
@@ -64,25 +68,25 @@ export function getTraderPositions(
       positions.push({
         asset: "SOL",
         type: "lending",
-        apy: null,
+        apy: bnToNumber(solProtocolMetrics.protocolMetrics.depositRate, 4),
         positionData: getLendingPosition(solTrader, 9),
       });
       positions.push({
         asset: "SOL",
         type: "p2pLending",
-        apy: null,
+        apy: bnToNumber(solProtocolMetrics.midRateApy, 4),
         positionData: getP2PLendingPosition(solTrader, 9),
       });
       positions.push({
         asset: "SOL",
         type: "p2pBorrowing",
-        apy: null,
+        apy: bnToNumber(solProtocolMetrics.midRateApy, 4),
         positionData: getP2PBorrowPosition(solTrader, 9),
       });
       positions.push({
         asset: "SOL",
         type: "pendingBorrowing",
-        apy: null,
+        apy: 0,
         positionData: getPendingBorrowPosition(solTrader, 9),
       });
     }
@@ -261,84 +265,70 @@ export function getDriftOptimizerStats(
 
 interface PositionData {
   amount: number;
-  action_amount: BN;
+  amountInUSD: number;
 }
 
 function getLendingPosition(
   traderPosition: TraderPositionUI,
   decimals: number,
-): PositionData {
+): PositionData | null {
   if (
     !traderPosition.lending ||
-    traderPosition.lending.p2pLends.eq(new BN(0))
+    traderPosition.lending.onVaultLends.eq(new BN(0))
   ) {
-    return {
-      amount: 0,
-      action_amount: new BN(0),
-    };
+    return null;
   }
   return {
-    amount: bnToNumber(traderPosition.lending.p2pLends, decimals),
-    action_amount:
-      traderPosition.lending.p2pLends -
-      traderPosition.lending.collateral.amount,
+    amount: bnToNumber(traderPosition.lending.onVaultLends, decimals),
+    amountInUSD: traderPosition.lending.onVaultLendsInUSD,
   };
 }
 
 function getP2PLendingPosition(
   traderPosition: TraderPositionUI,
   decimals: number,
-): PositionData {
+): PositionData | null {
   if (
     !traderPosition.lending ||
     traderPosition.lending.p2pLends.eq(new BN(0))
   ) {
-    return {
-      amount: 0,
-      action_amount: new BN(0),
-    };
+    return null;
   }
   return {
     amount: bnToNumber(traderPosition.lending.p2pLends, decimals),
-    action_amount: traderPosition.lending.p2pLends,
+    amountInUSD: traderPosition.lending.p2pLendsInUsdValue,
   };
 }
 
 function getP2PBorrowPosition(
   traderPosition: TraderPositionUI,
   decimals: number,
-): PositionData {
+): PositionData | null {
   if (
     !traderPosition.borrowing ||
     traderPosition.borrowing.p2pBorrowed.eq(new BN(0))
   ) {
-    return {
-      amount: 0,
-      action_amount: new BN(0),
-    };
+    return null;
   }
   return {
     amount: bnToNumber(traderPosition.borrowing.p2pBorrowed, decimals),
-    action_amount: traderPosition.borrowing.p2pBorrowed,
+    amountInUSD: traderPosition.borrowing.p2pBorrowedInUSD,
   };
 }
 
 function getPendingBorrowPosition(
   traderPosition: TraderPositionUI,
   decimals: number,
-): PositionData {
+): PositionData | null {
   if (
     !traderPosition.borrowing ||
     traderPosition.borrowing.borrowPending.eq(new BN(0))
   ) {
-    return {
-      amount: 0,
-      action_amount: new BN(0),
-    };
+    return null;
   }
   return {
     amount: bnToNumber(traderPosition.borrowing.borrowPending, decimals),
-    action_amount: traderPosition.borrowing.borrowPending,
+    amountInUSD: traderPosition.borrowing.borrowPendingInUSD,
   };
 }
 

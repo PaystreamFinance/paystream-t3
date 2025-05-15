@@ -45,6 +45,8 @@ const DashboardPage: NextPage = () => {
     error,
     paystreamProgram,
     provider,
+    usdcProtocolMetrics,
+    solProtocolMetrics,
   } = useMarketData(
     new anchor.web3.PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
     new anchor.web3.PublicKey("So11111111111111111111111111111111111111112"),
@@ -61,7 +63,7 @@ const DashboardPage: NextPage = () => {
       }
 
       // Don't proceed if we don't have all required data
-      if (!provider || !usdcMarketData || !solMarketData) return;
+      if (!provider || !usdcMarketData || !solMarketData || !usdcProtocolMetrics || !solProtocolMetrics) return;
 
       try {
         setLoading(true);
@@ -70,8 +72,10 @@ const DashboardPage: NextPage = () => {
           provider.wallet.publicKey.toBase58(),
           usdcMarketData,
           solMarketData,
+          usdcProtocolMetrics,
+          solProtocolMetrics,
         );
-
+        console.log("positions", positions);
         console.log("usdcMarketData", usdcMarketData);
 
         const matches = getP2PMatches(
@@ -82,20 +86,23 @@ const DashboardPage: NextPage = () => {
 
         // Convert positions to table data format
         const tableData = positions
-          .filter((pos) => Number(pos.positionData.amount) > 0)
+          .filter((pos) => pos.positionData !== null)
           .map((pos, idx) => ({
             id: idx.toString(),
-            asset: pos.asset.toLowerCase() as "usdc" | "sol",
-            position: pos.positionData.amount.toFixed(2).toString(),
+            asset: pos.asset as "USDC" | "SOL",
+            position: pos.positionData!.amount.toFixed(2).toString(),
             type: (pos.type === "lending"
-              ? "LEND"
+              ? "DEPOSIT"
               : pos.type === "p2pLending"
                 ? "P2P LEND"
-                : "BORROW") as "LEND" | "P2P LEND" | "BORROW",
+                : pos.type === "p2pBorrowing"
+                  ? "P2P BORROW"
+                  : "PENDING BORROW") as DashboardTable["type"],
             apy: pos.apy?.toString() ?? "N/A",
-            action_amount: pos.positionData.action_amount,
+            action_amount: pos.positionData!.amount,
+            amount_in_usd: pos.positionData!.amountInUSD,
           }));
-
+        console.log("tableData", tableData);
         setTableData(tableData);
       } catch (error) {
         console.error("Error fetching trader positions:", error);
@@ -114,7 +121,7 @@ const DashboardPage: NextPage = () => {
     ) {
       fetchTraderPositions();
     }
-  }, [provider, usdcMarketData, solMarketData, error]); // Only re-run when these core dependencies change
+  }, [provider, usdcMarketData, solMarketData, error, loadingMarketData, loading]); // Only re-run when these core dependencies change
 
   return (
     <MaxWidthWrapper>

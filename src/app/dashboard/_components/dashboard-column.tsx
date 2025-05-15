@@ -21,11 +21,12 @@ import WithdrawModal from "./withdraw-modal";
 
 export type DashboardTable = {
   id: string;
-  asset: "usdc" | "sol";
+  asset: "USDC" | "SOL";
   position: string;
-  type: "LEND" | "P2P LEND" | "BORROW";
+  type: "DEPOSIT" | "P2P LEND" | "BORROW" | "PENDING BORROW";
   apy: string;
   action_amount: BN;
+  amount_in_usd: number;
 };
 
 export const dashboardColumn: ColumnDef<DashboardTable>[] = [
@@ -61,9 +62,14 @@ export const dashboardColumn: ColumnDef<DashboardTable>[] = [
       </p>
     ),
     cell: ({ row }) => (
-      <p className="text-[14px] font-light text-[#9CE0FF]">
-        {row.original.position}
-      </p>
+      <div className="flex flex-col gap-1">
+        <p className="text-[14px] font-light text-[#9CE0FF]">
+          $ {row.original.amount_in_usd.toFixed(2)}
+        </p>
+        <p className="text-[12px] font-light text-[#9CE0FF]">
+          {row.original.position} {row.original.asset}
+        </p>
+      </div>
     ),
   },
   {
