@@ -31,14 +31,7 @@ export function WaitlistDialog() {
               instructions to request access.
             </p>
             <p>
-              <a
-                href="https://t.me/paystreamprotocol"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline text-blue-400 hover:text-blue-500 transition"
-              >
-                Join Telegram
-              </a>
+
             </p>
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -51,7 +44,7 @@ export function WaitlistDialog() {
             className="rounded-full px-4 py-2 bg-blue-600 hover:bg-blue-700 transition text-white"
           >
             <a
-              href="https://t.me/paystreamprotocol"
+              href="https://t.me/paystreamfi"
               target="_blank"
               rel="noopener noreferrer"
             >
