@@ -15,10 +15,7 @@ export function WaitlistDialog() {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button
-          variant="shady"
-          className="mt-7 rounded-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 transition"
-        >
+      <Button variant="shady" className="mt-7">
           We are live
         </Button>
       </AlertDialogTrigger>
