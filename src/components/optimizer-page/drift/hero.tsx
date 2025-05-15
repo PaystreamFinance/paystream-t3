@@ -20,6 +20,7 @@ export default function DriftHero() {
   const [stats, setStats] = useState<
     { title: string; value: string }[] | undefined
   >(undefined);
+
   const [tableData, setTableData] = useState<any>(undefined);
   const {
     usdcMarketData,
@@ -32,8 +33,8 @@ export default function DriftHero() {
   } = useMarketData(
     new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
     new PublicKey("So11111111111111111111111111111111111111112"),
-    new PublicKey("79f7C4TQ4hV3o8tjq1DJ4d5EnDGcnNApZ8mESti6oCt2"),
-    new PublicKey("E2kejpm5EmsKZVjB5Ge2YmjsjiwfWE4rfhqPhLZZ7TRd"),
+    new PublicKey("CCQXHfu51HEpiaegMU2kyYZK7dw1NhNbAX6cV44gZDJ8"),
+    new PublicKey("GSjnD3XA1ezr7Xew3PZKPJdKGhjWEGefFFxXJhsfrX5e"),
   );
 
   useEffect(() => {
@@ -42,7 +43,7 @@ export default function DriftHero() {
 
       const stats = getDriftStats(usdcMarketData, solMarketData, priceData);
       setStats(stats);
-
+      console.log("stats", stats);
       const tableData = getTableData(
         usdcMarketData,
         solMarketData,
@@ -51,6 +52,7 @@ export default function DriftHero() {
         solProtocolMetrics!,
       );
       setTableData(tableData);
+      console.log("tableData", tableData);
     }
     if (!loading && !error && usdcMarketData && solMarketData && priceData) {
       fetchStats();

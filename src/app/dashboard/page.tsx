@@ -49,8 +49,8 @@ const DashboardPage: NextPage = () => {
   } = useMarketData(
     new anchor.web3.PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
     new anchor.web3.PublicKey("So11111111111111111111111111111111111111112"),
-    new anchor.web3.PublicKey("79f7C4TQ4hV3o8tjq1DJ4d5EnDGcnNApZ8mESti6oCt2"),
-    new anchor.web3.PublicKey("E2kejpm5EmsKZVjB5Ge2YmjsjiwfWE4rfhqPhLZZ7TRd"),
+    new anchor.web3.PublicKey("CCQXHfu51HEpiaegMU2kyYZK7dw1NhNbAX6cV44gZDJ8"),
+    new anchor.web3.PublicKey("GSjnD3XA1ezr7Xew3PZKPJdKGhjWEGefFFxXJhsfrX5e"),
   );
 
   useEffect(() => {
