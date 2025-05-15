@@ -287,16 +287,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
       const existingCollateral: BN =
         existingTraderData?.lending.collateral.amount || new BN(0);
-      const maxBorrowAmount = calculate_max_borrow_amount(
-        existingTraderData?.lending.collateral.amount || new BN(0),
-        marketPriceData.borrowPriceInCollateralMintScaled,
-        vaultTitle === "SOL" ? 9 : 6,
-        vaultTitle === "SOL" ? 9 : 6,
-        vaultTitle === "USDC"
-          ? usdcConfig.collateralLtvRatio
-          : solConfig.collateralLtvRatio,
-      );
-      console.log(maxBorrowAmount.toString(), "max borrow amount");
+
       // Check if we need additional collateral
       if (existingCollateral.lt(requiredCollateral)) {
         // Calculate additional collateral needed
@@ -337,14 +328,6 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
           additionalCollateral,
         );
         toast.success("Additional collateral deposited successfully");
-      }
-
-      // Check if borrow amount is within limits
-      if (amount.gt(maxBorrowAmount)) {
-        toast.error(
-          `Cannot borrow more than ${bnToNumber(maxBorrowAmount, vaultTitle === "SOL" ? 9 : 6)} ${vaultTitle}`,
-        );
-        return;
       }
 
       // Proceed with borrowing
