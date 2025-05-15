@@ -1,9 +1,10 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import * as anchor from "@coral-xyz/anchor";
+import dynamic from "next/dynamic";
 
+import LoadingOverlay from "@/components/loading-overlay";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -14,13 +15,15 @@ import {
   USDC_HEADER_INDEX,
   USDC_MINT,
 } from "@/constants";
+import { useMarketData } from "@/hooks/useMarketData";
+import { bnToNumber } from "@/lib/contract";
 import { useVaultStateStore } from "@/store/vault-state-store";
 import { AnchorProvider, BN, utils } from "@coral-xyz/anchor";
 import {
-  PaystreamV1Program,
+  MarketConfig,
   MarketHeaderWithPubkey,
   PRICE_PRECISION,
-  MarketConfig,
+  PaystreamV1Program,
   calculate_max_borrow_amount,
 } from "@meimfhd/paystream-v1";
 import {
@@ -30,13 +33,10 @@ import {
 } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { VaultDataProps } from "./hero";
-import LoadingOverlay from "@/components/loading-overlay";
-import Link from "next/link";
-import { useMarketData } from "@/hooks/useMarketData";
-import { bnToNumber } from "@/lib/contract";
+import { type VaultDataProps } from "./hero";
 
 const WalletMultiButton = dynamic(
   () =>
@@ -48,6 +48,8 @@ const WalletMultiButton = dynamic(
 
 export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   const { publicKey, connected } = useWallet();
+  // const [solBalance, setSolBalance] = useState<number | null>(null);
+  // const [usdcBalance, setUSDCBalance] = useState<number | null>(null);
   const [balance, setBalance] = useState<number | null>(null);
   const [collateralBalance, setCollateralBalance] = useState<number | null>(
     null,
@@ -61,7 +63,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
   const [leverageValue, setLeverageValue] = useState(33);
   const [isDragging, setIsDragging] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
+  const [isLendingDisabled, setIsLendingDisabled] = useState(false);
+  const [isBorrowDisabled, setIsBorrowDisabled] = useState(false);
 
   const [supplyType, setSupplyType] = useState<"p2p" | "collateral">("p2p");
 
@@ -91,6 +94,18 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     if (!wallet || !connection) return;
     if (!paystreamProgram) return;
 
+    const isDisabled =
+      vaultTitle === "USDC"
+        ? solMarketData?.traders.find(
+            (trader) => trader.address === wallet?.publicKey?.toBase58(),
+          )?.isLender
+        : usdcMarketData?.traders.find(
+            (trader) => trader.address === wallet?.publicKey?.toBase58(),
+          )?.isLender;
+
+    setIsBorrowDisabled(isDisabled ?? false);
+    setIsLendingDisabled(!isDisabled);
+
     const fetchCollateralAmount = async () => {
       if (!usdcConfig || !solConfig) return;
 
@@ -100,22 +115,22 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       const collateralAmount =
         vaultTitle === "USDC"
           ? await paystreamProgram.calculateRequiredCollateral(
-              usdcConfig,
-              amount,
-              usdcConfig.collateralLtvRatio,
-            )
-          : await paystreamProgram.calculateRequiredCollateral(
               solConfig,
               amount,
               solConfig.collateralLtvRatio,
+            )
+          : await paystreamProgram.calculateRequiredCollateral(
+              usdcConfig,
+              amount,
+              usdcConfig.collateralLtvRatio,
             );
 
       const collateralBalance =
         vaultTitle === "USDC"
-          ? usdcMarketData?.traders.find(
+          ? solMarketData?.traders.find(
               (trader) => trader.address === wallet.publicKey?.toBase58(),
             )?.lending.collateral.amount
-          : solMarketData?.traders.find(
+          : usdcMarketData?.traders.find(
               (trader) => trader.address === wallet.publicKey?.toBase58(),
             )?.lending.collateral.amount;
       console.log(collateralBalance.toString(), "collateral balance");
@@ -131,7 +146,14 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     };
 
     fetchCollateralAmount();
-  }, [inputValue, vaultTitle, wallet, connection]);
+  }, [
+    inputValue,
+    vaultTitle,
+    wallet,
+    connection,
+    solMarketData,
+    usdcMarketData,
+  ]);
 
   const handleSupply = async () => {
     if (!inputValue || !wallet || !connection) return;
@@ -236,7 +258,9 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
         marketPriceData.borrowPriceInCollateralMintScaled,
         vaultTitle === "SOL" ? 9 : 6,
         vaultTitle === "SOL" ? 9 : 6,
-        vaultTitle === "USDC" ? usdcConfig.collateralLtvRatio : solConfig.collateralLtvRatio
+        vaultTitle === "USDC"
+          ? usdcConfig.collateralLtvRatio
+          : solConfig.collateralLtvRatio,
       );
       console.log(maxBorrowAmount.toString(), "max borrow amount");
       // Check if we need additional collateral
@@ -386,30 +410,53 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
         return;
       }
 
+      const usdcMint = new PublicKey(
+        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      ); // Mainnet USDC mint address
+      const tokenAccount = await utils.token.associatedAddress({
+        mint: usdcMint,
+        owner: publicKey,
+      });
+
+      const solBalance = await connection.getBalance(publicKey);
+
+      const tokenAccounts =
+        await connection.getTokenAccountBalance(tokenAccount);
+
+      const usdcBalance = tokenAccounts.value.uiAmount;
+
       try {
-        if (vaultTitle === "SOL") {
-          const tokenAccounts = await connection.getBalance(publicKey);
-          if (tokenAccounts) {
-            const balance = tokenAccounts / LAMPORTS_PER_SOL;
-            setBalance(balance ?? 0);
-          } else {
-            setBalance(0);
+        if (vaultState === "lend") {
+          if (vaultTitle === "SOL") {
+            if (solBalance) {
+              const balance = solBalance / LAMPORTS_PER_SOL;
+              setBalance(balance ?? 0);
+            } else {
+              setBalance(0);
+            }
+          } else if (vaultTitle === "USDC") {
+            if (tokenAccounts) {
+              setBalance(usdcBalance);
+            } else {
+              setBalance(0);
+            }
           }
-        } else if (vaultTitle === "USDC") {
-          const usdcMint = new PublicKey(
-            "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-          ); // Mainnet USDC mint address
-          const tokenAccount = await utils.token.associatedAddress({
-            mint: usdcMint,
-            owner: publicKey,
-          });
-          const tokenAccounts =
-            await connection.getTokenAccountBalance(tokenAccount);
-          if (tokenAccounts) {
-            const balance = tokenAccounts.value.uiAmount;
-            setBalance(balance);
-          } else {
-            setBalance(0);
+        }
+
+        if (vaultState === "borrow") {
+          if (vaultTitle === "USDC") {
+            if (solBalance) {
+              const balance = solBalance / LAMPORTS_PER_SOL;
+              setBalance(balance ?? 0);
+            } else {
+              setBalance(0);
+            }
+          } else if (vaultTitle === "SOL") {
+            if (tokenAccounts) {
+              setBalance(usdcBalance);
+            } else {
+              setBalance(0);
+            }
           }
         }
       } catch (error) {
@@ -422,7 +469,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     const intervalId = setInterval(fetchBalance, 10000);
 
     return () => clearInterval(intervalId);
-  }, [connection, publicKey, connected, vaultTitle]);
+  }, [connection, publicKey, connected, vaultTitle, vaultState]);
 
   const handlePercentageClick = (percentage: number) => {
     if (balance === null) return;
@@ -527,45 +574,12 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             </span>
           </div>
 
-          {/* <RadioGroup
-            defaultValue="p2p"
-            value={supplyType}
-            onValueChange={(val) => setSupplyType(val as "p2p" | "collateral")}
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem
-                value="p2p"
-                id="p2p"
-                className="border-[#9CE0FF]"
-              />
-              <Label
-                htmlFor="p2p"
-                className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]"
-              >
-                P2P Lending
-              </Label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem
-                value="collateral"
-                id="collateral"
-                className="border-[#9CE0FF]"
-              />
-              <Label
-                htmlFor="collateral"
-                className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]"
-              >
-                Collateral
-              </Label>
-            </div>
-          </RadioGroup> */}
-
           {connected ? (
             <Button
               variant="shady"
               className="w-full"
               onClick={handleSupplyClick}
+              disabled={isLendingDisabled}
             >
               Supply
             </Button>
@@ -591,113 +605,6 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
         </div>
       )}
 
-      {/* {vaultState === "withdraw" && (
-        <div className="flex flex-col gap-4 bg-[#9CE0FF05] p-[12px]">
-          <div className="flex items-center justify-between gap-2">
-            <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
-              Withdraw {vaultTitle}
-            </span>
-            <div className="ml-auto flex items-center gap-2 font-body">
-              <span className="text-sm text-[#BCEBFF80]">
-                Balance: {balance !== null ? balance.toFixed(2) : "--"}{" "}
-                {vaultTitle}
-              </span>
-              <span
-                onClick={() => handlePercentageClick(50)}
-                className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
-              >
-                50%
-              </span>
-              <span
-                onClick={() => handlePercentageClick(100)}
-                className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
-              >
-                max
-              </span>
-            </div>
-          </div>
-          <div className="flex h-[73px] w-full items-center justify-between bg-[#000D1E80] px-[16px]">
-            <div className="flex items-center gap-2">
-              <Image
-                src={icon}
-                alt="vault"
-                width={100}
-                height={100}
-                className="h-6 w-6"
-              />
-              <span className="font-body text-[20px] font-[500] uppercase text-[#EAEAEA]">
-                {vaultTitle}
-              </span>
-            </div>
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              className="h-full w-full border-none bg-transparent text-right font-darkerGrotesque text-[40px] font-[400] uppercase text-[#EAEAEAA3] shadow-none outline-none focus:border-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-              placeholder="0.0"
-              style={{ fontSize: "40px" }}
-            />
-          </div>
-          <div className="flex items-center justify-between gap-2">
-            <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
-              Transaction Settings
-            </span>
-
-            <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
-              Normal
-            </span>
-          </div>
-          <div className="flex items-center justify-between gap-2">
-            <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
-              Supply APY
-            </span>
-
-            <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
-              ---
-            </span>
-          </div>
-          <div className="flex items-center justify-between gap-2">
-            <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
-              Deposit Value
-            </span>
-
-            <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
-              ---
-            </span>
-          </div>
-          <Badge className="w-full border border-[#BBEBFF]/40 bg-[#08192A] px-3 py-2 text-sm text-amber-600 hover:bg-[#08192A]">
-            Withdrawal period: 7 days
-          </Badge>
-          {connected ? (
-            <Button
-              variant="shady"
-              className="w-full"
-              onClick={handleWithdrawClick}
-            >
-              Withdraw
-            </Button>
-          ) : (
-            <WalletMultiButton
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                width: "100%",
-                backgroundColor: "#000D1E",
-                color: "#9CE0FF",
-                border: "1px solid #9CE0FF",
-                borderRadius: "8px",
-                padding: "12px",
-                fontSize: "16px",
-                fontWeight: "500",
-                textAlign: "center",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-              }}
-            />
-          )}
-        </div>
-      )} */}
-
       {vaultState === "borrow" && (
         <div className="flex flex-col gap-4 bg-[#9CE0FF05] p-[12px]">
           <div className="flex items-center justify-between gap-2">
@@ -707,7 +614,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             <div className="ml-auto flex items-center gap-2 font-body">
               <span className="text-sm text-[#BCEBFF80]">
                 Balance: {balance !== null ? balance.toFixed(2) : "--"}{" "}
-                {vaultTitle}
+                {vaultTitle === "SOL" ? "USDC" : "SOL"}
               </span>
               <span
                 onClick={() => handlePercentageClick(50)}
@@ -819,64 +726,6 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
                 </div>
               </div>
             )}
-          {/* <div className="flex flex-col gap-1">
-            <div className="flex items-center justify-between gap-2">
-              <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
-                Leverage
-              </span>
-
-              <span className="font-body text-[20px] font-[500] uppercase text-[#EAEAEA]">
-                {(leverageValue / 33).toFixed(1)}x
-              </span>
-            </div>
-            <div className="relative">
-              <Slider
-                defaultValue={[33]}
-                max={100}
-                min={1}
-                step={1}
-                onValueChange={(value: number[]) => {
-                  const newValue = value[0];
-                  if (typeof newValue === "number") {
-                    setLeverageValue(newValue);
-                  }
-                }}
-                trackClassName="bg-[#9CE0FF14]"
-                rangeClassName="bg-[#9CE0FFCC]"
-                onMouseEnter={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
-              />
-              <div
-                className="absolute -top-8 rounded bg-[#000D1E] px-2 py-1 font-body text-xs text-[#9CE0FF] transition-opacity"
-                style={{
-                  left: `calc(${leverageValue}% - 15px)`,
-                  transform: "translateX(-50%)",
-                  opacity: isHovering ? 1 : 0,
-                }}
-              >
-                {(leverageValue / 33).toFixed(1)}x
-                <div className="absolute bottom-[-4px] left-1/2 h-0 w-0 -translate-x-1/2 border-x-4 border-t-4 border-x-transparent border-t-[#000D1E]"></div>
-              </div>
-            </div>
-          </div> */}
-          {/* <div className="flex items-center justify-between gap-2">
-            <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
-              Borrow APY
-            </span>
-
-            <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
-              ---
-            </span>
-          </div> */}
-          {/* <div className="flex items-center justify-between gap-2">
-            <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
-              USDC Debt
-            </span>
-
-            <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
-              ---
-            </span>
-          </div> */}
 
           <div className="flex items-center justify-between gap-2">
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
@@ -906,6 +755,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               variant="shady"
               className="w-full"
               onClick={handleBorrowClick}
+              disabled={isBorrowDisabled}
             >
               Borrow
             </Button>
