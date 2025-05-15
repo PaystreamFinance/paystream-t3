@@ -16,18 +16,18 @@ export default function AppWalletProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const network = WalletAdapterNetwork.Devnet;
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+  const ENDPOINT = process.env.NEXT_PUBLIC_RPC_URL;
+
   const wallets = useMemo(
     () => [
       // manually add any legacy wallet adapters here
       // new UnsafeBurnerWalletAdapter(),
     ],
-    [network],
+    [ENDPOINT],
   );
 
   return (
-    <ConnectionProvider endpoint={endpoint}>
+    <ConnectionProvider endpoint={ENDPOINT!}>
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>

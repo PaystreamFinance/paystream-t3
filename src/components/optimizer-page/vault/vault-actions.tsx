@@ -105,8 +105,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       const paystreamProgram = new PaystreamV1Program(provider);
       const marketConfig = await paystreamProgram.getMarketConfig(
         marketHeader.mint,
-        marketHeader.market,
         marketHeader.collateralMint,
+        marketHeader.market,
         marketHeader.collateralMarket,
       );
       setMarketConfig(marketConfig);
@@ -165,10 +165,10 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     try {
       setIsLoading(true);
       const marketConfig = await paystreamProgram.getMarketConfig(
-        marketHeader.collateralMint,
-        marketHeader.collateralMarket,
         marketHeader.mint,
+        marketHeader.collateralMint,
         marketHeader.market,
+        marketHeader.collateralMarket,
       );
 
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000; // 9 decimals for SOL, 6 for USDC
@@ -226,10 +226,10 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       //   collateralTokenProgram: marketHeader.collateralTokenProgram,
       // };
       const marketConfig = await paystreamProgram.getMarketConfig(
-        marketHeader.collateralMint,
-        marketHeader.collateralMarket,
         marketHeader.mint,
+        marketHeader.collateralMint,
         marketHeader.market,
+        marketHeader.collateralMarket,
       );
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       const amount = new BN(Number(inputValue) * decimals);
