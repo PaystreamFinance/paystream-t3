@@ -40,7 +40,7 @@ export function PrivacyDialog({
             <p>
               Read more about our protocol security{" "}
               <a
-                href="https://app.paystream.finance/security"
+                href="https://docs.paystream.finance/development"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline text-blue-400 hover:text-blue-500 transition"
