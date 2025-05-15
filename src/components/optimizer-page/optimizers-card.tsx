@@ -5,6 +5,15 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { AnchorProvider } from "@coral-xyz/anchor";
+import { MarketConfig, PaystreamV1Program } from "@meimfhd/paystream-v1";
+import { useConnection } from "@solana/wallet-adapter-react";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
+import { useMarketData } from "@/hooks/useMarketData";
+import { getDriftStats, getStats } from "@/lib/data";
+import { getTableData } from "@/lib/data";
 
 export type OptimizerVariant = "drift" | "kamino" | "save" | "marginfi";
 
@@ -38,12 +47,42 @@ export default function OptimizersCard({
     },
   };
 
+  const [stats, setStats] =
+    useState<{ title: string; value: string }[]>(getStats());
+
+  const {
+    usdcMarketData,
+    solMarketData,
+    priceData,
+    loading,
+    error,
+    paystreamProgram,
+    provider,
+    usdcProtocolMetrics,
+    solProtocolMetrics,
+  } = useMarketData(
+    new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
+    new PublicKey("So11111111111111111111111111111111111111112"),
+    new PublicKey("79f7C4TQ4hV3o8tjq1DJ4d5EnDGcnNApZ8mESti6oCt2"),
+    new PublicKey("E2kejpm5EmsKZVjB5Ge2YmjsjiwfWE4rfhqPhLZZ7TRd"),
+  );
+
+  useEffect(() => {
+    async function fetchStats() {
+      if (!usdcMarketData || !solMarketData || !priceData) return;
+      const stats = getDriftStats(usdcMarketData, solMarketData, priceData);
+      setStats(stats);
+      console.log("stats lol", stats);
+    }
+    fetchStats();
+  }, [usdcMarketData, solMarketData, priceData]);
+
   const cardData = {
     drift: {
       title: "Drift",
       description:
         "An optimised gateway to Drift Trade with the same liquidity and risk parameters.",
-      suppliedVolume: "132.32k",
+      suppliedVolume: stats[0]?.value,
       apyImprovement: "100%",
     },
     kamino: {
