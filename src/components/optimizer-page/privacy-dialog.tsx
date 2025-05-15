@@ -26,9 +26,30 @@ export function PrivacyDialog({
           <AlertDialogTitle className="text-white">
             Privacy dialog
           </AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+      <AlertDialogTitle className="text-white">
+            Terms & Conditions
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-sm text-gray-300 space-y-2">
+            <p>
+              This is an early-alpha version of Paystream deployed on mainnet. Please proceed with caution.
+            </p>
+            <p>
+              Contracts are <strong>not audited</strong>. However, interactions are restricted to whitelisted addresses only.
+            </p>
+            <p>
+              By using this protocol, you acknowledge the inherent risks of interacting with unaudited smart contracts.
+            </p>
+            <p>
+              For more information about Paystream’s security model and roadmap, please visit{" "}
+              <a
+                href="https://app.paystream.finance/security"
+                className="underline text-blue-400"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                our security page
+              </a>.
+            </p>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
