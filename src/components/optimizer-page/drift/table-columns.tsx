@@ -9,7 +9,7 @@ import Link from "next/link";
 export type OptimizerTable = {
   id: string;
   asset: "usdc" | "sol";
-
+  deposit_volume: string;
   balance: number;
   noOfToken: number;
   avl_liquidity: number;

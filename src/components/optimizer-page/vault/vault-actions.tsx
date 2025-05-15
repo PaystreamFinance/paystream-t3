@@ -21,6 +21,7 @@ import {
   MarketHeaderWithPubkey,
   PRICE_PRECISION,
   MarketConfig,
+  calculate_max_borrow_amount,
 } from "@meimfhd/paystream-v1";
 import {
   useAnchorWallet,
@@ -35,6 +36,7 @@ import { VaultDataProps } from "./hero";
 import LoadingOverlay from "@/components/loading-overlay";
 import Link from "next/link";
 import { useMarketData } from "@/hooks/useMarketData";
+import { bnToNumber } from "@/lib/contract";
 
 const WalletMultiButton = dynamic(
   () =>
@@ -47,6 +49,9 @@ const WalletMultiButton = dynamic(
 export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   const { publicKey, connected } = useWallet();
   const [balance, setBalance] = useState<number | null>(null);
+  const [collateralBalance, setCollateralBalance] = useState<number | null>(
+    null,
+  );
   const [collateralAmountToShow, setCollateralAmountToShow] = useState<
     number | null
   >(null);
@@ -104,10 +109,24 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               amount,
               solConfig.collateralLtvRatio,
             );
+
+      const collateralBalance =
+        vaultTitle === "USDC"
+          ? usdcMarketData?.traders.find(
+              (trader) => trader.address === wallet.publicKey?.toBase58(),
+            )?.lending.collateral.amount
+          : solMarketData?.traders.find(
+              (trader) => trader.address === wallet.publicKey?.toBase58(),
+            )?.lending.collateral.amount;
+      console.log(collateralBalance.toString(), "collateral balance");
       // we are reversing the collateral amount because if vaultTitle is USDC, then collateral amount is in SOL
       const collateralDecimals =
         vaultTitle === "USDC" ? LAMPORTS_PER_SOL : 1_000_000;
+      const balanceDecimals =
+        vaultTitle === "USDC" ? 1_000_000 : LAMPORTS_PER_SOL;
+      setCollateralBalance(Number(collateralBalance) / balanceDecimals);
       setCollateralAmountToShow(collateralAmount / collateralDecimals);
+
       console.log(collateralAmount, `collateral amount for ${vaultTitle}`);
     };
 
@@ -170,31 +189,24 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   };
 
   const handleBorrow = async () => {
-    if (!inputValue || !wallet || !connection) return;
-
-    const provider = new AnchorProvider(connection, wallet, {
-      commitment: "processed",
-    });
-    const paystreamProgram = new PaystreamV1Program(provider);
+    if (!inputValue || !wallet || !connection || !paystreamProgram) return;
 
     try {
       setIsLoading(true);
 
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       const amount = new BN(Number(inputValue) * decimals);
-      console.log(amount.toString(), "amount");
+
       if (!usdcConfig || !solConfig) return;
-      console.log(usdcConfig, "market config");
+
+      // Get market price data
       const marketPriceData =
         vaultTitle === "USDC"
           ? await paystreamProgram.getMarketPriceData(usdcConfig)
           : await paystreamProgram.getMarketPriceData(solConfig);
 
-      const collateralDecimals =
-        vaultTitle === "USDC" ? 1_000_000 : LAMPORTS_PER_SOL; //  6 for USDC, 9 decimals for SOL
-      console.log(marketPriceData, "market price data");
-
-      const collateralAmounta =
+      // Calculate required collateral
+      const requiredCollateral =
         vaultTitle === "USDC"
           ? await paystreamProgram.calculateRequiredCollateral(
               usdcConfig,
@@ -207,21 +219,83 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               solConfig.collateralLtvRatio,
             );
 
-      console.log(collateralAmounta.toString(), "collateral amount");
+      // Get existing collateral from the opposite market
+      const existingTraderData =
+        vaultTitle === "USDC"
+          ? solMarketData?.traders.find(
+              (trader) => trader.address === wallet.publicKey?.toBase58(),
+            )
+          : usdcMarketData?.traders.find(
+              (trader) => trader.address === wallet.publicKey?.toBase58(),
+            );
 
-      const depositCollateral = await paystreamProgram.depositWithUI(
-        vaultTitle === "USDC" ? solConfig : usdcConfig,
-        collateralAmounta,
+      const existingCollateral: BN =
+        existingTraderData?.lending.collateral.amount || new BN(0);
+      const maxBorrowAmount = calculate_max_borrow_amount(
+        existingTraderData?.lending.collateral.amount || new BN(0),
+        marketPriceData.borrowPriceInCollateralMintScaled,
+        vaultTitle === "SOL" ? 9 : 6,
+        vaultTitle === "SOL" ? 9 : 6,
+        vaultTitle === "USDC" ? usdcConfig.collateralLtvRatio : solConfig.collateralLtvRatio
       );
-      toast.success("Deposit collateral successful");
+      console.log(maxBorrowAmount.toString(), "max borrow amount");
+      // Check if we need additional collateral
+      if (existingCollateral.lt(requiredCollateral)) {
+        // Calculate additional collateral needed
+        const additionalCollateral = requiredCollateral.sub(existingCollateral);
+        console.log(additionalCollateral.toString(), "additional collateral");
+        // Check user's balance for the collateral asset
+        let userBalance;
+        if (vaultTitle === "USDC") {
+          // Need SOL as collateral
+          userBalance = await connection.getBalance(wallet.publicKey);
+          console.log(userBalance.toString(), "sol user balance");
+          if (new BN(userBalance).lt(additionalCollateral)) {
+            toast.error("Insufficient SOL balance for collateral");
+            return;
+          }
+        } else {
+          // Need USDC as collateral
+          const usdcMint = new PublicKey(
+            "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          );
+          const tokenAccount = await utils.token.associatedAddress({
+            mint: usdcMint,
+            owner: wallet.publicKey,
+          });
+          const tokenBalance =
+            await connection.getTokenAccountBalance(tokenAccount);
+          const usdcBalance = new BN(tokenBalance.value.amount);
+          console.log(usdcBalance.toString(), "usdc balance");
+          if (usdcBalance.lt(additionalCollateral)) {
+            toast.error("Insufficient USDC balance for collateral");
+            return;
+          }
+        }
 
-      const result = await paystreamProgram.borrowWithUI(
+        // Deposit additional collateral
+        const depositResult = await paystreamProgram.depositWithUI(
+          vaultTitle === "USDC" ? solConfig : usdcConfig,
+          additionalCollateral,
+        );
+        toast.success("Additional collateral deposited successfully");
+      }
+
+      // Check if borrow amount is within limits
+      if (amount.gt(maxBorrowAmount)) {
+        toast.error(
+          `Cannot borrow more than ${bnToNumber(maxBorrowAmount, vaultTitle === "SOL" ? 9 : 6)} ${vaultTitle}`,
+        );
+        return;
+      }
+
+      // Proceed with borrowing
+      const borrowResult = await paystreamProgram.borrowWithUI(
         vaultTitle === "USDC" ? usdcConfig : solConfig,
         amount,
-        true,
       );
 
-      console.log(result, "result");
+      console.log("Borrow result:", borrowResult);
       toast.success("Borrow successful");
     } catch (error) {
       console.error("Error in borrow:", error);
@@ -695,6 +769,56 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               </span>
             </div>
           </div>
+          <div className="flex items-center justify-between gap-2">
+            <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
+              Collateral Balance
+            </span>
+            <div className="flex items-center gap-2">
+              <Image
+                src={
+                  icon === "/optimizers/usdc.png"
+                    ? "/optimizers/sol.png"
+                    : "/optimizers/usdc.png"
+                }
+                alt="vault"
+                width={100}
+                height={100}
+                className="h-6 w-6"
+              />
+              <span className="font-body text-[15px] font-[500] uppercase text-[#EAEAEA]">
+                {collateralBalance !== null
+                  ? Number(collateralBalance).toFixed(5)
+                  : "--"}{" "}
+                {vaultTitle === "SOL" ? "USDC" : "SOL"}
+              </span>
+            </div>
+          </div>
+          {collateralBalance !== null &&
+            collateralAmountToShow !== null &&
+            collateralBalance < collateralAmountToShow && (
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
+                  Re-margin
+                </span>
+                <div className="flex items-center gap-2">
+                  <Image
+                    src={
+                      icon === "/optimizers/usdc.png"
+                        ? "/optimizers/sol.png"
+                        : "/optimizers/usdc.png"
+                    }
+                    alt="vault"
+                    width={100}
+                    height={100}
+                    className="h-6 w-6"
+                  />
+                  <span className="font-body text-[20px] font-[500] uppercase text-[#EAEAEA]">
+                    {(collateralAmountToShow - collateralBalance).toFixed(5)}
+                    {vaultTitle === "SOL" ? "USDC" : "SOL"}
+                  </span>
+                </div>
+              </div>
+            )}
           {/* <div className="flex flex-col gap-1">
             <div className="flex items-center justify-between gap-2">
               <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
@@ -753,6 +877,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               ---
             </span>
           </div> */}
+
           <div className="flex items-center justify-between gap-2">
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
               LTV
@@ -760,8 +885,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
               {vaultTitle === "USDC"
-                ? usdcConfig?.ltvRatio.toString()
-                : (solConfig?.ltvRatio.toString() ?? "--")}
+                ? usdcConfig?.collateralLtvRatio.toString()
+                : (solConfig?.collateralLtvRatio.toString() ?? "--")}
             </span>
           </div>
           <div className="flex items-center justify-between gap-2">
@@ -771,8 +896,9 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             {}
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
               {vaultTitle === "USDC"
-                ? usdcConfig?.collateralLtvRatio.toString()
-                : (solConfig?.collateralLtvRatio.toString() ?? "--")}
+                ? usdcConfig?.collateralLiquidationThreshold.toString()
+                : (solConfig?.collateralLiquidationThreshold.toString() ??
+                  "--")}
             </span>
           </div>
           {connected ? (

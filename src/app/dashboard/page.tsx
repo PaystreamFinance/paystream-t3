@@ -38,7 +38,6 @@ const DashboardPage: NextPage = () => {
   const [tableData, setTableData] = React.useState<DashboardTable[]>([]);
   const [loading, setLoading] = React.useState(false);
   const {
-    config,
     usdcMarketData,
     solMarketData,
     priceData,
