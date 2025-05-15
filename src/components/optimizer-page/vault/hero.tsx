@@ -20,6 +20,9 @@ import {
 import { SOL_HEADER_INDEX, USDC_HEADER_INDEX } from "@/constants";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useMarketData } from "@/hooks/useMarketData";
+import { PublicKey } from "@solana/web3.js";
+import { getDriftStats } from "@/lib/data";
 
 export interface VaultDataProps {
   vaultTitle: string;
@@ -42,6 +45,53 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
     useState<MarketHeaderWithPubkey | null>(null);
 
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [stats, setStats] = useState<{
+    totalDeposits: string;
+    liquidity: string;
+    apy: string;
+  } | null>(null);
+
+  const {
+    usdcMarketData,
+    solMarketData,
+    priceData,
+    loading,
+    error,
+    usdcProtocolMetrics,
+    solProtocolMetrics,
+  } = useMarketData(
+    new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
+    new PublicKey("So11111111111111111111111111111111111111112"),
+    new PublicKey("79f7C4TQ4hV3o8tjq1DJ4d5EnDGcnNApZ8mESti6oCt2"),
+    new PublicKey("E2kejpm5EmsKZVjB5Ge2YmjsjiwfWE4rfhqPhLZZ7TRd"),
+  );
+
+  useEffect(() => {
+    if (vaultTitle === "SOL") {
+      setStats({
+        totalDeposits:
+          solMarketData?.stats.deposits.collateralInUSD.toString() ?? "--",
+        liquidity:
+          solMarketData?.stats.totalLiquidityAvailable.toString() ?? "--",
+        apy: solProtocolMetrics?.midRateApy.toString() ?? "--",
+      });
+    } else if (vaultTitle === "USDC") {
+      setStats({
+        totalDeposits:
+          usdcMarketData?.stats.deposits.collateralInUSD.toString() ?? "--",
+        liquidity:
+          usdcMarketData?.stats.totalLiquidityAvailable.toString() ?? "--",
+        apy: usdcProtocolMetrics?.midRateApy.toString() ?? "--",
+      });
+    }
+  }, [
+    usdcMarketData,
+    solMarketData,
+    priceData,
+    usdcProtocolMetrics,
+    solProtocolMetrics,
+    vaultTitle,
+  ]);
 
   useEffect(() => {
     if (!wallet || !connection) return;
@@ -135,11 +185,13 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
           <VaultActions vaultTitle={vaultTitle} icon={icon} />
         </div>
         <StatsGridHorizontal
-          stats={{
-            totalDeposits: "Not available for testnet",
-            liquidity: "Not available for testnet",
-            apy: "Not available for testnet",
-          }}
+          stats={
+            stats ?? {
+              totalDeposits: "--",
+              liquidity: "--",
+              apy: "--",
+            }
+          }
           underline={false}
         />
         <VaultGraph dataUser={{ position: userData?.myPositions ?? "--" }} />

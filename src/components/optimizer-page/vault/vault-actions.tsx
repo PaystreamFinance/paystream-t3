@@ -175,7 +175,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       const amount = new BN(Number(inputValue) * decimals);
       // if (supplyType === "p2p") {
       console.log("test");
-      console.log(marketConfig, "market config");
+      console.log(marketConfig.ltvRatio, "market config");
       console.log(marketConfig.mint.toBase58(), "mint");
       console.log(marketConfig.market.toBase58(), "market");
 
@@ -816,7 +816,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             </span>
 
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
-              75%
+              {marketConfig?.ltvRatio.toString() ?? "--"}
             </span>
           </div>
           <div className="flex items-center justify-between gap-2">
@@ -825,7 +825,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             </span>
             {}
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
-              69%
+              {marketConfig?.collateralLtvRatio.toString() ?? "--"}
             </span>
           </div>
           {connected ? (

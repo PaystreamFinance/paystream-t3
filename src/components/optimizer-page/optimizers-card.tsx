@@ -1,8 +1,10 @@
+"use client";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export type OptimizerVariant = "drift" | "kamino" | "save" | "marginfi";
 
@@ -69,8 +71,23 @@ export default function OptimizersCard({
 
   const selectedGradient = gradients[variant];
 
+  const router = useRouter();
+
   return (
-    <Link href={`/optimizers/${variant}`}>
+    <div
+      onMouseDown={() => {
+        if (cardData[variant].title === "Drift") {
+          router.push(`/optimizers/${variant}`);
+        } else {
+          return;
+        }
+      }}
+      className={cn(
+        cardData[variant].title === "Drift"
+          ? "cursor-pointer"
+          : "cursor-not-allowed",
+      )}
+    >
       <div
         className={cn(
           "group relative h-[160px] w-full overflow-hidden p-[1px] sm:h-[150px] md:h-[170px] lg:h-[192px]",
@@ -148,6 +165,6 @@ export default function OptimizersCard({
           )}
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
