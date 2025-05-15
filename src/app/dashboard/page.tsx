@@ -73,6 +73,8 @@ const DashboardPage: NextPage = () => {
           solMarketData,
         );
 
+        console.log("usdcMarketData", usdcMarketData);
+
         const matches = getP2PMatches(
           provider.wallet.publicKey.toBase58(),
           usdcMarketData,

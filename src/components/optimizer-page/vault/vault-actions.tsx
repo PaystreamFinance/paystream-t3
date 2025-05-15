@@ -14,7 +14,7 @@ import {
   USDC_MINT,
 } from "@/constants";
 import { useVaultStateStore } from "@/store/vault-state-store";
-import { AnchorProvider, BN } from "@coral-xyz/anchor";
+import { AnchorProvider, BN, utils } from "@coral-xyz/anchor";
 import {
   PaystreamV1Program,
   MarketHeaderWithPubkey,
@@ -233,7 +233,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       );
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       const amount = new BN(Number(inputValue) * decimals);
-
+      console.log(amount.toString(), "amount");
       if (vaultTitle === "SOL") {
         if (marketConfig.mint.toBase58() !== SOL_MINT) {
           toast.error("Invalid mint");
@@ -262,7 +262,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
         await paystreamProgram.calculateRequiredCollateral(
           marketConfig,
           amount,
-          marketConfig.ltvRatio,
+          marketConfig.collateralLtvRatio,
         );
       console.log(collateralAmount.toString(), "collateral amount");
 
@@ -364,32 +364,26 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
       try {
         if (vaultTitle === "SOL") {
-          const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
-            publicKey,
-            {
-              mint: new PublicKey(SOL_MINT),
-            },
-          );
-          if (tokenAccounts.value.length > 0) {
-            const balance =
-              tokenAccounts.value[0]?.account.data.parsed.info.tokenAmount
-                .uiAmount;
+          const tokenAccounts = await connection.getBalance(publicKey);
+          if (tokenAccounts) {
+            const balance = tokenAccounts / LAMPORTS_PER_SOL;
             setBalance(balance ?? 0);
           } else {
             setBalance(0);
           }
         } else if (vaultTitle === "USDC") {
-          const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
-            publicKey,
-            {
-              mint: new PublicKey(USDC_MINT),
-            },
-          );
-          if (tokenAccounts.value.length > 0) {
-            const balance =
-              tokenAccounts.value[0]?.account.data.parsed.info.tokenAmount
-                .uiAmount;
-            setBalance(balance ?? 0);
+          const usdcMint = new PublicKey(
+            "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          ); // Mainnet USDC mint address
+          const tokenAccount = await utils.token.associatedAddress({
+            mint: usdcMint,
+            owner: publicKey,
+          });
+          const tokenAccounts =
+            await connection.getTokenAccountBalance(tokenAccount);
+          if (tokenAccounts) {
+            const balance = tokenAccounts.value.uiAmount;
+            setBalance(balance);
           } else {
             setBalance(0);
           }
