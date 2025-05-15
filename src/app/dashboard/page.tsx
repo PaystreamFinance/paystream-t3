@@ -91,14 +91,8 @@ const DashboardPage: NextPage = () => {
             id: idx.toString(),
             asset: pos.asset ,
             position: pos.positionData!.amount.toFixed(2).toString(),
-            type: (pos.type === "lending"
-              ? "DEPOSIT"
-              : pos.type === "p2pLending"
-                ? "P2P LEND"
-                : pos.type === "p2pBorrowing"
-                  ? "P2P BORROW"
-                  : "PENDING BORROW") ,
-            apy: pos.apy?.toString() ?? "N/A",
+            type: pos.type,
+            apy: pos.apy?.toString() ?? "--",
             action_amount: pos.positionData!.amount,
             amount_in_usd: pos.positionData!.amountInUSD,
           }));

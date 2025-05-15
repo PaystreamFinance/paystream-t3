@@ -86,11 +86,11 @@ export default function OptimizersCard({
       title: "Drift",
       description:
         "An optimised gateway to Drift Trade with the same liquidity and risk parameters.",
-      suppliedVolume: stats?.supplyVolume.toFixed(2).toString() ?? "--",
-      apyImprovement: stats?.apyImprovement.toString() ?? "--",
+      suppliedVolume: stats?.supplyVolume.toFixed(2)|| "--",
+      apyImprovement: stats?.apyImprovement.toString() + "%" || "--",
     },
     kamino: {
-      title: "Kamino",
+      title: "Kamino", 
       description:
         "An optimised gateway to Kamino with the same liquidity and risk parameters.",
       suppliedVolume: "132.32k",

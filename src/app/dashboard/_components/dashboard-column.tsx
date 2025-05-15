@@ -23,7 +23,7 @@ export type DashboardTable = {
   id: string;
   asset: "USDC" | "SOL";
   position: string;
-  type: "LEND" | "TOTAL DEPOSIT" | "P2P LEND" | "P2P BORROW" | "PENDING BORROW";
+  type: "UNMATCHED" | "TOTAL DEPOSIT" | "P2P LEND" | "P2P BORROW" | "PENDING BORROW";
   apy: string;
   action_amount: BN;
   amount_in_usd: number;

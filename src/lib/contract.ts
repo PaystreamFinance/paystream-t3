@@ -11,11 +11,11 @@ import { logger } from "./utils";
 export interface Position {
   asset: "SOL" | "USDC";
   type:
-    | "lending"
-    | "total_deposit"
-    | "p2pLending"
-    | "p2pBorrowing"
-    | "pendingBorrowing";
+    | "UNMATCHED"
+    | "TOTAL DEPOSIT"
+    | "P2P LEND"
+    | "P2P BORROW"
+    | "PENDING BORROW";
   apy: number | null;
   positionData: PositionData | null;
 }
@@ -45,25 +45,31 @@ export function getTraderPositions(
     if (usdcMarket && usdcTrader) {
       positions.push({
         asset: "USDC",
-        type: "lending",
+        type: "TOTAL DEPOSIT",
+        apy: 0,
+        positionData: getTotalDepositPosition(usdcTrader, 6),
+      });
+      positions.push({
+        asset: "USDC",
+        type: "UNMATCHED",
         apy: bnToNumber(usdcProtocolMetrics.protocolMetrics.depositRate, 4),
         positionData: getLendingPosition(usdcTrader, 6),
       });
       positions.push({
         asset: "USDC",
-        type: "p2pLending",
+        type: "P2P LEND",
         apy: bnToNumber(usdcProtocolMetrics.midRateApy, 4),
         positionData: getP2PLendingPosition(usdcTrader, 6),
       });
       positions.push({
         asset: "USDC",
-        type: "p2pBorrowing",
+        type: "P2P BORROW",
         apy: bnToNumber(usdcProtocolMetrics.midRateApy, 4),
         positionData: getP2PBorrowPosition(usdcTrader, 6),
       });
       positions.push({
         asset: "USDC",
-        type: "pendingBorrowing",
+        type: "PENDING BORROW",
         apy: 0,
         positionData: getPendingBorrowPosition(usdcTrader, 6),
       });
@@ -72,25 +78,31 @@ export function getTraderPositions(
     if (solMarket && solTrader) {
       positions.push({
         asset: "SOL",
-        type: "lending",
+        type: "TOTAL DEPOSIT",
+        apy: 0,
+        positionData: getTotalDepositPosition(solTrader, 9),
+      });
+      positions.push({
+        asset: "SOL",
+        type: "UNMATCHED",
         apy: bnToNumber(solProtocolMetrics.protocolMetrics.depositRate, 4),
         positionData: getLendingPosition(solTrader, 9),
       });
       positions.push({
         asset: "SOL",
-        type: "p2pLending",
+        type: "P2P LEND",
         apy: bnToNumber(solProtocolMetrics.midRateApy, 4),
         positionData: getP2PLendingPosition(solTrader, 9),
       });
       positions.push({
         asset: "SOL",
-        type: "p2pBorrowing",
+        type: "P2P BORROW",
         apy: bnToNumber(solProtocolMetrics.midRateApy, 4),
         positionData: getP2PBorrowPosition(solTrader, 9),
       });
       positions.push({
         asset: "SOL",
-        type: "pendingBorrowing",
+        type: "PENDING BORROW",
         apy: 0,
         positionData: getPendingBorrowPosition(solTrader, 9),
       });
@@ -279,6 +291,22 @@ export function getDriftOptimizerStats(
 interface PositionData {
   amount: number;
   amountInUSD: number;
+}
+
+function getTotalDepositPosition(
+  traderPosition: TraderPositionUI,
+  decimals: number,
+): PositionData | null {
+  if (
+    !traderPosition.lending ||
+    traderPosition.lending.collateral.amount.eq(new BN(0))
+  ) {
+    return null;
+  }
+  return {
+    amount: bnToNumber(traderPosition.lending.collateral.amount, decimals),
+    amountInUSD: traderPosition.lending.collateral.amountInUSD,
+  };
 }
 
 function getLendingPosition(
