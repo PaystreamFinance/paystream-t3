@@ -46,7 +46,7 @@ export function getTraderPositions(
       positions.push({
         asset: "USDC",
         type: "TOTAL DEPOSIT",
-        apy: 0,
+        apy: bnToNumber(usdcProtocolMetrics.protocolMetrics.depositRate, 4),
         positionData: getTotalDepositPosition(usdcTrader, 6),
       });
       positions.push({
@@ -79,7 +79,7 @@ export function getTraderPositions(
       positions.push({
         asset: "SOL",
         type: "TOTAL DEPOSIT",
-        apy: 0,
+        apy: bnToNumber(solProtocolMetrics.protocolMetrics.depositRate, 4),
         positionData: getTotalDepositPosition(solTrader, 9),
       });
       positions.push({
