@@ -39,7 +39,7 @@ const navItems = [
   },
   {
     label: "Docs",
-    href: "/docs",
+    href: "https://docs.paystream.finance",
   },
 ];
 
