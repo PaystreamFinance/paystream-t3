@@ -166,12 +166,14 @@ export interface OptimizerStats {
   availableLiquidity: number;
   supplyVolume: number;
   matchRate: number;
+  apyImprovement: BN;
 }
 
 export function getDriftOptimizerStats(
   usdcMarket: MarketDataUI,
   solMarket: MarketDataUI,
   priceData: MarketPriceData,
+  solProtocolMetrics: PaystreamMetrics<"drift">,
 ): OptimizerStats {
   try {
     const solPrice = priceData.originalCollateralPrice;
@@ -251,11 +253,17 @@ export function getDriftOptimizerStats(
       bnToNumber(usdcMarket.stats.totalLiquidityAvailable, 6) +
       bnToNumber(solMarket.stats.totalLiquidityAvailable, 9) * solPrice;
 
+    const apyImprovement = solProtocolMetrics.midRateApy
+      .sub(solProtocolMetrics.protocolMetrics.depositRate)
+      .mul(100)
+      .div(solProtocolMetrics.protocolMetrics.depositRate);
+
     return {
       borrowVolume,
       availableLiquidity,
       supplyVolume,
       matchRate,
+      apyImprovement,
     };
   } catch (error) {
     logger.error("Error getting drift optimizer stats:", error);

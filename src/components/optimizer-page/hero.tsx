@@ -7,20 +7,16 @@ import { AnchorProvider } from "@coral-xyz/anchor";
 import { PaystreamV1Program } from "@meimfhd/paystream-v1";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { Button } from "@/components/ui/button";
-import { getStats } from "@/lib/data";
 import Carousel from "./carousel";
 
 import { Loader } from "lucide-react";
 import Stats from "./stats";
 import { getDriftStats, getTableData } from "@/lib/data";
-import { StatsTable } from "./drift/stats-table";
-import { columns } from "./drift/table-columns";
 import { useMarketData } from "@/hooks/useMarketData";
 import { PublicKey } from "@solana/web3.js";
 
 const Hero: React.FC = () => {
-  const [stats, setStats] =
-    useState<{ title: string; value: string }[]>(getStats());
+  const [stats, setStats] = useState<{ title: string; value: string }[]>([]);
 
   const [tableData, setTableData] = useState<any>(undefined);
 

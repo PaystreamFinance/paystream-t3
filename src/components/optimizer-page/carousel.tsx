@@ -172,7 +172,10 @@ export default function Carousel() {
               data-card
               className="mr-3 flex w-[260px] flex-none justify-center sm:mr-4 sm:w-[320px] md:mr-6 md:w-[400px] lg:mr-8 lg:w-[474px]"
             >
-              <OptimizersCard variant={card.variant} />
+              <OptimizersCard
+                variant={card.variant}
+                commingSoon={card.variant === "drift" ? false : true}
+              />
             </div>
           ))}
         </div>

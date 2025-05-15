@@ -12,8 +12,6 @@ import { useConnection } from "@solana/wallet-adapter-react";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { useMarketData } from "@/hooks/useMarketData";
-import { getDriftStats, getStats } from "@/lib/data";
-import { getTableData } from "@/lib/data";
 import { getDriftOptimizerStats, OptimizerStats } from "@/lib/contract";
 
 export type OptimizerVariant = "drift" | "kamino" | "save" | "marginfi";
@@ -50,7 +48,13 @@ export default function OptimizersCard({
 
   const [stats, setStats] = useState<OptimizerStats | null>(null);
 
-  const { usdcMarketData, solMarketData, priceData } = useMarketData(
+  const {
+    usdcMarketData,
+    solMarketData,
+    priceData,
+    solProtocolMetrics,
+    loading,
+  } = useMarketData(
     new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
     new PublicKey("So11111111111111111111111111111111111111112"),
     new PublicKey("CCQXHfu51HEpiaegMU2kyYZK7dw1NhNbAX6cV44gZDJ8"),
@@ -59,25 +63,34 @@ export default function OptimizersCard({
 
   useEffect(() => {
     async function fetchStats() {
-      if (!usdcMarketData || !solMarketData || !priceData) return;
+      if (loading) return;
+      if (
+        !usdcMarketData ||
+        !solMarketData ||
+        !priceData ||
+        !solProtocolMetrics
+      )
+        return;
       const optimizerStats = getDriftOptimizerStats(
         usdcMarketData,
         solMarketData,
         priceData,
+        solProtocolMetrics,
       );
       setStats(optimizerStats);
+
       console.log("stats lol", optimizerStats);
     }
     fetchStats();
-  }, [usdcMarketData, solMarketData, priceData]);
+  }, [usdcMarketData, solMarketData, priceData, solProtocolMetrics, loading]);
 
   const cardData = {
     drift: {
       title: "Drift",
       description:
         "An optimised gateway to Drift Trade with the same liquidity and risk parameters.",
-      suppliedVolume: stats?.supplyVolume.toString() ?? "0",
-      apyImprovement: "65%",
+      suppliedVolume: stats?.supplyVolume.toFixed(2).toString() ?? "0",
+      apyImprovement: stats?.apyImprovement.toString() ?? "0",
     },
     kamino: {
       title: "Kamino",

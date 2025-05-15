@@ -17,11 +17,13 @@ export function getDriftStats(
   usdcMarketData: MarketDataUI,
   solMarketData: MarketDataUI,
   priceData: MarketPriceData,
+  solProtocolMetrics: PaystreamMetrics<"drift">,
 ) {
   const optimizerStats = getDriftOptimizerStats(
     usdcMarketData,
     solMarketData,
     priceData,
+    solProtocolMetrics,
   );
 
   return [
@@ -41,14 +43,6 @@ export function getDriftStats(
       title: "Available Liquidity",
       value: "$ " + optimizerStats.availableLiquidity.toFixed(2).toString(),
     },
-  ];
-}
-export function getStats() {
-  return [
-    { title: "Supply Volume", value: "Not available in testnet" },
-    { title: "Borrow Volume", value: "Not available in testnet" },
-    { title: "Match Rate", value: "Not available in testnet" },
-    { title: "Available Liquidity", value: "Not available in testnet" },
   ];
 }
 
