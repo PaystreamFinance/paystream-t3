@@ -2,7 +2,7 @@
 
 import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import {
-  MarketHeaderWithPubkey,
+  type MarketHeaderWithPubkey,
   PaystreamV1Program,
 } from "@meimfhd/paystream-v1";
 import {
@@ -12,7 +12,7 @@ import {
 } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
-import { Row } from "@tanstack/react-table";
+import { type Row } from "@tanstack/react-table";
 import Image from "next/image";
 import React from "react";
 import toast from "react-hot-toast";
@@ -26,9 +26,9 @@ import {
   USDC_MINT,
 } from "@/constants";
 
-import { bnToNumber } from "@/lib/contract";
-import { DashboardTable } from "./dashboard-column";
 import { useMarketData } from "@/hooks/useMarketData";
+import { bnToNumber } from "@/lib/contract";
+import { type DashboardTable } from "./dashboard-column";
 
 export interface WithdrawModalProps {
   row: Row<DashboardTable>;
@@ -65,7 +65,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
     const maxDecimals = vaultTitle === "SOL" ? 9 : 6;
     setInputValue(amount.toFixed(maxDecimals));
   };
-  const { config } = useMarketData(
+  const { solConfig, usdcConfig } = useMarketData(
     new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
     new PublicKey("So11111111111111111111111111111111111111112"),
     new PublicKey("CCQXHfu51HEpiaegMU2kyYZK7dw1NhNbAX6cV44gZDJ8"),
@@ -91,10 +91,11 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
       // };
 
       console.log(inputValue, "input value");
-      console.log(config!.mint.toBase58(), "market config");
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       console.log(decimals);
       const amount = new BN(Number(inputValue) * decimals);
+
+      const config = vaultTitle === "SOL" ? solConfig : usdcConfig;
 
       const result = await paystreamProgram.withdrawWithUI(config!, amount);
       console.log(result);

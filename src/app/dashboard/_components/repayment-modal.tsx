@@ -3,7 +3,7 @@
 import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import {
   MarketConfig,
-  MarketHeaderWithPubkey,
+  type MarketHeaderWithPubkey,
   PaystreamV1Program,
 } from "@meimfhd/paystream-v1";
 import {
@@ -26,9 +26,9 @@ import {
   USDC_MINT,
 } from "@/constants";
 
-import { bnToNumber } from "@/lib/contract";
-import { WithdrawModalProps } from "./withdraw-modal";
 import { useMarketData } from "@/hooks/useMarketData";
+import { bnToNumber } from "@/lib/contract";
+import { type WithdrawModalProps } from "./withdraw-modal";
 
 const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
   const [balance, setBalance] = React.useState<number | null>(null);
@@ -42,7 +42,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
 
-  const { config } = useMarketData(
+  const { usdcConfig, solConfig } = useMarketData(
     new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
     new PublicKey("So11111111111111111111111111111111111111112"),
     new PublicKey("CCQXHfu51HEpiaegMU2kyYZK7dw1NhNbAX6cV44gZDJ8"),
@@ -83,6 +83,8 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
 
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       const amount = new BN(Number(inputValue) * decimals);
+
+      const config = vaultTitle === "SOL" ? solConfig : usdcConfig;
 
       const result = await paystreamProgram.repayAndWithdrawCollateralWithUI(
         config!,

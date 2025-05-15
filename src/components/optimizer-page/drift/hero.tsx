@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { getDriftStats, getTableData, TableDataRow } from "@/lib/data";
+import { getDriftStats, getTableData } from "@/lib/data";
 
 import { useMarketData } from "@/hooks/useMarketData";
 import { PublicKey } from "@solana/web3.js";
@@ -51,22 +51,33 @@ export default function DriftHero() {
       setStats(stats);
       console.log("USDC Stats", {
         totalAmountInP2p: usdcMarketData.stats.totalAmountInP2p.toString(),
-        totalAmountInP2pInUSD: usdcMarketData.stats.totalAmountInP2pInUSD.toString(),
-        totalLiquidityAvailable: usdcMarketData.stats.totalLiquidityAvailable.toString(),
-        totalLiquidityAvailableInUSD: usdcMarketData.stats.totalLiquidityAvailableInUSD.toString(),
+        totalAmountInP2pInUSD:
+          usdcMarketData.stats.totalAmountInP2pInUSD.toString(),
+        totalLiquidityAvailable:
+          usdcMarketData.stats.totalLiquidityAvailable.toString(),
+        totalLiquidityAvailableInUSD:
+          usdcMarketData.stats.totalLiquidityAvailableInUSD.toString(),
         deposits: {
           totalSupply: usdcMarketData.stats.deposits.totalSupply.toString(),
-          totalSupplyInUSD: usdcMarketData.stats.deposits.totalSupplyInUSD.toString(),
-          lendAmountUnmatched: usdcMarketData.stats.deposits.lendAmountUnmatched.toString(),
-          lendAmountUnmatchedInUSD: usdcMarketData.stats.deposits.lendAmountUnmatchedInUSD.toString(),
+          totalSupplyInUSD:
+            usdcMarketData.stats.deposits.totalSupplyInUSD.toString(),
+          lendAmountUnmatched:
+            usdcMarketData.stats.deposits.lendAmountUnmatched.toString(),
+          lendAmountUnmatchedInUSD:
+            usdcMarketData.stats.deposits.lendAmountUnmatchedInUSD.toString(),
           collateral: usdcMarketData.stats.deposits.collateral.toString(),
-          collateralInUSD: usdcMarketData.stats.deposits.collateralInUSD.toString(),
+          collateralInUSD:
+            usdcMarketData.stats.deposits.collateralInUSD.toString(),
         },
         borrows: {
-          totalBorrowedP2p: usdcMarketData.stats.borrows.totalBorrowedP2p.toString(),
-          totalBorrowedP2pInUSD: usdcMarketData.stats.borrows.totalBorrowedP2pInUSD.toString(),
-          borrowAmountUnmatched: usdcMarketData.stats.borrows.borrowAmountUnmatched.toString(),
-          borrowAmountUnmatchedInUSD: usdcMarketData.stats.borrows.borrowAmountUnmatchedInUSD.toString(),
+          totalBorrowedP2p:
+            usdcMarketData.stats.borrows.totalBorrowedP2p.toString(),
+          totalBorrowedP2pInUSD:
+            usdcMarketData.stats.borrows.totalBorrowedP2pInUSD.toString(),
+          borrowAmountUnmatched:
+            usdcMarketData.stats.borrows.borrowAmountUnmatched.toString(),
+          borrowAmountUnmatchedInUSD:
+            usdcMarketData.stats.borrows.borrowAmountUnmatchedInUSD.toString(),
           utilizationRate: usdcMarketData.stats.borrows.utilizationRate,
         },
         traders: {
@@ -76,22 +87,33 @@ export default function DriftHero() {
       });
       console.log("SOL Stats", {
         totalAmountInP2p: solMarketData.stats.totalAmountInP2p.toString(),
-        totalAmountInP2pInUSD: solMarketData.stats.totalAmountInP2pInUSD.toString(),
-        totalLiquidityAvailable: solMarketData.stats.totalLiquidityAvailable.toString(),
-        totalLiquidityAvailableInUSD: solMarketData.stats.totalLiquidityAvailableInUSD.toString(),
+        totalAmountInP2pInUSD:
+          solMarketData.stats.totalAmountInP2pInUSD.toString(),
+        totalLiquidityAvailable:
+          solMarketData.stats.totalLiquidityAvailable.toString(),
+        totalLiquidityAvailableInUSD:
+          solMarketData.stats.totalLiquidityAvailableInUSD.toString(),
         deposits: {
           totalSupply: solMarketData.stats.deposits.totalSupply.toString(),
-          totalSupplyInUSD: solMarketData.stats.deposits.totalSupplyInUSD.toString(),
-          lendAmountUnmatched: solMarketData.stats.deposits.lendAmountUnmatched.toString(),
-          lendAmountUnmatchedInUSD: solMarketData.stats.deposits.lendAmountUnmatchedInUSD.toString(),
+          totalSupplyInUSD:
+            solMarketData.stats.deposits.totalSupplyInUSD.toString(),
+          lendAmountUnmatched:
+            solMarketData.stats.deposits.lendAmountUnmatched.toString(),
+          lendAmountUnmatchedInUSD:
+            solMarketData.stats.deposits.lendAmountUnmatchedInUSD.toString(),
           collateral: solMarketData.stats.deposits.collateral.toString(),
-          collateralInUSD: solMarketData.stats.deposits.collateralInUSD.toString(),
+          collateralInUSD:
+            solMarketData.stats.deposits.collateralInUSD.toString(),
         },
         borrows: {
-          totalBorrowedP2p: solMarketData.stats.borrows.totalBorrowedP2p.toString(),
-          totalBorrowedP2pInUSD: solMarketData.stats.borrows.totalBorrowedP2pInUSD.toString(),
-          borrowAmountUnmatched: solMarketData.stats.borrows.borrowAmountUnmatched.toString(),
-          borrowAmountUnmatchedInUSD: solMarketData.stats.borrows.borrowAmountUnmatchedInUSD.toString(),
+          totalBorrowedP2p:
+            solMarketData.stats.borrows.totalBorrowedP2p.toString(),
+          totalBorrowedP2pInUSD:
+            solMarketData.stats.borrows.totalBorrowedP2pInUSD.toString(),
+          borrowAmountUnmatched:
+            solMarketData.stats.borrows.borrowAmountUnmatched.toString(),
+          borrowAmountUnmatchedInUSD:
+            solMarketData.stats.borrows.borrowAmountUnmatchedInUSD.toString(),
           utilizationRate: solMarketData.stats.borrows.utilizationRate,
         },
         traders: {
@@ -115,10 +137,9 @@ export default function DriftHero() {
             collateralInUSD: trader.lending.collateral.amountInUSD.toString(),
             p2pLend: trader.lending.p2pLends.toString(),
             p2pLendInUSD: trader.lending.p2pLendsInUsdValue.toString(),
-            maxBorrowAmount:
-              trader.lending.collateral.maxBorrowAmount.toString(),
+            maxBorrowAmount: trader.lending.collateral.amount.toString(),
             maxBorrowAmountInUSD:
-              trader.lending.collateral.maxBorrowAmountInUSD.toString(),
+              trader.lending.collateral.amountInUSD.toString(),
           };
         }),
       );
@@ -136,10 +157,9 @@ export default function DriftHero() {
             collateralInUSD: trader.lending.collateral.amountInUSD.toString(),
             p2pLend: trader.lending.p2pLends.toString(),
             p2pLendInUSD: trader.lending.p2pLendsInUsdValue.toString(),
-            maxBorrowAmount:
-              trader.lending.collateral.maxBorrowAmount.toString(),
+            maxBorrowAmount: trader.lending.collateral.amount.toString(),
             maxBorrowAmountInUSD:
-              trader.lending.collateral.maxBorrowAmountInUSD.toString(),
+              trader.lending.collateral.amountInUSD.toString(),
           };
         }),
       );
