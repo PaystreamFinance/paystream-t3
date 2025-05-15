@@ -170,16 +170,9 @@ export function getDriftOptimizerStats(
   priceData: MarketPriceData,
 ): OptimizerStats {
   try {
-    let usdcPrice: number;
-    let solPrice: number;
-    console.log(usdcMarket, solMarket);
-    if (usdcMarket.marketId.toString() === "0") {
-      usdcPrice = priceData.originalMarketPrice;
-      solPrice = priceData.originalCollateralPrice;
-    } else {
-      usdcPrice = priceData.originalMarketPrice;
-      solPrice = priceData.originalCollateralPrice;
-    }
+    const solPrice = priceData.originalCollateralPrice;
+    const usdcPrice = priceData.originalMarketPrice;
+
     // Calculate borrow metrics
     const totalBorrowsUSDCP2p = bnToNumber(
       usdcMarket.stats.borrows.totalBorrowedP2p,
@@ -199,9 +192,10 @@ export function getDriftOptimizerStats(
       9,
     );
 
+    // Calculate total unmatched lending amounts in USD terms
     const totalLendAmountUnmatched =
       bnToNumber(usdcMarket.stats.deposits.lendAmountUnmatched, 6) +
-      bnToNumber(solMarket.stats.deposits.lendAmountUnmatched, 9);
+      bnToNumber(solMarket.stats.deposits.lendAmountUnmatched, 9) * solPrice;
 
     const totalBorrowsUSDC = totalBorrowsUSDCP2p + totalBorrowsUSDCP2pUnmatched;
     const totalBorrowsSOL = totalBorrowsSOLP2p + totalBorrowsSOLP2pUnmatched;
@@ -222,7 +216,7 @@ export function getDriftOptimizerStats(
       9,
     );
 
-    // Calculate aggregated metrics
+    // Calculate aggregated metrics in USD terms
     const totalCollateral = totalCollateralUSDC + totalCollateralSOL * solPrice;
     const borrowVolume = totalBorrowsUSDC + totalBorrowsSOL * solPrice;
     const supplyVolume = totalSupplyUSDC + totalSupplySOL * solPrice;
@@ -231,12 +225,14 @@ export function getDriftOptimizerStats(
       bnToNumber(solMarket.stats.totalAmountInP2p, 9) * solPrice;
 
     const totalLendingVolume = supplyVolume - totalCollateral;
+
+    // Calculate match rate as the percentage of matched P2P volume relative to total lending volume
     const matchRate =
-      totalAmountInP2p > 0 && totalLendAmountUnmatched > 0
-        ? (totalAmountInP2p / totalLendAmountUnmatched) * 100
+      totalLendingVolume > 0
+        ? (totalAmountInP2p / totalLendingVolume) * 100
         : 0;
 
-    logger.info(`Match rate: ${matchRate}`);
+    logger.info(`Match rate: ${matchRate}%`);
     logger.info(`Total lending volume: ${totalLendingVolume}`);
     logger.info(`Total amount in P2P: ${totalAmountInP2p}`);
     logger.info(`Total lend amount unmatched: ${totalLendAmountUnmatched}`);

@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { getDriftStats, getTableData } from "@/lib/data";
+import { getDriftStats, getTableData, TableDataRow } from "@/lib/data";
 
 import Stats from "../stats";
 import { StatsTable } from "./stats-table";
@@ -43,7 +43,100 @@ export default function DriftHero() {
 
       const stats = getDriftStats(usdcMarketData, solMarketData, priceData);
       setStats(stats);
+      console.log("USDC Stats", {
+        totalAmountInP2p: usdcMarketData.stats.totalAmountInP2p.toString(),
+        totalAmountInP2pInUSD: usdcMarketData.stats.totalAmountInP2pInUSD.toString(),
+        totalLiquidityAvailable: usdcMarketData.stats.totalLiquidityAvailable.toString(),
+        totalLiquidityAvailableInUSD: usdcMarketData.stats.totalLiquidityAvailableInUSD.toString(),
+        deposits: {
+          totalSupply: usdcMarketData.stats.deposits.totalSupply.toString(),
+          totalSupplyInUSD: usdcMarketData.stats.deposits.totalSupplyInUSD.toString(),
+          lendAmountUnmatched: usdcMarketData.stats.deposits.lendAmountUnmatched.toString(),
+          lendAmountUnmatchedInUSD: usdcMarketData.stats.deposits.lendAmountUnmatchedInUSD.toString(),
+          collateral: usdcMarketData.stats.deposits.collateral.toString(),
+          collateralInUSD: usdcMarketData.stats.deposits.collateralInUSD.toString(),
+        },
+        borrows: {
+          totalBorrowedP2p: usdcMarketData.stats.borrows.totalBorrowedP2p.toString(),
+          totalBorrowedP2pInUSD: usdcMarketData.stats.borrows.totalBorrowedP2pInUSD.toString(),
+          borrowAmountUnmatched: usdcMarketData.stats.borrows.borrowAmountUnmatched.toString(),
+          borrowAmountUnmatchedInUSD: usdcMarketData.stats.borrows.borrowAmountUnmatchedInUSD.toString(),
+          utilizationRate: usdcMarketData.stats.borrows.utilizationRate,
+        },
+        traders: {
+          count: usdcMarketData.stats.traders.count,
+          activeCount: usdcMarketData.stats.traders.activeCount,
+        },
+      });
+      console.log("SOL Stats", {
+        totalAmountInP2p: solMarketData.stats.totalAmountInP2p.toString(),
+        totalAmountInP2pInUSD: solMarketData.stats.totalAmountInP2pInUSD.toString(),
+        totalLiquidityAvailable: solMarketData.stats.totalLiquidityAvailable.toString(),
+        totalLiquidityAvailableInUSD: solMarketData.stats.totalLiquidityAvailableInUSD.toString(),
+        deposits: {
+          totalSupply: solMarketData.stats.deposits.totalSupply.toString(),
+          totalSupplyInUSD: solMarketData.stats.deposits.totalSupplyInUSD.toString(),
+          lendAmountUnmatched: solMarketData.stats.deposits.lendAmountUnmatched.toString(),
+          lendAmountUnmatchedInUSD: solMarketData.stats.deposits.lendAmountUnmatchedInUSD.toString(),
+          collateral: solMarketData.stats.deposits.collateral.toString(),
+          collateralInUSD: solMarketData.stats.deposits.collateralInUSD.toString(),
+        },
+        borrows: {
+          totalBorrowedP2p: solMarketData.stats.borrows.totalBorrowedP2p.toString(),
+          totalBorrowedP2pInUSD: solMarketData.stats.borrows.totalBorrowedP2pInUSD.toString(),
+          borrowAmountUnmatched: solMarketData.stats.borrows.borrowAmountUnmatched.toString(),
+          borrowAmountUnmatchedInUSD: solMarketData.stats.borrows.borrowAmountUnmatchedInUSD.toString(),
+          utilizationRate: solMarketData.stats.borrows.utilizationRate,
+        },
+        traders: {
+          count: solMarketData.stats.traders.count,
+          activeCount: solMarketData.stats.traders.activeCount,
+        },
+      });
       console.log("stats", stats);
+      console.log("stats", stats);
+      console.log(
+        "usdcMarketData",
+        usdcMarketData.traders.map((trader) => {
+          return {
+            borrowPending: trader.borrowing.borrowPending.toString(),
+            borrowPendingInUSD: trader.borrowing.borrowPendingInUSD.toString(),
+            p2pBorrowed: trader.borrowing.p2pBorrowed.toString(),
+            p2pBorrowedInUSD: trader.borrowing.p2pBorrowedInUSD.toString(),
+            deposit: trader.lending.onVaultLends.toString(),
+            depositInUSD: trader.lending.onVaultLendsInUSD.toString(),
+            collateral: trader.lending.collateral.amount.toString(),
+            collateralInUSD: trader.lending.collateral.amountInUSD.toString(),
+            p2pLend: trader.lending.p2pLends.toString(),
+            p2pLendInUSD: trader.lending.p2pLendsInUsdValue.toString(),
+            maxBorrowAmount:
+              trader.lending.collateral.maxBorrowAmount.toString(),
+            maxBorrowAmountInUSD:
+              trader.lending.collateral.maxBorrowAmountInUSD.toString(),
+          };
+        }),
+      );
+      console.log(
+        "solMarketData",
+        solMarketData.traders.map((trader) => {
+          return {
+            borrowPending: trader.borrowing.borrowPending.toString(),
+            borrowPendingInUSD: trader.borrowing.borrowPendingInUSD.toString(),
+            p2pBorrowed: trader.borrowing.p2pBorrowed.toString(),
+            p2pBorrowedInUSD: trader.borrowing.p2pBorrowedInUSD.toString(),
+            deposit: trader.lending.onVaultLends.toString(),
+            depositInUSD: trader.lending.onVaultLendsInUSD.toString(),
+            collateral: trader.lending.collateral.amount.toString(),
+            collateralInUSD: trader.lending.collateral.amountInUSD.toString(),
+            p2pLend: trader.lending.p2pLends.toString(),
+            p2pLendInUSD: trader.lending.p2pLendsInUsdValue.toString(),
+            maxBorrowAmount:
+              trader.lending.collateral.maxBorrowAmount.toString(),
+            maxBorrowAmountInUSD:
+              trader.lending.collateral.maxBorrowAmountInUSD.toString(),
+          };
+        }),
+      );
       const tableData = getTableData(
         usdcMarketData,
         solMarketData,
