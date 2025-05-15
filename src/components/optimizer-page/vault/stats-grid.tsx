@@ -104,7 +104,7 @@ export function StatsGridHorizontal({
             underline && "underline decoration-dotted",
           )}
         >
-          P2P APY
+          Drift APY
         </span>
         <span className="font-darkerGrotesque text-lg font-[400] text-[#EAEAEA]">
           {stats.apy}%

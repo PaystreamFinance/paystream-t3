@@ -258,10 +258,15 @@ export function getDriftOptimizerStats(
       bnToNumber(usdcMarket.stats.totalLiquidityAvailable, 6) +
       bnToNumber(solMarket.stats.totalLiquidityAvailable, 9) * solPrice;
 
-    const apyImprovement = solProtocolMetrics.midRateApy
-      .sub(solProtocolMetrics.protocolMetrics.depositRate)
-      .mul(100)
-      .div(solProtocolMetrics.protocolMetrics.depositRate);
+    let apyImprovement = new BN(0);
+    try {
+      apyImprovement = solProtocolMetrics.midRateApy
+        .sub(solProtocolMetrics.protocolMetrics.depositRate)
+        .mul(100)
+        .div(solProtocolMetrics.protocolMetrics.depositRate);
+    } catch (error) {
+      logger.error("Error getting apy improvement:", error);
+    }
 
     return {
       borrowVolume,

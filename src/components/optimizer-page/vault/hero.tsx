@@ -24,6 +24,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import StatsGrid, { StatsGridHorizontal } from "./stats-grid";
 import VaultDropdown from "./vault-dropdown";
+import { bnToNumber } from "@/lib/contract";
 
 export interface VaultDataProps {
   vaultTitle: string;
@@ -77,7 +78,16 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
           solMarketData?.stats.deposits.collateralInUSD.toString() ?? "--",
         liquidity:
           solMarketData?.stats.totalLiquidityAvailable.toString() ?? "--",
-        apy: solProtocolMetrics?.midRateApy.toString() ?? "--",
+        apy:
+          vaultState === "lend"
+            ? (bnToNumber(
+                solProtocolMetrics?.protocolMetrics.depositRate,
+                4,
+              ).toFixed(2) ?? "--")
+            : (bnToNumber(
+                solProtocolMetrics?.protocolMetrics.borrowRate,
+                4,
+              ).toFixed(2) ?? "--"),
       });
     } else if (vaultTitle === "USDC") {
       setStats({
@@ -85,7 +95,16 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
           usdcMarketData?.stats.deposits.collateralInUSD.toString() ?? "--",
         liquidity:
           usdcMarketData?.stats.totalLiquidityAvailable.toString() ?? "--",
-        apy: usdcProtocolMetrics?.midRateApy.toString() ?? "--",
+        apy:
+          vaultState === "lend"
+            ? (bnToNumber(
+                usdcProtocolMetrics?.protocolMetrics.depositRate,
+                4,
+              ).toFixed(2) ?? "--")
+            : (bnToNumber(
+                usdcProtocolMetrics?.protocolMetrics.borrowRate,
+                4,
+              ).toFixed(2) ?? "--"),
       });
     }
   }, [
@@ -95,6 +114,7 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
     usdcProtocolMetrics,
     solProtocolMetrics,
     vaultTitle,
+    vaultState,
   ]);
 
   useEffect(() => {
@@ -197,14 +217,6 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
             : "0",
           p2pApy: p2pApy?.toString() ?? "0",
         });
-
-        setStats({
-          totalDeposits:
-            solMarketData?.stats.deposits.collateralInUSD.toString() ?? "--",
-          liquidity:
-            solMarketData?.stats.totalLiquidityAvailable.toString() ?? "--",
-          apy: p2pApy?.toString() ?? "--",
-        });
       } catch (error) {
         console.info("Error fetching user data:", error);
       }
@@ -245,7 +257,7 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
           <StatsGrid
             stats={{
               myPosition: userData?.myPositions ?? "--",
-              apy: userData?.apy ?? "--",
+              apy: userData?.p2pApy ?? "--",
               projectedEarnings: userData?.projectedEarnings ?? "--",
             }}
           />
