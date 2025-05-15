@@ -217,9 +217,15 @@ export function getDriftOptimizerStats(
     );
 
     // Calculate aggregated metrics in USD terms
-    const totalCollateral = totalCollateralUSDC + totalCollateralSOL * solPrice;
-    const borrowVolume = totalBorrowsUSDC + totalBorrowsSOL * solPrice;
-    const supplyVolume = totalSupplyUSDC + totalSupplySOL * solPrice;
+    const totalCollateral =
+      solMarket.stats.deposits.collateral +
+      usdcMarket.stats.deposits.collateral;
+    const borrowVolume =
+      solMarket.stats.borrows.totalBorrowedP2pInUSD +
+      usdcMarket.stats.borrows.totalBorrowedP2pInUSD;
+    const supplyVolume =
+      solMarket.stats.deposits.totalSupplyInUSD +
+      usdcMarket.stats.deposits.totalSupplyInUSD;
     const totalAmountInP2p =
       bnToNumber(usdcMarket.stats.totalAmountInP2p, 6) +
       bnToNumber(solMarket.stats.totalAmountInP2p, 9) * solPrice;

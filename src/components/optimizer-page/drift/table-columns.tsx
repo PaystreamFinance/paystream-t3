@@ -10,6 +10,7 @@ export type OptimizerTable = {
   id: string;
   asset: "usdc" | "sol";
   deposit_volume: string;
+  supply_volume_usd: string;
   supply_volume: number;
   noOfToken: number;
   avl_liquidity: number;
@@ -60,10 +61,10 @@ export const columns: ColumnDef<OptimizerTable>[] = [
       return (
         <div className="flex flex-col items-start justify-start font-inter">
           <p className="text-[14px] text-[#FAFAFA]">
-            ${row.original.supply_volume}
+            ${row.original.supply_volume_usd}
           </p>
           <p className="text-[12px] text-[#9CE0FF66]">
-            {row.original.noOfToken} {row.original.asset}
+            {row.original.supply_volume} {row.original.asset}
           </p>
         </div>
       );

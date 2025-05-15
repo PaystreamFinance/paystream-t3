@@ -87,10 +87,18 @@ export function getTableData(
     {
       id: "1",
       asset: "sol" as const,
-      supply_volume: bnToNumber(solProtocolMetrics.totalDepositsOnVault, 6),
+      supply_volume_usd:
+        solMarketData.stats.deposits.totalSupplyInUSD.toFixed(2),
+      supply_volume: (+Number(
+        solMarketData.stats.deposits.totalSupply.toNumber() / 10 ** 9,
+      ).toFixed(4)).toString(),
       no_of_token: totalSupplySOL.toFixed(2),
-      avl_liquidity: avaialableLiqSOL.toFixed(2),
-      avl_liquidity_usd: (avaialableLiqSOL * solPrice).toFixed(2),
+      avl_liquidity: (+Number(
+        solMarketData.stats.totalLiquidityAvailable.toNumber() / 10 ** 9,
+      ).toFixed(4)).toString(),
+
+      avl_liquidity_usd:
+        solMarketData.stats.totalLiquidityAvailableInUSD.toFixed(2),
       borrow_apr: bnToNumber(solProtocolMetrics.protocolMetrics.borrowRate, 4),
       supply_apr: bnToNumber(solProtocolMetrics.protocolMetrics.depositRate, 4),
       p2p_apr: bnToNumber(solProtocolMetrics.midRateApy, 4),
@@ -98,11 +106,20 @@ export function getTableData(
     {
       id: "2",
       asset: "usdc" as const,
-      deposit_volume: bnToNumber(usdcProtocolMetrics.totalDepositsOnVault, 6),
-      supply_volume: bnToNumber(usdcProtocolMetrics.totalDepositsOnVault, 6),
+      supply_volume_usd:
+        usdcMarketData.stats.deposits.totalSupplyInUSD.toFixed(2),
+
+      supply_volume: (+Number(
+        usdcMarketData.stats.deposits.totalSupply.toNumber() / 10 ** 6,
+      ).toFixed(4)).toString(),
       no_of_token: totalSupplyUSDC.toFixed(2),
-      avl_liquidity: avaialableLiqUSDC.toFixed(2),
-      avl_liquidity_usd: avaialableLiqUSDC.toFixed(2),
+
+      avl_liquidity: (+Number(
+        usdcMarketData.stats.totalLiquidityAvailable.toNumber() / 10 ** 6,
+      ).toFixed(4)).toString(),
+
+      avl_liquidity_usd:
+        usdcMarketData.stats.totalLiquidityAvailableInUSD.toFixed(2),
       borrow_apr: bnToNumber(usdcProtocolMetrics.protocolMetrics.borrowRate, 4),
       supply_apr: bnToNumber(
         usdcProtocolMetrics.protocolMetrics.depositRate,
