@@ -38,21 +38,21 @@ const Hero: React.FC = () => {
   );
   useEffect(() => {
     async function fetchStats() {
-      if (!usdcMarketData || !solMarketData || !priceData) return;
-      const stats = getDriftStats(usdcMarketData, solMarketData, priceData);
+      if (!usdcMarketData || !solMarketData || !priceData || !solProtocolMetrics || !usdcProtocolMetrics) return;
+      const stats = getDriftStats(usdcMarketData, solMarketData, priceData, solProtocolMetrics);
       setStats(stats);
 
       const tableData = getTableData(
         usdcMarketData,
         solMarketData,
         priceData,
-        usdcProtocolMetrics!,
-        solProtocolMetrics!,
+        usdcProtocolMetrics,
+        solProtocolMetrics,
       );
       setTableData(tableData);
     }
     fetchStats();
-  }, [usdcMarketData, solMarketData, priceData]);
+  }, [usdcMarketData, solMarketData, priceData, solProtocolMetrics, usdcProtocolMetrics]);
 
   return (
     <>
@@ -70,7 +70,12 @@ const Hero: React.FC = () => {
             <Stats stats={stats} />
           </div>
 
-          <Carousel />
+          <Carousel
+            usdcMarketData={usdcMarketData}
+            solMarketData={solMarketData}
+            priceData={priceData}
+            solProtocolMetrics={solProtocolMetrics}
+          />
         </div>
 
         {/* Stats for desktop view */}

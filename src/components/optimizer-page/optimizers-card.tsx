@@ -5,24 +5,32 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { AnchorProvider } from "@coral-xyz/anchor";
-import { MarketConfig, PaystreamV1Program } from "@meimfhd/paystream-v1";
+import { MarketConfig, MarketDataUI, MarketPriceData, PaystreamMetrics, PaystreamV1Program } from "@meimfhd/paystream-v1";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { useMarketData } from "@/hooks/useMarketData";
-import { getDriftOptimizerStats, OptimizerStats } from "@/lib/contract";
+import { getDriftOptimizerStats, type OptimizerStats } from "@/lib/contract";
 
 export type OptimizerVariant = "drift" | "kamino" | "save" | "marginfi";
 
 type OptimizerCardProps = {
+  usdcMarketData: MarketDataUI | null;
+  solMarketData: MarketDataUI | null;
+  priceData: MarketPriceData | null;
+  solProtocolMetrics: PaystreamMetrics<"drift"> | null;
   variant?: OptimizerVariant;
   className?: string;
   commingSoon?: boolean;
 };
 
 export default function OptimizersCard({
+  usdcMarketData,
+  solMarketData,
+  priceData,
+  solProtocolMetrics,
   variant = "drift",
   className,
   commingSoon,
@@ -47,50 +55,39 @@ export default function OptimizersCard({
   };
 
   const [stats, setStats] = useState<OptimizerStats | null>(null);
+  const router = useRouter();
 
-  const {
-    usdcMarketData,
-    solMarketData,
-    priceData,
-    solProtocolMetrics,
-    loading,
-  } = useMarketData(
-    new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
-    new PublicKey("So11111111111111111111111111111111111111112"),
-    new PublicKey("CCQXHfu51HEpiaegMU2kyYZK7dw1NhNbAX6cV44gZDJ8"),
-    new PublicKey("GSjnD3XA1ezr7Xew3PZKPJdKGhjWEGefFFxXJhsfrX5e"),
-  );
-
-  useEffect(() => {
-    async function fetchStats() {
-      if (loading) return;
-      if (
-        !usdcMarketData ||
-        !solMarketData ||
-        !priceData ||
-        !solProtocolMetrics
-      )
-        return;
-      const optimizerStats = getDriftOptimizerStats(
+  // Memoize the stats calculation to prevent unnecessary updates
+  const calculateStats = useCallback(() => {
+    if (!usdcMarketData || !solMarketData || !priceData || !solProtocolMetrics) return null;
+    
+    try {
+      return getDriftOptimizerStats(
         usdcMarketData,
         solMarketData,
         priceData,
         solProtocolMetrics,
       );
-      setStats(optimizerStats);
-
-      console.log("stats lol", optimizerStats);
+    } catch (error) {
+      console.error("Error calculating optimizer stats:", error);
+      return null;
     }
-    fetchStats();
-  }, [usdcMarketData, solMarketData, priceData, solProtocolMetrics, loading]);
+  }, [usdcMarketData, solMarketData, priceData, solProtocolMetrics]);
+
+  useEffect(() => {
+    const newStats = calculateStats();
+    if (newStats) {
+      setStats(newStats);
+    }
+  }, [calculateStats]);
 
   const cardData = {
     drift: {
       title: "Drift",
       description:
         "An optimised gateway to Drift Trade with the same liquidity and risk parameters.",
-      suppliedVolume: stats?.supplyVolume.toFixed(2).toString() ?? "0",
-      apyImprovement: stats?.apyImprovement.toString() ?? "0",
+      suppliedVolume: stats?.supplyVolume.toFixed(2).toString() ?? "--",
+      apyImprovement: stats?.apyImprovement.toString() ?? "--",
     },
     kamino: {
       title: "Kamino",
@@ -116,8 +113,6 @@ export default function OptimizersCard({
   };
 
   const selectedGradient = gradients[variant];
-
-  const router = useRouter();
 
   return (
     <div

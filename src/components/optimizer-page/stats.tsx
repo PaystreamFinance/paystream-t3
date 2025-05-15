@@ -20,8 +20,6 @@ export default function Stats({
     throw new Error("Stats must be less than 4");
   }
 
-  console.log("[LOGGGG] stats", stats);
-
   return (
     <div
       className={cn(

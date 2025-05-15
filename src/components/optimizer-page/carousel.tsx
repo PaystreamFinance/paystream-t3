@@ -4,6 +4,7 @@ import OptimizersCard from "./optimizers-card";
 import "./carousel.css";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { MarketDataUI, MarketPriceData, PaystreamMetrics } from "@meimfhd/paystream-v1";
 
 type CardVariant = "drift" | "kamino" | "save" | "marginfi";
 
@@ -12,7 +13,17 @@ interface CarouselCard {
   commingSoon: boolean;
 }
 
-export default function Carousel() {
+export default function Carousel({
+  usdcMarketData,
+  solMarketData,
+  priceData,
+  solProtocolMetrics,
+}: {
+  usdcMarketData: MarketDataUI | null;
+  solMarketData: MarketDataUI | null;
+  priceData: MarketPriceData | null;
+  solProtocolMetrics: PaystreamMetrics<"drift"> | null;
+}) {
   const [activeIndex, setActiveIndex] = React.useState(0);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const isManualScrollRef = React.useRef(false);
@@ -146,6 +157,10 @@ export default function Carousel() {
           {cardsData.map((card, index) => (
             <div key={index} className="w-full">
               <OptimizersCard
+                usdcMarketData={usdcMarketData}
+                solMarketData={solMarketData}
+                priceData={priceData}
+                solProtocolMetrics={solProtocolMetrics}
                 variant={card.variant}
                 commingSoon={card.variant === "drift" ? false : true}
               />
@@ -173,6 +188,10 @@ export default function Carousel() {
               className="mr-3 flex w-[260px] flex-none justify-center sm:mr-4 sm:w-[320px] md:mr-6 md:w-[400px] lg:mr-8 lg:w-[474px]"
             >
               <OptimizersCard
+                usdcMarketData={usdcMarketData}
+                solMarketData={solMarketData}
+                priceData={priceData}
+                solProtocolMetrics={solProtocolMetrics}
                 variant={card.variant}
                 commingSoon={card.variant === "drift" ? false : true}
               />

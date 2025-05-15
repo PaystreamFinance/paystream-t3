@@ -125,24 +125,5 @@ export function getTableData(
 }
 
 export function getDashboardTableData() {
-  return [
-    {
-      id: "1",
-      asset: "SOL" as const,
-      position: "100",
-      type: "P2P BORROW" as const,
-      apy: "8.4",
-      action_amount: new BN(1000000000),
-      amount_in_usd: 100,
-    },
-    {
-      id: "2",
-      asset: "USDC" as const,
-      position: "200",
-      type: "P2P LEND" as const,
-      apy: "7.36",
-      action_amount: new BN(200000000),
-      amount_in_usd: 200,
-    },
-  ] as DashboardTable[];
+  return [] as DashboardTable[];
 }

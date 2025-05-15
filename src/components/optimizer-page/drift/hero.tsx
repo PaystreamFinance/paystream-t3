@@ -45,9 +45,9 @@ export default function DriftHero() {
 
   useEffect(() => {
     async function fetchStats() {
-      if (!usdcMarketData || !solMarketData || !priceData) return;
+      if (!usdcMarketData || !solMarketData || !priceData || !solProtocolMetrics) return;
 
-      const stats = getDriftStats(usdcMarketData, solMarketData, priceData);
+      const stats = getDriftStats(usdcMarketData, solMarketData, priceData, solProtocolMetrics);
       setStats(stats);
       console.log("USDC Stats", {
         totalAmountInP2p: usdcMarketData.stats.totalAmountInP2p.toString(),
