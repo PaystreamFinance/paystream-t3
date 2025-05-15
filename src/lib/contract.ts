@@ -10,7 +10,12 @@ import { logger } from "./utils";
 
 export interface Position {
   asset: "SOL" | "USDC";
-  type: "lending" | "p2pLending" | "p2pBorrowing" | "pendingBorrowing";
+  type:
+    | "lending"
+    | "total_deposit"
+    | "p2pLending"
+    | "p2pBorrowing"
+    | "pendingBorrowing";
   apy: number | null;
   positionData: PositionData | null;
 }

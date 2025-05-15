@@ -23,7 +23,7 @@ export type DashboardTable = {
   id: string;
   asset: "USDC" | "SOL";
   position: string;
-  type: "DEPOSIT" | "P2P LEND" | "BORROW" | "PENDING BORROW";
+  type: "LEND" | "TOTAL DEPOSIT" | "P2P LEND" | "P2P BORROW" | "PENDING BORROW";
   apy: string;
   action_amount: BN;
   amount_in_usd: number;
@@ -107,7 +107,7 @@ export const dashboardColumn: ColumnDef<DashboardTable>[] = [
     ),
     cell: ({ row }) => {
       const type = row.original.type;
-      const buttonText = type === "BORROW" ? "Repayment" : "Withdraw";
+      const buttonText = type === "P2P BORROW" ? "Repayment" : "Withdraw";
 
       return (
         <div>
@@ -118,7 +118,7 @@ export const dashboardColumn: ColumnDef<DashboardTable>[] = [
               </Button>
             </DialogTrigger>
             <DialogContent className="border border-[#9CE0FF] bg-[#070f14] sm:max-w-[550px]">
-              {type === "BORROW" ? (
+              {type === "P2P BORROW" ? (
                 <RepaymentModal row={row} />
               ) : (
                 <WithdrawModal row={row} />

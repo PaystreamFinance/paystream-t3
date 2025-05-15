@@ -85,11 +85,11 @@ const DashboardPage: NextPage = () => {
         );
 
         // Convert positions to table data format
-        const tableData = positions
+        const tableData: DashboardTable[] = positions
           .filter((pos) => pos.positionData !== null)
           .map((pos, idx) => ({
             id: idx.toString(),
-            asset: pos.asset as "USDC" | "SOL",
+            asset: pos.asset ,
             position: pos.positionData!.amount.toFixed(2).toString(),
             type: (pos.type === "lending"
               ? "DEPOSIT"
@@ -97,7 +97,7 @@ const DashboardPage: NextPage = () => {
                 ? "P2P LEND"
                 : pos.type === "p2pBorrowing"
                   ? "P2P BORROW"
-                  : "PENDING BORROW") as DashboardTable["type"],
+                  : "PENDING BORROW") ,
             apy: pos.apy?.toString() ?? "N/A",
             action_amount: pos.positionData!.amount,
             amount_in_usd: pos.positionData!.amountInUSD,
