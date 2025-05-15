@@ -10,7 +10,7 @@ export type OptimizerTable = {
   id: string;
   asset: "usdc" | "sol";
   deposit_volume: string;
-  balance: number;
+  supply_volume: number;
   noOfToken: number;
   avl_liquidity: number;
   avl_liquidity_usd: number;
@@ -48,7 +48,7 @@ export const columns: ColumnDef<OptimizerTable>[] = [
     },
   },
   {
-    accessorKey: "balance",
+    accessorKey: "supply_volume",
     header: ({ column }) => (
       <HeaderButton
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -59,7 +59,9 @@ export const columns: ColumnDef<OptimizerTable>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex flex-col items-start justify-start font-inter">
-          <p className="text-[14px] text-[#FAFAFA]">${row.original.balance}</p>
+          <p className="text-[14px] text-[#FAFAFA]">
+            ${row.original.supply_volume}
+          </p>
           <p className="text-[12px] text-[#9CE0FF66]">
             {row.original.noOfToken} {row.original.asset}
           </p>
