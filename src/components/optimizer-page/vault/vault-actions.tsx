@@ -17,6 +17,7 @@ import {
 } from "@/constants";
 import { useMarketData } from "@/hooks/useMarketData";
 import { bnToNumber } from "@/lib/contract";
+import { getTableData } from "@/lib/data";
 import { useVaultStateStore } from "@/store/vault-state-store";
 import { AnchorProvider, BN, utils } from "@coral-xyz/anchor";
 import {
@@ -83,6 +84,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     error,
     paystreamProgram,
     provider,
+    usdcProtocolMetrics,
+    solProtocolMetrics,
   } = useMarketData(
     new anchor.web3.PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
     new anchor.web3.PublicKey("So11111111111111111111111111111111111111112"),
@@ -211,7 +214,38 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   };
 
   const handleBorrow = async () => {
-    if (!inputValue || !wallet || !connection || !paystreamProgram) return;
+    if (
+      !inputValue ||
+      !wallet ||
+      !connection ||
+      !paystreamProgram ||
+      !usdcMarketData ||
+      !solMarketData ||
+      !priceData
+    )
+      return;
+
+    const tableData = getTableData(
+      usdcMarketData,
+      solMarketData,
+      priceData,
+      usdcProtocolMetrics!,
+      solProtocolMetrics!,
+    );
+
+    const usdcData = tableData?.filter((item: any) => item.asset === "usdc");
+    const solData = tableData?.filter((item: any) => item.asset === "sol");
+
+    const availableLiq =
+      vaultTitle === "SOL"
+        ? solData[0]?.avl_liquidity
+        : usdcData[0]?.avl_liquidity;
+
+    if (Number(inputValue) > Number(availableLiq)) {
+      return toast.error(
+        "Requested amount exceeds current liquidity of market",
+      );
+    }
 
     try {
       setIsLoading(true);
@@ -579,7 +613,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               variant="shady"
               className="w-full"
               onClick={handleSupplyClick}
-              disabled={isLendingDisabled}
+              // disabled={isLendingDisabled}
             >
               Supply
             </Button>
