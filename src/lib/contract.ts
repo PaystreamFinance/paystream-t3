@@ -145,7 +145,7 @@ export function getP2PMatches(
           amount: bnToNumber(match.amount, 6),
           timestamp: match.timestamp,
           durationInDays: match.durationInDays,
-          id: match.id,
+          id: match.id.toNumber(),
         });
       });
     }
@@ -166,7 +166,7 @@ export function getP2PMatches(
           amount: bnToNumber(match.amount, 9),
           timestamp: match.timestamp,
           durationInDays: match.durationInDays,
-          id: match.id,
+          id: match.id.toNumber(),
         });
       });
     }
@@ -180,7 +180,6 @@ export function getP2PMatches(
 
 export interface OptimizerStats {
   borrowVolume: number;
-  availableLiquidity: number;
   availableLiquidityInUSD: number;
   supplyVolume: number;
   matchRate: number;
@@ -216,14 +215,6 @@ export function getDriftOptimizerStats(
       9,
     );
 
-    // Calculate total unmatched lending amounts in USD terms
-    const totalLendAmountUnmatched =
-      bnToNumber(usdcMarket.stats.deposits.lendAmountUnmatched, 6) +
-      bnToNumber(solMarket.stats.deposits.lendAmountUnmatched, 9) * solPrice;
-
-    const totalBorrowsUSDC = totalBorrowsUSDCP2p + totalBorrowsUSDCP2pUnmatched;
-    const totalBorrowsSOL = totalBorrowsSOLP2p + totalBorrowsSOLP2pUnmatched;
-
     // Calculate supply metrics
     const totalSupplyUSDC = bnToNumber(
       usdcMarket.stats.deposits.totalSupply,
@@ -241,9 +232,9 @@ export function getDriftOptimizerStats(
     );
 
     // Calculate aggregated metrics in USD terms
-    const totalCollateral =
-      solMarket.stats.deposits.collateral +
-      usdcMarket.stats.deposits.collateral;
+    const totalCollateral = solMarket.stats.deposits.collateral.add(
+      usdcMarket.stats.deposits.collateral,
+    );
     const borrowVolume =
       solMarket.stats.borrows.totalBorrowedP2pInUSD +
       usdcMarket.stats.borrows.totalBorrowedP2pInUSD;
@@ -252,29 +243,10 @@ export function getDriftOptimizerStats(
       solMarket.stats.deposits.totalSupplyInUSD +
       usdcMarket.stats.deposits.totalSupplyInUSD;
 
-    const totalAmountInP2p =
-      bnToNumber(usdcMarket.stats.totalAmountInP2p, 6) +
-      bnToNumber(solMarket.stats.totalAmountInP2p, 9) * solPrice;
-
-    const totalLendingVolume = supplyVolume - totalCollateral;
-
-    const availableLiquidity =
-      bnToNumber(usdcMarket.stats.totalLiquidityAvailable, 6) +
-      bnToNumber(solMarket.stats.totalLiquidityAvailable, 9) * solPrice;
-
     const availableLiquidityInUSD =
       usdcMarket.stats.totalLiquidityAvailableInUSD +
       solMarket.stats.totalLiquidityAvailableInUSD;
 
-    const totalLiquidityAvailable =
-      usdcMarket.stats.totalLiquidityAvailable +
-      solMarket.stats.totalLiquidityAvailable;
-
-    // Calculate match rate as the percentage of matched P2P volume relative to total lending volume
-    console.log(
-      "availableLiquidityInUSD + borrowVolume",
-      availableLiquidityInUSD + borrowVolume,
-    );
     const matchRate =
       borrowVolume > 0
         ? (borrowVolume / (availableLiquidityInUSD + borrowVolume)) * 100
@@ -287,7 +259,6 @@ export function getDriftOptimizerStats(
 
     return {
       borrowVolume,
-      availableLiquidity,
       availableLiquidityInUSD,
       supplyVolume,
       matchRate,

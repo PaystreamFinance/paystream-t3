@@ -22,11 +22,13 @@ import * as React from "react";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  loading: boolean;
 }
 
 export function StatsTable<TData, TValue>({
   columns,
   data,
+  loading,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const table = useReactTable({
@@ -63,7 +65,16 @@ export function StatsTable<TData, TValue>({
         ))}
       </TableHeader>
       <TableBody>
-        {table.getRowModel().rows?.length ? (
+        {loading || table === undefined || table.getRowModel() === undefined  || table.getRowModel().rows === undefined ? (
+          <TableRow className="hover:bg-[#1E364B]">
+            <TableCell
+              colSpan={columns.length}
+              className="h-24 text-center text-white/80"
+            >
+              Loading...
+            </TableCell>
+          </TableRow>
+        ) : table.getRowModel().rows.length > 0 ? (
           table.getRowModel().rows.map((row) => (
             <TableRow
               key={row.id}
@@ -83,7 +94,7 @@ export function StatsTable<TData, TValue>({
               colSpan={columns.length}
               className="h-24 text-center text-white/80"
             >
-              Loading...
+              No positions found. Select an optimizer to start trading.
             </TableCell>
           </TableRow>
         )}

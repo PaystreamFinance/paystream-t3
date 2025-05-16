@@ -245,6 +245,11 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
             {vaultTitle} Vault
           </p>
           <div className="flex items-center gap-2">
+            <Link href={`/optimizers/drift/${vaultTitle === "SOL" ? "usdc" : "sol"}`}>
+              <Button className="w-fit bg-[#9CE0FF0F] font-body text-[#9CE0FF] hover:bg-[#9CE0FF] hover:text-[#02142B]">
+                Go to {vaultTitle === "SOL" ? "USDC" : "SOL"} Market
+              </Button>
+            </Link>
             <Link href="/dashboard">
               <Button className="w-fit bg-[#9CE0FF0F] font-body text-[#9CE0FF] hover:bg-[#9CE0FF] hover:text-[#02142B]">
                 Dashboard

@@ -44,7 +44,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
 
-  const { usdcConfig, solConfig, priceData, solMarketData, usdcMarketData } =
+  const { usdcConfig, solConfig, priceData, solMarketData, usdcMarketData, paystreamProgram } =
     useMarketData(
       new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
       new PublicKey("So11111111111111111111111111111111111111112"),
@@ -55,15 +55,11 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
   const provider = new AnchorProvider(connection, wallet!, {
     commitment: "processed",
   });
-  const paystreamProgram = new PaystreamV1Program(provider);
 
   const vaultTitle = row.original.asset.toUpperCase();
 
   const handlePercentageClick = (percentage: number) => {
-    const maxAmount = bnToNumber(
-      row.original.action_amount,
-      vaultTitle === "SOL" ? 9 : 6,
-    );
+    const maxAmount = row.original.action_amount;
     const amount =
       percentage === 100 ? maxAmount : (maxAmount * percentage) / 100;
 
@@ -72,7 +68,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
   };
 
   const handleRepayment = async () => {
-    if (!marketHeader || !inputValue) return;
+    if (!marketHeader || !inputValue || !paystreamProgram || !solConfig || !usdcConfig) return;
 
     try {
       // const marketConfig = {
@@ -89,16 +85,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
 
       const config = vaultTitle === "SOL" ? solConfig : usdcConfig;
 
-      const freeCollateral = await calculate_debt_amount_in_collateral(
-        amount.toNumber(),
-        vaultTitle === "SOL"
-          ? priceData?.borrowPriceInCollateralMintScaled
-          : priceData?.collateralPriceInBorrowMintScaled,
-        vaultTitle === "SOL" ? 9 : 6,
-        vaultTitle === "SOL" ? 6 : 9,
-      );
-
-      const replayResult = await paystreamProgram.repayWithUI(config!, amount);
+      const replayResult = await paystreamProgram.repayWithUI(config, amount);
       console.log(replayResult);
       toast.success("Repaid successful");
 
@@ -176,6 +163,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
   React.useEffect(() => {
     const fetchMarketHeader = async () => {
       try {
+        if (!paystreamProgram) return;
         const headers = await paystreamProgram.getAllMarketHeaders();
         if (vaultTitle === "SOL") {
           // headers[0] is for SOL vault
@@ -204,7 +192,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
     };
 
     fetchTime();
-  }, [publicKey, vaultTitle, solMarketData, usdcMarketData]);
+  }, [publicKey, vaultTitle, solMarketData, usdcMarketData, paystreamProgram]);
 
   return (
     <div>
@@ -216,11 +204,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
           <div className="ml-auto flex items-center gap-2 font-body">
             <span className="text-sm text-[#BCEBFF80]">
               Pending:{" "}
-              {bnToNumber(
-                row.original.action_amount,
-                vaultTitle === "SOL" ? 9 : 6,
-              ).toFixed(4)}{" "}
-              {vaultTitle}
+              {row.original.action_amount.toFixed(4)} {vaultTitle}
             </span>
             <span
               onClick={() => handlePercentageClick(50)}

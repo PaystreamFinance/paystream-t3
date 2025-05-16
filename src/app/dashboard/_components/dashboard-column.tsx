@@ -30,7 +30,7 @@ export type DashboardTable = {
     | "P2P BORROW"
     | "PENDING BORROW";
   apy: string;
-  action_amount: BN;
+  action_amount: number;
   amount_in_usd: number;
 };
 

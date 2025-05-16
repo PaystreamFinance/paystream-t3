@@ -40,6 +40,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { type VaultDataProps } from "./hero";
+import { TokenAmount } from "@solana/web3.js";
 
 const WalletMultiButton = dynamic(
   () =>
@@ -57,6 +58,9 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   const [collateralBalance, setCollateralBalance] = useState<number | null>(
     null,
   );
+  const [usdcTokenAccountExists, setUsdcTokenAccountExists] = useState<
+    boolean | null
+  >(null);
   const [solTrader, setSolTrader] = useState<
     TraderPositionUI | null | undefined
   >(undefined);
@@ -149,13 +153,16 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   useEffect(() => {
     if (!wallet || !connection) return;
     if (!paystreamProgram) return;
+    console.log("paystreamProgram", paystreamProgram);
 
     const fetchCollateralAmount = async () => {
       if (!usdcConfig || !solConfig) return;
-
+      console.log("fetching collateral amount");
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       if (vaultState === "lend" && balance && balance < Number(inputValue)) {
         setIsLendingDisabled(true);
+      } else {
+        setIsLendingDisabled(false);
       }
       const amount = new BN(Number(inputValue) * decimals);
 
@@ -172,7 +179,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               solConfig.collateralLtvRatio,
             );
       console.log(collateralAmount.toString(), "collateral amount");
-      const collateralBalance =
+      const collateralBalance: BN | undefined =
         vaultTitle === "USDC"
           ? solMarketData?.traders.find(
               (trader) => trader.address === wallet.publicKey?.toBase58(),
@@ -188,18 +195,20 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       );
       const collateralBalanceFrozen =
         vaultTitle === "USDC"
-          ? (solTrader?.borrowing.p2pBorrowed ?? new BN(0)) +
-            (solTrader?.borrowing.borrowPending ?? new BN(0))
-          : (usdcTrader?.borrowing.p2pBorrowed ?? new BN(0)) +
-            (usdcTrader?.borrowing.borrowPending ?? new BN(0));
+          ? (solTrader?.borrowing.p2pBorrowed ?? new BN(0)).add(
+              solTrader?.borrowing.borrowPending ?? new BN(0),
+            )
+          : (usdcTrader?.borrowing.p2pBorrowed ?? new BN(0)).add(
+              usdcTrader?.borrowing.borrowPending ?? new BN(0),
+            );
       console.log(
         collateralBalanceFrozen.toString(),
         "collateral balance frozen",
       );
-      console.log(collateralBalance.toString(), "collateral balance");
-      const remainingCollateralBalance = new BN(collateralBalance).sub(
-        new BN(collateralBalanceFrozen),
-      );
+      console.log(collateralBalance?.toString(), "collateral balance");
+      const remainingCollateralBalance = collateralBalance
+        ? new BN(collateralBalance).sub(new BN(collateralBalanceFrozen))
+        : new BN(0);
       console.log(
         remainingCollateralBalance.toString(),
         "remaining collateral balance",
@@ -241,9 +250,86 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     paystreamProgram,
     usdcConfig,
     solConfig,
+    vaultState,
+    balance,
   ]);
+
+  // fetch wallet balance to be shown in the UI
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (!connected || !publicKey) {
+        setBalance(null);
+        return;
+      }
+
+      const usdcMint = new PublicKey(
+        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      ); // Mainnet USDC mint address
+      const tokenAccount = utils.token.associatedAddress({
+        mint: usdcMint,
+        owner: publicKey,
+      });
+
+      console.log(tokenAccount.toBase58(), "token account");
+
+      const solBalance = await connection.getBalance(publicKey);
+
+      const tokenAccountInfo = await connection.getAccountInfo(tokenAccount);
+      setUsdcTokenAccountExists(tokenAccountInfo ? true : false);
+      const tokenAccounts = tokenAccountInfo
+        ? await connection.getTokenAccountBalance(tokenAccount)
+        : null;
+
+      const usdcBalance = tokenAccounts ? tokenAccounts.value.uiAmount : null;
+
+      try {
+        if (vaultState === "lend") {
+          if (vaultTitle === "SOL") {
+            if (solBalance) {
+              const balance = solBalance / LAMPORTS_PER_SOL;
+              setBalance(balance ?? 0);
+            } else {
+              setBalance(0);
+            }
+          } else if (vaultTitle === "USDC") {
+            if (usdcBalance) {
+              setBalance(usdcBalance);
+            } else {
+              setBalance(0);
+            }
+          }
+        }
+
+        if (vaultState === "borrow") {
+          if (vaultTitle === "USDC") {
+            if (solBalance) {
+              const balance = solBalance / LAMPORTS_PER_SOL;
+              setBalance(balance ?? 0);
+            } else {
+              setBalance(0);
+            }
+          } else if (vaultTitle === "SOL") {
+            if (usdcBalance) {
+              setBalance(usdcBalance);
+            } else {
+              setBalance(0);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching balance:", error);
+        setBalance(null);
+      }
+    };
+
+    fetchBalance();
+    const intervalId = setInterval(fetchBalance, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [connection, publicKey, connected, vaultTitle, vaultState]);
+
   const handleSupply = async () => {
-    if (!inputValue || !wallet || !connection) return;
+    if (!inputValue || !wallet || !connection || !paystreamProgram) return;
 
     // Check if input amount exceeds balance
     const amount = Number(inputValue);
@@ -252,11 +338,6 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       setIsLendingDisabled(true);
       return;
     }
-
-    const provider = new AnchorProvider(connection, wallet, {
-      commitment: "processed",
-    });
-    const paystreamProgram = new PaystreamV1Program(provider);
     try {
       setIsLoading(true);
 
@@ -280,14 +361,14 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       if (isCollateral) {
         const result = await paystreamProgram.depositWithUI(
           vaultTitle === "USDC" ? usdcConfig : solConfig,
-          amount,
+          amountBN,
         );
         console.log("worked", result);
         toast.success("Deposit successful");
       } else {
         const result = await paystreamProgram.lendWithUI(
           vaultTitle === "USDC" ? usdcConfig : solConfig,
-          amount,
+          amountBN,
           vaultTitle === "USDC" ? isP2pUsdcEnabled : isP2pSolEnabled,
         );
         console.log("worked", result);
@@ -558,75 +639,6 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     }
   };
 
-  // fetch wallet balance to be shown in the UI
-  useEffect(() => {
-    const fetchBalance = async () => {
-      if (!connected || !publicKey) {
-        setBalance(null);
-        return;
-      }
-
-      const usdcMint = new PublicKey(
-        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-      ); // Mainnet USDC mint address
-      const tokenAccount = await utils.token.associatedAddress({
-        mint: usdcMint,
-        owner: publicKey,
-      });
-
-      const solBalance = await connection.getBalance(publicKey);
-
-      const tokenAccounts =
-        await connection.getTokenAccountBalance(tokenAccount);
-
-      const usdcBalance = tokenAccounts.value.uiAmount;
-
-      try {
-        if (vaultState === "lend") {
-          if (vaultTitle === "SOL") {
-            if (solBalance) {
-              const balance = solBalance / LAMPORTS_PER_SOL;
-              setBalance(balance ?? 0);
-            } else {
-              setBalance(0);
-            }
-          } else if (vaultTitle === "USDC") {
-            if (tokenAccounts) {
-              setBalance(usdcBalance);
-            } else {
-              setBalance(0);
-            }
-          }
-        }
-
-        if (vaultState === "borrow") {
-          if (vaultTitle === "USDC") {
-            if (solBalance) {
-              const balance = solBalance / LAMPORTS_PER_SOL;
-              setBalance(balance ?? 0);
-            } else {
-              setBalance(0);
-            }
-          } else if (vaultTitle === "SOL") {
-            if (tokenAccounts) {
-              setBalance(usdcBalance);
-            } else {
-              setBalance(0);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching balance:", error);
-        setBalance(null);
-      }
-    };
-
-    fetchBalance();
-    const intervalId = setInterval(fetchBalance, 10000);
-
-    return () => clearInterval(intervalId);
-  }, [connection, publicKey, connected, vaultTitle, vaultState]);
-
   const handlePercentageClick = (percentage: number) => {
     if (balance === null) return;
     const amount = percentage === 100 ? balance : (balance * percentage) / 100;
@@ -636,27 +648,29 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   };
 
   const handleSupplyClick = () => {
-    // if (!inputValue) {
+    // if (!inputValue || Number(inputValue) === 0) {
     //   inputRef.current?.focus();
     //   return;
     // }
-    console.log("supply clicked");
+    // console.log("supply clicked");
     handleSupply();
   };
 
   const handleWithdrawClick = () => {
-    if (!inputValue) {
-      inputRef.current?.focus();
-      return;
-    }
+    // if (!inputValue || Number(inputValue) === 0) {
+    //   inputRef.current?.focus();
+    //   return;
+    // }
+    // console.log("supply clicked");
     handleWithdraw();
   };
 
   const handleBorrowClick = () => {
-    if (!inputValue) {
-      inputRef.current?.focus();
-      return;
-    }
+    // if (!inputValue || Number(inputValue) === 0) {
+    //   inputRef.current?.focus();
+    //   return;
+    // }
+    // console.log("supply clicked");
     handleBorrow();
   };
 
@@ -724,7 +738,19 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             </span>
 
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
-              ---
+              {vaultTitle === "USDC"
+                ? usdcProtocolMetrics?.protocolMetrics.depositRate?.toNumber()
+                  ? (
+                      usdcProtocolMetrics.protocolMetrics.depositRate.toNumber() /
+                      10000
+                    ).toFixed(1)
+                  : "--"
+                : solProtocolMetrics?.protocolMetrics.depositRate?.toNumber()
+                  ? (
+                      solProtocolMetrics.protocolMetrics.depositRate.toNumber() /
+                      10000
+                    ).toFixed(1)
+                  : "--"}
             </span>
           </div>
           <div className="flex items-center justify-between gap-2">
@@ -733,7 +759,13 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             </span>
 
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
-              ---
+              {vaultTitle === "USDC"
+                ? inputValue && priceData?.originalMarketPrice
+                  ? `$ ${Number((new BN(Number(inputValue) * 1_000_000).mul(new BN(priceData.originalMarketPrice)).div(PRICE_PRECISION).toNumber() / 1_000_000).toFixed(4))}`
+                  : "--"
+                : inputValue && priceData?.originalCollateralPrice
+                  ? `$ ${Number((new BN(Number(inputValue) * LAMPORTS_PER_SOL).mul(new BN(priceData.originalCollateralPrice)).div(PRICE_PRECISION).toNumber() / LAMPORTS_PER_SOL).toFixed(4))}`
+                  : "--"}
             </span>
           </div>
 
@@ -758,9 +790,12 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               variant="shady"
               className="w-full"
               onClick={handleSupplyClick}
-              disabled={isLendingDisabled ?? true}
+              disabled={(isLendingDisabled ?? true) || Number(inputValue) === 0}
             >
               {(() => {
+                console.log("solTrader", solTrader === undefined);
+                console.log("usdcTrader", usdcTrader === undefined);
+                console.log("isLendingDisabled", isLendingDisabled === null);
                 if (
                   solTrader === undefined ||
                   usdcTrader === undefined ||
@@ -930,8 +965,12 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
               {vaultTitle === "USDC"
-                ? (usdcConfig?.collateralLtvRatio.toNumber() / 100).toFixed(1)
-                : (solConfig?.collateralLtvRatio.toNumber() / 100).toFixed(1)}
+                ? usdcConfig?.collateralLtvRatio?.toNumber()
+                  ? (usdcConfig.collateralLtvRatio.toNumber() / 100).toFixed(1)
+                  : "--"
+                : solConfig?.collateralLtvRatio?.toNumber()
+                  ? (solConfig.collateralLtvRatio.toNumber() / 100).toFixed(1)
+                  : "--"}
               %
             </span>
           </div>
@@ -942,12 +981,16 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
               {vaultTitle === "USDC"
-                ? (
-                    usdcConfig?.collateralLiquidationThreshold.toNumber() / 100
-                  ).toFixed(1)
-                : (
-                    solConfig?.collateralLiquidationThreshold.toNumber() / 100
-                  ).toFixed(1)}
+                ? usdcConfig?.collateralLiquidationThreshold?.toNumber()
+                  ? (
+                      usdcConfig.collateralLiquidationThreshold.toNumber() / 100
+                    ).toFixed(1)
+                  : "--"
+                : solConfig?.collateralLiquidationThreshold?.toNumber()
+                  ? (
+                      solConfig.collateralLiquidationThreshold.toNumber() / 100
+                    ).toFixed(1)
+                  : "--"}
               %
             </span>
           </div>
@@ -956,7 +999,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               variant="shady"
               className="w-full"
               onClick={handleBorrowClick}
-              disabled={isBorrowDisabled ?? true}
+              disabled={(isBorrowDisabled ?? true) || Number(inputValue) === 0}
             >
               {(() => {
                 if (

@@ -122,14 +122,7 @@ const DashboardPage: NextPage = () => {
     ) {
       fetchTraderPositions();
     }
-  }, [
-    provider,
-    usdcMarketData,
-    solMarketData,
-    error,
-    loadingMarketData,
-    loading,
-  ]); // Only re-run when these core dependencies change
+  }, [provider, usdcMarketData, solMarketData, error, loadingMarketData, loading, usdcProtocolMetrics, solProtocolMetrics]); // Only re-run when these core dependencies change
 
   return (
     <MaxWidthWrapper>
@@ -170,7 +163,7 @@ const DashboardPage: NextPage = () => {
               table data...
             </p>
           ) : (
-            <StatsTable columns={dashboardColumn} data={tableData} />
+            <StatsTable loading={loading} columns={dashboardColumn} data={tableData} />
           )}
         </div>
       </main>

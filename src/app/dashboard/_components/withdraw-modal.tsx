@@ -43,29 +43,19 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const { publicKey, connected } = useWallet();
-  const { connection } = useConnection();
-  const wallet = useAnchorWallet();
-
-  const provider = new AnchorProvider(connection, wallet!, {
-    commitment: "processed",
-  });
-  const paystreamProgram = new PaystreamV1Program(provider);
 
   const vaultTitle = row.original.asset.toUpperCase();
 
   // TODO: support for decimals for multiple tokens, for now its hardcoded: 6 for usdc and 9 for sol
   const handlePercentageClick = (percentage: number) => {
-    const maxAmount = bnToNumber(
-      row.original.action_amount,
-      vaultTitle === "SOL" ? 9 : 6,
-    );
+    const maxAmount = row.original.action_amount;
     const amount =
       percentage === 100 ? maxAmount : (maxAmount * percentage) / 100;
 
     const maxDecimals = vaultTitle === "SOL" ? 9 : 6;
     setInputValue(amount.toFixed(maxDecimals));
   };
-  const { solConfig, usdcConfig } = useMarketData(
+  const { solConfig, usdcConfig, paystreamProgram, provider } = useMarketData(
     new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
     new PublicKey("So11111111111111111111111111111111111111112"),
     new PublicKey("CCQXHfu51HEpiaegMU2kyYZK7dw1NhNbAX6cV44gZDJ8"),
@@ -73,12 +63,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
   );
 
   const handleWithdraw = async () => {
-    if (!marketHeader || !inputValue || !wallet || !connection) return;
-
-    const provider = new AnchorProvider(connection, wallet, {
-      commitment: "processed",
-    });
-    const paystreamProgram = new PaystreamV1Program(provider);
+    if (!marketHeader || !inputValue || !paystreamProgram) return;
 
     try {
       // const marketConfig = {
@@ -120,10 +105,10 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
         setBalance(null);
         return;
       }
-
+      if (!provider) return;
       try {
         if (vaultTitle === "SOL") {
-          const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
+          const tokenAccounts = await provider.connection.getParsedTokenAccountsByOwner(
             publicKey,
             {
               mint: new PublicKey(SOL_MINT),
@@ -138,7 +123,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
             setBalance(0);
           }
         } else if (vaultTitle === "USDC") {
-          const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
+          const tokenAccounts = await provider.connection.getParsedTokenAccountsByOwner(
             publicKey,
             {
               mint: new PublicKey(USDC_MINT),
@@ -163,10 +148,11 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
     const intervalId = setInterval(fetchBalance, 10000);
 
     return () => clearInterval(intervalId);
-  }, [connection, publicKey, connected, vaultTitle]);
+  }, [publicKey, connected, vaultTitle, provider]);
 
   React.useEffect(() => {
     const fetchMarketHeader = async () => {
+      if (!paystreamProgram) return;
       try {
         const headers = await paystreamProgram.getAllMarketHeaders();
         if (vaultTitle === "SOL") {
@@ -182,7 +168,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
     };
 
     fetchMarketHeader();
-  }, []);
+  }, [paystreamProgram, vaultTitle]);
 
   return (
     <div>
@@ -194,10 +180,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
           <div className="ml-auto flex items-center gap-2 font-body">
             <span className="text-sm text-[#BCEBFF80]">
               Available:{" "}
-              {bnToNumber(
-                row.original.action_amount,
-                vaultTitle === "SOL" ? 9 : 6,
-              ).toFixed(4)}{" "}
+              {row.original.action_amount.toFixed(4)}{" "}
               {vaultTitle}
             </span>
             <span
