@@ -28,7 +28,7 @@ import {
 } from "@/constants";
 
 import { useMarketData } from "@/hooks/useMarketData";
-import { bnToNumber } from "@/lib/contract";
+import { type PositionData } from "@/lib/contract";
 import { type WithdrawModalProps } from "./withdraw-modal";
 import { Clock } from "lucide-react";
 
@@ -59,7 +59,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
   const vaultTitle = row.original.asset.toUpperCase();
 
   const handlePercentageClick = (percentage: number) => {
-    const maxAmount = row.original.action_amount;
+    const maxAmount = getPendingAmount(row.original.positionData);
     const amount =
       percentage === 100 ? maxAmount : (maxAmount * percentage) / 100;
 
@@ -194,6 +194,12 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
     fetchTime();
   }, [publicKey, vaultTitle, solMarketData, usdcMarketData, paystreamProgram]);
 
+  const getPendingAmount = (position: PositionData) => {
+    return Number(
+      position.amount.add(position.interestAccrued ?? new BN(0)),
+    );
+  };
+
   return (
     <div>
       <div className="flex flex-col gap-4 bg-[#070f14] p-[12px]">
@@ -204,7 +210,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
           <div className="ml-auto flex items-center gap-2 font-body">
             <span className="text-sm text-[#BCEBFF80]">
               Pending:{" "}
-              {Number(row.original.action_amount.toFixed(4))} {vaultTitle}
+              {Number(getPendingAmount(row.original.positionData).toFixed(4))} {vaultTitle}
             </span>
             <span
               onClick={() => handlePercentageClick(50)}

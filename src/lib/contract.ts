@@ -1,8 +1,11 @@
 import { BN } from "@coral-xyz/anchor";
 import {
+  calculate_debt_amount_in_collateral,
+  calculate_interest_accrued,
   type MarketDataUI,
   type MarketPriceData,
   type PaystreamMetrics,
+  PRICE_PRECISION,
   ProtocolMetrics,
   type TraderPositionUI,
 } from "@meimfhd/paystream-v1";
@@ -12,7 +15,7 @@ export interface Position {
   asset: "SOL" | "USDC";
   type:
     | "UNMATCHED"
-    | "TOTAL DEPOSIT"
+    | "COLLATERAL"
     | "P2P LEND"
     | "P2P BORROW"
     | "PENDING BORROW";
@@ -24,6 +27,7 @@ export function getTraderPositions(
   address: string,
   usdcMarket: MarketDataUI,
   solMarket: MarketDataUI,
+  priceData: MarketPriceData,
   usdcProtocolMetrics: PaystreamMetrics<"drift">,
   solProtocolMetrics: PaystreamMetrics<"drift">,
 ): Position[] {
@@ -45,66 +49,115 @@ export function getTraderPositions(
     if (usdcMarket && usdcTrader) {
       positions.push({
         asset: "USDC",
-        type: "TOTAL DEPOSIT",
+        type: "COLLATERAL",
         apy: bnToNumber(usdcProtocolMetrics.protocolMetrics.depositRate, 4),
-        positionData: getTotalDepositPosition(usdcTrader, 6),
+        positionData: getTotalDepositPosition(
+          usdcTrader,
+          priceData,
+          solTrader,
+          usdcProtocolMetrics,
+        ),
       });
       positions.push({
         asset: "USDC",
         type: "UNMATCHED",
         apy: bnToNumber(usdcProtocolMetrics.protocolMetrics.depositRate, 4),
-        positionData: getLendingPosition(usdcTrader, 6),
+        positionData: getLendingPosition(
+          usdcTrader,
+          usdcProtocolMetrics,
+          priceData,
+        ),
       });
       positions.push({
         asset: "USDC",
         type: "P2P LEND",
         apy: bnToNumber(usdcProtocolMetrics.midRateApy, 4),
-        positionData: getP2PLendingPosition(usdcTrader, 6),
+        positionData: getP2PLendingPosition(
+          usdcTrader,
+          usdcMarket,
+          usdcProtocolMetrics,
+          priceData,
+        ),
       });
       positions.push({
         asset: "USDC",
         type: "P2P BORROW",
         apy: bnToNumber(usdcProtocolMetrics.midRateApy, 4),
-        positionData: getP2PBorrowPosition(usdcTrader, 6),
+        positionData: getP2PBorrowPosition(
+          usdcTrader,
+          priceData,
+          solMarket,
+          solProtocolMetrics,
+        ),
       });
       positions.push({
         asset: "USDC",
         type: "PENDING BORROW",
         apy: 0,
-        positionData: getPendingBorrowPosition(usdcTrader, 6),
+        positionData: getPendingBorrowPosition(
+          usdcTrader,
+          usdcMarket,
+          usdcProtocolMetrics,
+          priceData,
+        ),
       });
     }
 
     if (solMarket && solTrader) {
       positions.push({
         asset: "SOL",
-        type: "TOTAL DEPOSIT",
+        type: "COLLATERAL",
         apy: bnToNumber(solProtocolMetrics.protocolMetrics.depositRate, 4),
-        positionData: getTotalDepositPosition(solTrader, 9),
+        positionData: getTotalDepositPosition(
+          solTrader,
+          priceData,
+          usdcTrader,
+          solProtocolMetrics,
+        ),
       });
       positions.push({
         asset: "SOL",
         type: "UNMATCHED",
         apy: bnToNumber(solProtocolMetrics.protocolMetrics.depositRate, 4),
-        positionData: getLendingPosition(solTrader, 9),
+        positionData: getLendingPosition(
+          solTrader,
+          solProtocolMetrics,
+          priceData,
+        ),
       });
       positions.push({
         asset: "SOL",
         type: "P2P LEND",
         apy: bnToNumber(solProtocolMetrics.midRateApy, 4),
-        positionData: getP2PLendingPosition(solTrader, 9),
+        positionData: getP2PLendingPosition(
+          solTrader,
+          solMarket,
+          solProtocolMetrics,
+          priceData,
+        ),
       });
+
       positions.push({
         asset: "SOL",
         type: "P2P BORROW",
         apy: bnToNumber(solProtocolMetrics.midRateApy, 4),
-        positionData: getP2PBorrowPosition(solTrader, 9),
+        positionData: getP2PBorrowPosition(
+          solTrader,
+          priceData,
+          usdcMarket,
+          usdcProtocolMetrics,
+        ),
       });
       positions.push({
         asset: "SOL",
         type: "PENDING BORROW",
         apy: 0,
-        positionData: getPendingBorrowPosition(solTrader, 9),
+        positionData: getPendingBorrowPosition(
+          solTrader,
+          usdcMarket,
+          usdcProtocolMetrics,
+          priceData,
+        ),
       });
     }
 
@@ -189,56 +242,13 @@ export interface OptimizerStats {
 export function getDriftOptimizerStats(
   usdcMarket: MarketDataUI,
   solMarket: MarketDataUI,
-  priceData: MarketPriceData,
   solProtocolMetrics: PaystreamMetrics<"drift">,
 ): OptimizerStats {
   try {
-    const solPrice = priceData.originalCollateralPrice;
-    const usdcPrice = priceData.originalMarketPrice;
-
-    // Calculate borrow metrics
-    const totalBorrowsUSDCP2p = bnToNumber(
-      usdcMarket.stats.borrows.totalBorrowedP2p,
-      6,
-    );
-    const totalBorrowsSOLP2p = bnToNumber(
-      solMarket.stats.borrows.totalBorrowedP2p,
-      9,
-    );
-
-    const totalBorrowsUSDCP2pUnmatched = bnToNumber(
-      usdcMarket.stats.borrows.borrowAmountUnmatched,
-      6,
-    );
-    const totalBorrowsSOLP2pUnmatched = bnToNumber(
-      solMarket.stats.borrows.borrowAmountUnmatched,
-      9,
-    );
-
-    // Calculate supply metrics
-    const totalSupplyUSDC = bnToNumber(
-      usdcMarket.stats.deposits.totalSupply,
-      6,
-    );
-    const totalSupplySOL = bnToNumber(solMarket.stats.deposits.totalSupply, 9);
-
-    const totalCollateralUSDC = bnToNumber(
-      usdcMarket.stats.deposits.collateral,
-      6,
-    );
-    const totalCollateralSOL = bnToNumber(
-      solMarket.stats.deposits.collateral,
-      9,
-    );
-
-    // Calculate aggregated metrics in USD terms
-    const totalCollateral = solMarket.stats.deposits.collateral.add(
-      usdcMarket.stats.deposits.collateral,
-    );
     const borrowVolume =
       solMarket.stats.borrows.totalBorrowedP2pInUSD +
       usdcMarket.stats.borrows.totalBorrowedP2pInUSD;
-    console.log("borrowVolume", borrowVolume);
+
     const supplyVolume =
       solMarket.stats.deposits.totalSupplyInUSD +
       usdcMarket.stats.deposits.totalSupplyInUSD;
@@ -270,14 +280,20 @@ export function getDriftOptimizerStats(
   }
 }
 
-interface PositionData {
-  amount: number;
+export interface PositionData {
+  amount: BN;
   amountInUSD: number;
+  lockedAmount: BN | null;
+  lockedAmountInUSD: number | null;
+  interestAccrued: BN | null;
+  interestAccruedInUSD: number | null;
 }
 
 function getTotalDepositPosition(
   traderPosition: TraderPositionUI,
-  decimals: number,
+  priceData: MarketPriceData,
+  traderCollateralPosition: TraderPositionUI | undefined,
+  metrics: PaystreamMetrics<"drift">,
 ): PositionData | null {
   if (
     !traderPosition.lending ||
@@ -285,15 +301,50 @@ function getTotalDepositPosition(
   ) {
     return null;
   }
+  const totalBorrowedCollateral =
+    (traderCollateralPosition &&
+      traderCollateralPosition.borrowing.borrowPending.add(
+        traderCollateralPosition.borrowing.p2pBorrowed,
+      )) ??
+    new BN(0);
+  const totalBorrowedCollateralInBorrowMint =
+    calculate_debt_amount_in_collateral(
+      totalBorrowedCollateral.toNumber(),
+      priceData.collateralPriceInBorrowMintScaled.toNumber(),
+      9,
+      6,
+    );
+  const totalBorrowedCollateralInUSD =
+    totalBorrowedCollateralInBorrowMint
+      .mul(priceData.collateralPriceInBorrowMintScaled)
+      .div(PRICE_PRECISION)
+      .toNumber() / PRICE_PRECISION.toNumber();
+
+  const interestAccrued = calculate_interest_accrued(
+    traderPosition.lending.collateral.amount,
+    metrics.protocolMetrics.depositRate,
+    new BN(new Date().getTime() - new Date().getTime() / 1000),
+  );
+  const totalInterestAccruedInUSD =
+    interestAccrued
+      .mul(priceData.borrowPriceInCollateralMintScaled)
+      .div(PRICE_PRECISION)
+      .toNumber() / PRICE_PRECISION.toNumber();
+
   return {
-    amount: bnToNumber(traderPosition.lending.collateral.amount, decimals),
+    amount: traderPosition.lending.collateral.amount,
     amountInUSD: traderPosition.lending.collateral.amountInUSD,
+    lockedAmount: totalBorrowedCollateralInBorrowMint,
+    lockedAmountInUSD: totalBorrowedCollateralInUSD,
+    interestAccrued: interestAccrued,
+    interestAccruedInUSD: totalInterestAccruedInUSD,
   };
 }
 
 function getLendingPosition(
   traderPosition: TraderPositionUI,
-  decimals: number,
+  metrics: PaystreamMetrics<"drift">,
+  priceData: MarketPriceData,
 ): PositionData | null {
   if (
     !traderPosition.lending ||
@@ -301,15 +352,31 @@ function getLendingPosition(
   ) {
     return null;
   }
+  const interestAccrued = calculate_interest_accrued(
+    traderPosition.lending.onVaultLends,
+    metrics.protocolMetrics.depositRate,
+    new BN(new Date().getTime() - new Date().getTime() / 1000),
+  );
+  const totalInterestAccruedInUSD =
+    interestAccrued
+      .mul(priceData.borrowPriceInCollateralMintScaled)
+      .div(PRICE_PRECISION)
+      .toNumber() / PRICE_PRECISION.toNumber();
   return {
-    amount: bnToNumber(traderPosition.lending.onVaultLends, decimals),
+    amount: traderPosition.lending.onVaultLends,
     amountInUSD: traderPosition.lending.onVaultLendsInUSD,
+    interestAccrued: interestAccrued,
+    interestAccruedInUSD: totalInterestAccruedInUSD,
+    lockedAmount: null,
+    lockedAmountInUSD: null,
   };
 }
 
 function getP2PLendingPosition(
   traderPosition: TraderPositionUI,
-  decimals: number,
+  marketData: MarketDataUI,
+  metrics: PaystreamMetrics<"drift">,
+  priceData: MarketPriceData,
 ): PositionData | null {
   if (
     !traderPosition.lending ||
@@ -317,15 +384,39 @@ function getP2PLendingPosition(
   ) {
     return null;
   }
+  const lendingInterestAccrued = marketData.matches
+    .filter((match) => match.lender === traderPosition.address)
+    .map((match) => {
+      const interestAccrued = calculate_interest_accrued(
+        match.amount,
+        metrics.midRateApy,
+        new BN(match.timestamp.getTime() - new Date().getTime() / 1000),
+      );
+      return interestAccrued;
+    })
+    .reduce((acc, curr) => {
+      return acc.add(curr);
+    }, new BN(0));
+  const totalInterestAccruedInUSD =
+    lendingInterestAccrued
+      .mul(priceData.borrowPriceInCollateralMintScaled)
+      .div(PRICE_PRECISION)
+      .toNumber() / PRICE_PRECISION.toNumber();
   return {
-    amount: bnToNumber(traderPosition.lending.p2pLends, decimals),
+    amount: traderPosition.lending.p2pLends,
     amountInUSD: traderPosition.lending.p2pLendsInUsdValue,
+    interestAccrued: lendingInterestAccrued,
+    interestAccruedInUSD: totalInterestAccruedInUSD,
+    lockedAmount: null,
+    lockedAmountInUSD: null,
   };
 }
 
 function getP2PBorrowPosition(
   traderPosition: TraderPositionUI,
-  decimals: number,
+  priceData: MarketPriceData,
+  collateralMarketData: MarketDataUI,
+  metrics: PaystreamMetrics<"drift">,
 ): PositionData | null {
   if (
     !traderPosition.borrowing ||
@@ -333,15 +424,52 @@ function getP2PBorrowPosition(
   ) {
     return null;
   }
+
+  const borrowingInterestAccrued = collateralMarketData.matches
+    .filter((match) => match.borrower === traderPosition.address)
+    .map((match) => {
+      const interestAccrued = calculate_interest_accrued(
+        match.amount,
+        metrics.midRateApy,
+        new BN(match.timestamp.getTime() - new Date().getTime() / 1000),
+      );
+      return interestAccrued;
+    })
+    .reduce((acc, curr) => {
+      return acc.add(curr);
+    }, new BN(0));
+  const totalInterestAccruedInUSD =
+    borrowingInterestAccrued
+      .mul(priceData.borrowPriceInCollateralMintScaled)
+      .div(PRICE_PRECISION)
+      .toNumber() / PRICE_PRECISION.toNumber();
+
+  const totalCollateralLocked = calculate_debt_amount_in_collateral(
+    traderPosition.borrowing.p2pBorrowed.toNumber(),
+    priceData.collateralPriceInBorrowMintScaled.toNumber(),
+    9,
+    6,
+  );
+  const totalCollateralLockedInUSD =
+    totalCollateralLocked
+      .mul(priceData.borrowPriceInCollateralMintScaled)
+      .div(PRICE_PRECISION)
+      .toNumber() / PRICE_PRECISION.toNumber();
   return {
-    amount: bnToNumber(traderPosition.borrowing.p2pBorrowed, decimals),
+    amount: traderPosition.borrowing.p2pBorrowed,
     amountInUSD: traderPosition.borrowing.p2pBorrowedInUSD,
+    interestAccrued: borrowingInterestAccrued,
+    interestAccruedInUSD: totalInterestAccruedInUSD,
+    lockedAmount: totalCollateralLocked,
+    lockedAmountInUSD: totalCollateralLockedInUSD,
   };
 }
 
 function getPendingBorrowPosition(
   traderPosition: TraderPositionUI,
-  decimals: number,
+  collateralMarketData: MarketDataUI,
+  metrics: PaystreamMetrics<"drift">,
+  priceData: MarketPriceData,
 ): PositionData | null {
   if (
     !traderPosition.borrowing ||
@@ -349,9 +477,31 @@ function getPendingBorrowPosition(
   ) {
     return null;
   }
+  const interestAccrued = collateralMarketData.matches
+    .filter((match) => match.borrower === traderPosition.address)
+    .map((match) => {
+      const interestAccrued = calculate_interest_accrued(
+        match.amount,
+        metrics.midRateApy,
+        new BN(match.timestamp.getTime() - new Date().getTime() / 1000),
+      );
+      return interestAccrued;
+    })
+    .reduce((acc, curr) => {
+      return acc.add(curr);
+    }, new BN(0));
+  const totalInterestAccruedInUSD =
+    interestAccrued
+      .mul(priceData.borrowPriceInCollateralMintScaled)
+      .div(PRICE_PRECISION)
+      .toNumber() / PRICE_PRECISION.toNumber();
   return {
-    amount: bnToNumber(traderPosition.borrowing.borrowPending, decimals),
+    amount: traderPosition.borrowing.borrowPending,
     amountInUSD: traderPosition.borrowing.borrowPendingInUSD,
+    interestAccrued: interestAccrued,
+    interestAccruedInUSD: totalInterestAccruedInUSD,
+    lockedAmount: null,
+    lockedAmountInUSD: null,
   };
 }
 

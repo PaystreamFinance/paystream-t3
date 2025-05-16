@@ -49,21 +49,26 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
 
   const vaultTitle = row.original.asset.toUpperCase();
 
-  // TODO: support for decimals for multiple tokens, for now its hardcoded: 6 for usdc and 9 for sol
-  const handlePercentageClick = (percentage: number) => {
-    const maxAmount = row.original.action_amount;
-    const amount =
-      percentage === 100 ? maxAmount : (maxAmount * percentage) / 100;
-
-    const maxDecimals = vaultTitle === "SOL" ? 9 : 6;
-    setInputValue(Number(amount.toFixed(maxDecimals)).toString());
-  };
   const { solConfig, usdcConfig, paystreamProgram, provider } = useMarketData(
     new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
     new PublicKey("So11111111111111111111111111111111111111112"),
     new PublicKey("CCQXHfu51HEpiaegMU2kyYZK7dw1NhNbAX6cV44gZDJ8"),
     new PublicKey("GSjnD3XA1ezr7Xew3PZKPJdKGhjWEGefFFxXJhsfrX5e"),
   );
+
+  // TODO: support for decimals for multiple tokens, for now its hardcoded: 6 for usdc and 9 for sol
+  const handlePercentageClick = (percentage: number) => {
+    const maxAmount = getAvailableAmount(
+      row.original.positionData.amount,
+      row.original.positionData.interestAccrued ?? new BN(0),
+      row.original.positionData.lockedAmount ?? new BN(0),
+    );
+    const amount =
+      percentage === 100 ? maxAmount : (maxAmount * percentage) / 100;
+
+    const maxDecimals = vaultTitle === "SOL" ? 9 : 6;
+    setInputValue(Number(amount.toFixed(maxDecimals)).toString());
+  };
 
   const handleWithdraw = async () => {
     if (
@@ -77,15 +82,6 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
       return;
 
     try {
-      // const marketConfig = {
-      //   market: marketHeader.market,
-      //   collateralMarket: marketHeader.collateralMarket,
-      //   mint: marketHeader.mint,
-      //   collateralMint: marketHeader.collateralMint,
-      //   tokenProgram: marketHeader.tokenProgram,
-      //   collateralTokenProgram: marketHeader.collateralTokenProgram,
-      // };
-
       console.log(inputValue, "input value");
       const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
       console.log(decimals);
@@ -193,6 +189,13 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
     fetchMarketHeader();
   }, [paystreamProgram, vaultTitle]);
 
+  const getAvailableAmount = (
+    amount: BN,
+    interestAccrued: BN,
+    lockedAmount: BN,
+  ) => {
+    return Number(amount.add(interestAccrued).sub(lockedAmount));
+  };
   return (
     <div>
       <div className="flex flex-col gap-4 bg-[#070f14] p-[12px]">
@@ -202,7 +205,12 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
           </span>
           <div className="ml-auto flex items-center gap-2 font-body">
             <span className="text-sm text-[#BCEBFF80]">
-              Available: {Number(row.original.action_amount.toFixed(4))}{" "}
+              Available:{" "}
+              {getAvailableAmount(
+                row.original.positionData.amount,
+                row.original.positionData.interestAccrued ?? new BN(0),
+                row.original.positionData.lockedAmount ?? new BN(0),
+              )}{" "}
               {vaultTitle}
             </span>
             <span

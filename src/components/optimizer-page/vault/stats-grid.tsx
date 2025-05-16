@@ -78,7 +78,7 @@ export function StatsGridHorizontal({
             underline && "underline decoration-dotted",
           )}
         >
-          Total Deposits
+          COLLATERALs
         </span>
         <span className="font-darkerGrotesque text-lg font-[400] text-[#EAEAEA]">
           $ {stats.totalDeposits}

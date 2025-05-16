@@ -18,6 +18,7 @@ import {
 
 import RepaymentModal from "./repayment-modal";
 import WithdrawModal from "./withdraw-modal";
+import { type PositionData, type MatchData } from "@/lib/contract";
 
 export type DashboardTable = {
   id: string;
@@ -25,13 +26,15 @@ export type DashboardTable = {
   position: string;
   type:
     | "UNMATCHED"
-    | "TOTAL DEPOSIT"
+    | "COLLATERAL"
     | "P2P LEND"
     | "P2P BORROW"
     | "PENDING BORROW";
   apy: string;
-  action_amount: number;
+  positionData: PositionData;
+  // action_amount: number;
   amount_in_usd: number;
+  matches: MatchData[];
   onSuccess: () => void;
 };
 
@@ -127,7 +130,9 @@ export const dashboardColumn: ColumnDef<DashboardTable>[] = [
               {type === "P2P BORROW" ? (
                 <RepaymentModal row={row} onSuccess={row.original.onSuccess} />
               ) : (
-                <WithdrawModal row={row} onSuccess={row.original.onSuccess} />
+                (type === "COLLATERAL" || type === "UNMATCHED") && (
+                  <WithdrawModal row={row} onSuccess={row.original.onSuccess} />
+                )
               )}
             </DialogContent>
           </Dialog>

@@ -45,6 +45,7 @@ const DashboardPage: NextPage = () => {
     provider,
     usdcProtocolMetrics,
     solProtocolMetrics,
+    priceData,
     refresh,
     setRefresh,
   } = useMarketData(
@@ -60,6 +61,7 @@ const DashboardPage: NextPage = () => {
       console.log("Loading", loading, "Error", error);
       return;
     }
+    setLoading(true);
 
     // Don't proceed if we don't have all required data
     if (
@@ -67,17 +69,17 @@ const DashboardPage: NextPage = () => {
       !usdcMarketData ||
       !solMarketData ||
       !usdcProtocolMetrics ||
-      !solProtocolMetrics
+      !solProtocolMetrics ||
+      !priceData
     )
       return;
 
     try {
-      setLoading(true);
-
       const positions = getTraderPositions(
         provider.wallet.publicKey.toBase58(),
         usdcMarketData,
         solMarketData,
+        priceData,
         usdcProtocolMetrics,
         solProtocolMetrics,
       );
@@ -98,9 +100,11 @@ const DashboardPage: NextPage = () => {
           asset: pos.asset,
           position: Number(pos.positionData!.amount.toFixed(4)).toString(),
           type: pos.type,
+          positionData: pos.positionData!,
           apy: pos.apy?.toString() ?? "--",
           action_amount: pos.positionData!.amount,
           amount_in_usd: pos.positionData!.amountInUSD,
+          matches: matches,
           onSuccess: () => setRefresh(!refresh),
         }));
       console.log("tableData", tableData);
@@ -120,30 +124,13 @@ const DashboardPage: NextPage = () => {
     solProtocolMetrics,
     refresh,
     setRefresh,
+    priceData,
   ]);
 
   useEffect(() => {
     // Only fetch if we have the required data and we're not in a loading state
-    if (
-      !loadingMarketData &&
-      provider &&
-      usdcMarketData &&
-      solMarketData &&
-      !loading
-    ) {
-      fetchTraderPositions();
-    }
-  }, [
-    provider,
-    usdcMarketData,
-    solMarketData,
-    error,
-    loadingMarketData,
-    loading,
-    usdcProtocolMetrics,
-    solProtocolMetrics,
-    fetchTraderPositions,
-  ]); // Only re-run when these core dependencies change
+    fetchTraderPositions();
+  }, [fetchTraderPositions]); // Only re-run when these core dependencies change
 
   return (
     <MaxWidthWrapper>
