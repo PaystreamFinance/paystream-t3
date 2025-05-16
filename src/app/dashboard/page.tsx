@@ -57,7 +57,7 @@ const DashboardPage: NextPage = () => {
 
   const fetchTraderPositions = useCallback(async () => {
     // Don't proceed if we're already loading or if there's an error
-    if (loading || error) {
+    if (loadingMarketData || error) {
       console.log("Loading", loading, "Error", error);
       return;
     }
@@ -98,14 +98,18 @@ const DashboardPage: NextPage = () => {
         .map((pos, idx) => ({
           id: idx.toString(),
           asset: pos.asset,
-          position: Number(pos.positionData!.amount.toFixed(4)).toString(),
+          position: Number(
+            pos.positionData!.amount.toNumber().toFixed(4),
+          ).toString(),
           type: pos.type,
           positionData: pos.positionData!,
           apy: pos.apy?.toString() ?? "--",
           action_amount: pos.positionData!.amount,
           amount_in_usd: pos.positionData!.amountInUSD,
           matches: matches,
-          onSuccess: () => setRefresh(!refresh),
+          onSuccess: () => {
+            setRefresh(!refresh);
+          },
         }));
       console.log("tableData", tableData);
       setTableData(tableData);

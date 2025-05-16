@@ -67,7 +67,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
       percentage === 100 ? maxAmount : (maxAmount * percentage) / 100;
 
     const maxDecimals = vaultTitle === "SOL" ? 9 : 6;
-    setInputValue(Number(amount.toFixed(maxDecimals)).toString());
+    setInputValue(Number(amount / 10 ** maxDecimals).toString());
   };
 
   const handleWithdraw = async () => {
@@ -194,6 +194,13 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
     interestAccrued: BN,
     lockedAmount: BN,
   ) => {
+    console.log("Amount:", amount.toNumber());
+    console.log("Interest Accrued:", interestAccrued.toNumber());
+    console.log("Locked Amount:", lockedAmount.toNumber());
+    console.log(
+      "Available Amount:",
+      amount.add(interestAccrued).sub(lockedAmount).toNumber(),
+    );
     return Number(amount.add(interestAccrued).sub(lockedAmount));
   };
   return (
@@ -206,10 +213,14 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
           <div className="ml-auto flex items-center gap-2 font-body">
             <span className="text-sm text-[#BCEBFF80]">
               Available:{" "}
-              {getAvailableAmount(
-                row.original.positionData.amount,
-                row.original.positionData.interestAccrued ?? new BN(0),
-                row.original.positionData.lockedAmount ?? new BN(0),
+              {Number(
+                (
+                  getAvailableAmount(
+                    row.original.positionData.amount,
+                    row.original.positionData.interestAccrued ?? new BN(0),
+                    row.original.positionData.lockedAmount ?? new BN(0),
+                  ) / (vaultTitle === "USDC" ? 1000000 : 1000000000)
+                ).toFixed(4),
               )}{" "}
               {vaultTitle}
             </span>

@@ -320,24 +320,24 @@ function getTotalDepositPosition(
       .div(PRICE_PRECISION)
       .toNumber() / PRICE_PRECISION.toNumber();
 
-  const interestAccrued = calculate_interest_accrued(
-    traderPosition.lending.collateral.amount,
-    metrics.protocolMetrics.depositRate,
-    new BN(new Date().getTime() - new Date().getTime() / 1000),
-  );
-  const totalInterestAccruedInUSD =
-    interestAccrued
-      .mul(priceData.borrowPriceInCollateralMintScaled)
-      .div(PRICE_PRECISION)
-      .toNumber() / PRICE_PRECISION.toNumber();
+  // const interestAccrued = calculate_interest_accrued(
+  //   traderPosition.lending.collateral.amount,
+  //   metrics.protocolMetrics.depositRate,
+  //   new BN(100 * 365 * 24 * 60 * 60 * 1000), // 100 years in milliseconds
+  // );
+  // const totalInterestAccruedInUSD =
+  //   interestAccrued
+  //     .mul(priceData.borrowPriceInCollateralMintScaled)
+  //     .div(PRICE_PRECISION)
+  //     .toNumber() / PRICE_PRECISION.toNumber();
 
   return {
     amount: traderPosition.lending.collateral.amount,
     amountInUSD: traderPosition.lending.collateral.amountInUSD,
     lockedAmount: totalBorrowedCollateralInBorrowMint,
     lockedAmountInUSD: totalBorrowedCollateralInUSD,
-    interestAccrued: interestAccrued,
-    interestAccruedInUSD: totalInterestAccruedInUSD,
+    interestAccrued: null,
+    interestAccruedInUSD: null,
   };
 }
 

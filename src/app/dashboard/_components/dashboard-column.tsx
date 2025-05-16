@@ -18,7 +18,7 @@ import {
 
 import RepaymentModal from "./repayment-modal";
 import WithdrawModal from "./withdraw-modal";
-import { type PositionData, type MatchData } from "@/lib/contract";
+import { type PositionData, type MatchData, bnToNumber } from "@/lib/contract";
 
 export type DashboardTable = {
   id: string;
@@ -75,8 +75,12 @@ export const dashboardColumn: ColumnDef<DashboardTable>[] = [
         <p className="text-[14px] font-light text-[#9CE0FF]">
           $ {Number(row.original.amount_in_usd.toFixed(4))}
         </p>
-        <p className="text-[12px] font-light text-[#9CE0FF]">
-          {row.original.position} {row.original.asset}
+        <p className="text-[12px] font-light text-[#9CE0FF33]">
+          {bnToNumber(
+            row.original.positionData.amount,
+            row.original.asset === "USDC" ? 6 : 9,
+          )}{" "}
+          {row.original.asset}
         </p>
       </div>
     ),

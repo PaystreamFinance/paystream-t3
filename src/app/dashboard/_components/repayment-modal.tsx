@@ -44,13 +44,19 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
 
-  const { usdcConfig, solConfig, priceData, solMarketData, usdcMarketData, paystreamProgram } =
-    useMarketData(
-      new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
-      new PublicKey("So11111111111111111111111111111111111111112"),
-      new PublicKey("CCQXHfu51HEpiaegMU2kyYZK7dw1NhNbAX6cV44gZDJ8"),
-      new PublicKey("GSjnD3XA1ezr7Xew3PZKPJdKGhjWEGefFFxXJhsfrX5e"),
-    );
+  const {
+    usdcConfig,
+    solConfig,
+    priceData,
+    solMarketData,
+    usdcMarketData,
+    paystreamProgram,
+  } = useMarketData(
+    new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
+    new PublicKey("So11111111111111111111111111111111111111112"),
+    new PublicKey("CCQXHfu51HEpiaegMU2kyYZK7dw1NhNbAX6cV44gZDJ8"),
+    new PublicKey("GSjnD3XA1ezr7Xew3PZKPJdKGhjWEGefFFxXJhsfrX5e"),
+  );
 
   const provider = new AnchorProvider(connection, wallet!, {
     commitment: "processed",
@@ -64,11 +70,18 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
       percentage === 100 ? maxAmount : (maxAmount * percentage) / 100;
 
     const maxDecimals = vaultTitle === "SOL" ? 9 : 6;
-    setInputValue(Number(amount.toFixed(maxDecimals)).toString());
+    setInputValue(Number(amount / 10 ** maxDecimals).toString());
   };
 
   const handleRepayment = async () => {
-    if (!marketHeader || !inputValue || !paystreamProgram || !solConfig || !usdcConfig) return;
+    if (
+      !marketHeader ||
+      !inputValue ||
+      !paystreamProgram ||
+      !solConfig ||
+      !usdcConfig
+    )
+      return;
 
     try {
       // const marketConfig = {
@@ -189,15 +202,14 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
               (match) => match.borrower?.toString() === publicKey?.toString(),
             )?.timestamp;
       setRepaymentTime(time ?? null);
+      console.log("time", time);
     };
 
     fetchTime();
   }, [publicKey, vaultTitle, solMarketData, usdcMarketData, paystreamProgram]);
 
   const getPendingAmount = (position: PositionData) => {
-    return Number(
-      position.amount.add(position.interestAccrued ?? new BN(0)),
-    );
+    return Number(position.amount.add(position.interestAccrued ?? new BN(0)));
   };
 
   return (
@@ -210,7 +222,13 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
           <div className="ml-auto flex items-center gap-2 font-body">
             <span className="text-sm text-[#BCEBFF80]">
               Pending:{" "}
-              {Number(getPendingAmount(row.original.positionData).toFixed(4))} {vaultTitle}
+              {Number(
+                (
+                  getPendingAmount(row.original.positionData) /
+                  (row.original.asset === "USDC" ? 1000000 : 1000000000)
+                ).toFixed(4),
+              )}{" "}
+              {vaultTitle}
             </span>
             <span
               onClick={() => handlePercentageClick(50)}
@@ -280,13 +298,13 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
           <div className="flex items-center gap-2">
             <span className="font-mono">
               {repaymentTime
-                ? `${Math.ceil((Date.now() - repaymentTime.getTime()) / (1000 * 60 * 60 * 24))} days`
+                ? `${Math.ceil((repaymentTime.getTime() - Date.now() / 1000) / (60 * 60 * 24))} days`
                 : "0 days"}
             </span>
             <span className="font-mono text-[#9CE0FF80]">|</span>
             <span className="font-mono">
               {repaymentTime
-                ? `${Math.ceil((Date.now() - repaymentTime.getTime()) / (1000 * 60 * 60))} hours`
+                ? `${Math.ceil((repaymentTime.getTime() - Date.now() / 1000) / (60 * 60))} hours`
                 : "0 hours"}
             </span>
           </div>
