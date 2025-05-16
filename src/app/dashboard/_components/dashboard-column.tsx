@@ -47,7 +47,7 @@ export const dashboardColumn: ColumnDef<DashboardTable>[] = [
       return (
         <div className="flex items-center gap-2">
           <Image
-            src={`/optimizers/${row.original.asset}.png`}
+            src={`/optimizers/${row.original.asset.toLowerCase()}.png`}
             alt={row.original.asset}
             width={24}
             height={24}
