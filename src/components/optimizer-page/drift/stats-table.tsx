@@ -65,7 +65,10 @@ export function StatsTable<TData, TValue>({
         ))}
       </TableHeader>
       <TableBody>
-        {loading || table === undefined || table.getRowModel() === undefined  || table.getRowModel().rows === undefined ? (
+        {loading ||
+        table === undefined ||
+        table.getRowModel() === undefined ||
+        table.getRowModel().rows === undefined ? (
           <TableRow className="hover:bg-[#1E364B]">
             <TableCell
               colSpan={columns.length}
@@ -94,7 +97,7 @@ export function StatsTable<TData, TValue>({
               colSpan={columns.length}
               className="h-24 text-center text-white/80"
             >
-              No positions found. Select an optimizer to start trading.
+              Loading...
             </TableCell>
           </TableRow>
         )}
