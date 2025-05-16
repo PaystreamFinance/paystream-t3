@@ -212,8 +212,8 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
         setUserData({
           myPositions: onVaultLendsNum.toFixed(4),
           apy: apy?.toString() ?? "0",
-          projectedEarnings: apy
-            ? (onVaultLendsNum * (1 + apy / 100)).toFixed(4)
+          projectedEarnings: p2pApy
+            ? (onVaultLendsNum * (1 + p2pApy / 100)).toFixed(4)
             : "0",
           p2pApy: p2pApy?.toString() ?? "0",
         });
