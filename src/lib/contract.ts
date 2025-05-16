@@ -181,6 +181,7 @@ export function getP2PMatches(
 export interface OptimizerStats {
   borrowVolume: number;
   availableLiquidity: number;
+  availableLiquidityInUSD: number;
   supplyVolume: number;
   matchRate: number;
   apyImprovement: BN;
@@ -246,29 +247,38 @@ export function getDriftOptimizerStats(
     const borrowVolume =
       solMarket.stats.borrows.totalBorrowedP2pInUSD +
       usdcMarket.stats.borrows.totalBorrowedP2pInUSD;
+    console.log("borrowVolume", borrowVolume);
     const supplyVolume =
       solMarket.stats.deposits.totalSupplyInUSD +
       usdcMarket.stats.deposits.totalSupplyInUSD;
+
     const totalAmountInP2p =
       bnToNumber(usdcMarket.stats.totalAmountInP2p, 6) +
       bnToNumber(solMarket.stats.totalAmountInP2p, 9) * solPrice;
 
     const totalLendingVolume = supplyVolume - totalCollateral;
 
-    // Calculate match rate as the percentage of matched P2P volume relative to total lending volume
-    const matchRate =
-      totalLendingVolume > 0
-        ? (totalAmountInP2p / totalLendingVolume) * 100
-        : 0;
-
-    logger.info(`Match rate: ${matchRate}%`);
-    logger.info(`Total lending volume: ${totalLendingVolume}`);
-    logger.info(`Total amount in P2P: ${totalAmountInP2p}`);
-    logger.info(`Total lend amount unmatched: ${totalLendAmountUnmatched}`);
-
     const availableLiquidity =
       bnToNumber(usdcMarket.stats.totalLiquidityAvailable, 6) +
       bnToNumber(solMarket.stats.totalLiquidityAvailable, 9) * solPrice;
+
+    const availableLiquidityInUSD =
+      usdcMarket.stats.totalLiquidityAvailableInUSD +
+      solMarket.stats.totalLiquidityAvailableInUSD;
+
+    const totalLiquidityAvailable =
+      usdcMarket.stats.totalLiquidityAvailable +
+      solMarket.stats.totalLiquidityAvailable;
+
+    // Calculate match rate as the percentage of matched P2P volume relative to total lending volume
+    console.log(
+      "availableLiquidityInUSD + borrowVolume",
+      availableLiquidityInUSD + borrowVolume,
+    );
+    const matchRate =
+      borrowVolume > 0
+        ? (borrowVolume / (availableLiquidityInUSD + borrowVolume)) * 100
+        : 0;
 
     const apyImprovement = solProtocolMetrics.midRateApy
       .sub(solProtocolMetrics.protocolMetrics.depositRate)
@@ -278,6 +288,7 @@ export function getDriftOptimizerStats(
     return {
       borrowVolume,
       availableLiquidity,
+      availableLiquidityInUSD,
       supplyVolume,
       matchRate,
       apyImprovement,

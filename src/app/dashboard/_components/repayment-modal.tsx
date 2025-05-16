@@ -2,6 +2,7 @@
 
 import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import {
+  calculate_debt_amount_in_collateral,
   MarketConfig,
   type MarketHeaderWithPubkey,
   PaystreamV1Program,
@@ -29,6 +30,7 @@ import {
 import { useMarketData } from "@/hooks/useMarketData";
 import { bnToNumber } from "@/lib/contract";
 import { type WithdrawModalProps } from "./withdraw-modal";
+import { Clock } from "lucide-react";
 
 const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
   const [balance, setBalance] = React.useState<number | null>(null);
@@ -42,7 +44,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
 
-  const { usdcConfig, solConfig } = useMarketData(
+  const { usdcConfig, solConfig, priceData } = useMarketData(
     new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
     new PublicKey("So11111111111111111111111111111111111111112"),
     new PublicKey("CCQXHfu51HEpiaegMU2kyYZK7dw1NhNbAX6cV44gZDJ8"),
@@ -86,12 +88,25 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
 
       const config = vaultTitle === "SOL" ? solConfig : usdcConfig;
 
-      const result = await paystreamProgram.repayAndWithdrawCollateralWithUI(
-        config!,
-        amount,
+      const freeCollateral = await calculate_debt_amount_in_collateral(
+        amount.toNumber(),
+        vaultTitle === "SOL"
+          ? priceData?.borrowPriceInCollateralMintScaled
+          : priceData?.collateralPriceInBorrowMintScaled,
+        vaultTitle === "SOL" ? 9 : 6,
+        vaultTitle === "SOL" ? 6 : 9,
       );
-      console.log(result);
+
+      const replayResult = await paystreamProgram.repayWithUI(config!, amount);
+      console.log(replayResult);
       toast.success("Repaid successful");
+
+      // const result = await paystreamProgram.withdrawWithUI(
+      //   config!,
+      //   freeCollateral,
+      // );
+      // console.log(result);
+      // toast.success("Withdrawal successful");
     } catch (error) {
       console.error("Error in repayment:", error);
       toast.error("Repayment failed");
@@ -189,7 +204,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
               {bnToNumber(
                 row.original.action_amount,
                 vaultTitle === "SOL" ? 9 : 6,
-              ).toFixed(2)}{" "}
+              ).toFixed(4)}{" "}
               {vaultTitle}
             </span>
             <span
@@ -237,7 +252,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
             Normal
           </span>
         </div>
-        <div className="flex items-center justify-between gap-2">
+        {/* <div className="flex items-center justify-between gap-2">
           <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
             Supply APY
           </span>
@@ -254,9 +269,9 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
           <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
             ---
           </span>
-        </div>
-        <Badge className="mb-5 w-full border border-[#9CE0FF] bg-[#08192A] px-3 py-2 text-sm text-amber-600 hover:bg-[#08192A]">
-          Withdrawal period: 7 days
+        </div> */}
+        <Badge className="mb-5 flex w-full items-center justify-center gap-2 border border-[#9CE0FF33] bg-[#000D1E80] px-4 py-3 text-sm font-medium text-[#9CE0FF] hover:bg-[#000D1E80]">
+          <Clock className="h-4 w-4" />7 days repayment period
         </Badge>
 
         {connected ? (

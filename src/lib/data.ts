@@ -29,19 +29,20 @@ export function getDriftStats(
   return [
     {
       title: "Supply Volume",
-      value: "$ " + optimizerStats.supplyVolume.toFixed(2).toString(),
+      value: "$ " + optimizerStats.supplyVolume.toFixed(4).toString(),
     },
     {
       title: "Borrow Volume",
-      value: "$ " + optimizerStats.borrowVolume.toFixed(2).toString(),
+      value: "$ " + optimizerStats.borrowVolume.toFixed(4).toString(),
     },
     {
       title: "Match Rate",
-      value: optimizerStats.matchRate.toFixed(2).toString() + " %",
+      value: optimizerStats.matchRate.toFixed(4).toString() + " %",
     },
     {
       title: "Available Liquidity",
-      value: "$ " + optimizerStats.availableLiquidity.toFixed(2).toString(),
+      value:
+        "$ " + optimizerStats.availableLiquidityInUSD.toFixed(4).toString(),
     },
   ];
 }
@@ -82,17 +83,17 @@ export function getTableData(
       id: "1",
       asset: "sol" as const,
       supply_volume_usd:
-        solMarketData.stats.deposits.totalSupplyInUSD.toFixed(2),
+        solMarketData.stats.deposits.totalSupplyInUSD.toFixed(4),
       supply_volume: (+Number(
         solMarketData.stats.deposits.totalSupply.toNumber() / 10 ** 9,
       ).toFixed(4)).toString(),
-      no_of_token: totalSupplySOL.toFixed(2),
+      no_of_token: totalSupplySOL.toFixed(4),
       avl_liquidity: (+Number(
         solMarketData.stats.totalLiquidityAvailable.toNumber() / 10 ** 9,
       ).toFixed(4)).toString(),
 
       avl_liquidity_usd:
-        solMarketData.stats.totalLiquidityAvailableInUSD.toFixed(2),
+        solMarketData.stats.totalLiquidityAvailableInUSD.toFixed(4),
       borrow_apr: bnToNumber(solProtocolMetrics.protocolMetrics.borrowRate, 4),
       supply_apr: bnToNumber(solProtocolMetrics.protocolMetrics.depositRate, 4),
       p2p_apr: bnToNumber(solProtocolMetrics.midRateApy, 4),
@@ -101,19 +102,19 @@ export function getTableData(
       id: "2",
       asset: "usdc" as const,
       supply_volume_usd:
-        usdcMarketData.stats.deposits.totalSupplyInUSD.toFixed(2),
+        usdcMarketData.stats.deposits.totalSupplyInUSD.toFixed(4),
 
       supply_volume: (+Number(
         usdcMarketData.stats.deposits.totalSupply.toNumber() / 10 ** 6,
       ).toFixed(4)).toString(),
-      no_of_token: totalSupplyUSDC.toFixed(2),
+      no_of_token: totalSupplyUSDC.toFixed(4),
 
       avl_liquidity: (+Number(
         usdcMarketData.stats.totalLiquidityAvailable.toNumber() / 10 ** 6,
       ).toFixed(4)).toString(),
 
       avl_liquidity_usd:
-        usdcMarketData.stats.totalLiquidityAvailableInUSD.toFixed(2),
+        usdcMarketData.stats.totalLiquidityAvailableInUSD.toFixed(4),
       borrow_apr: bnToNumber(usdcProtocolMetrics.protocolMetrics.borrowRate, 4),
       supply_apr: bnToNumber(
         usdcProtocolMetrics.protocolMetrics.depositRate,

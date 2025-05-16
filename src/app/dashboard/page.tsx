@@ -63,7 +63,14 @@ const DashboardPage: NextPage = () => {
       }
 
       // Don't proceed if we don't have all required data
-      if (!provider || !usdcMarketData || !solMarketData || !usdcProtocolMetrics || !solProtocolMetrics) return;
+      if (
+        !provider ||
+        !usdcMarketData ||
+        !solMarketData ||
+        !usdcProtocolMetrics ||
+        !solProtocolMetrics
+      )
+        return;
 
       try {
         setLoading(true);
@@ -89,8 +96,8 @@ const DashboardPage: NextPage = () => {
           .filter((pos) => pos.positionData !== null)
           .map((pos, idx) => ({
             id: idx.toString(),
-            asset: pos.asset ,
-            position: pos.positionData!.amount.toFixed(2).toString(),
+            asset: pos.asset,
+            position: pos.positionData!.amount.toFixed(4).toString(),
             type: pos.type,
             apy: pos.apy?.toString() ?? "--",
             action_amount: pos.positionData!.amount,
@@ -115,7 +122,14 @@ const DashboardPage: NextPage = () => {
     ) {
       fetchTraderPositions();
     }
-  }, [provider, usdcMarketData, solMarketData, error, loadingMarketData, loading]); // Only re-run when these core dependencies change
+  }, [
+    provider,
+    usdcMarketData,
+    solMarketData,
+    error,
+    loadingMarketData,
+    loading,
+  ]); // Only re-run when these core dependencies change
 
   return (
     <MaxWidthWrapper>

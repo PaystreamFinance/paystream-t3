@@ -23,7 +23,12 @@ export type DashboardTable = {
   id: string;
   asset: "USDC" | "SOL";
   position: string;
-  type: "UNMATCHED" | "TOTAL DEPOSIT" | "P2P LEND" | "P2P BORROW" | "PENDING BORROW";
+  type:
+    | "UNMATCHED"
+    | "TOTAL DEPOSIT"
+    | "P2P LEND"
+    | "P2P BORROW"
+    | "PENDING BORROW";
   apy: string;
   action_amount: BN;
   amount_in_usd: number;
@@ -64,7 +69,7 @@ export const dashboardColumn: ColumnDef<DashboardTable>[] = [
     cell: ({ row }) => (
       <div className="flex flex-col gap-1">
         <p className="text-[14px] font-light text-[#9CE0FF]">
-          $ {row.original.amount_in_usd.toFixed(2)}
+          $ {row.original.amount_in_usd.toFixed(4)}
         </p>
         <p className="text-[12px] font-light text-[#9CE0FF]">
           {row.original.position} {row.original.asset}

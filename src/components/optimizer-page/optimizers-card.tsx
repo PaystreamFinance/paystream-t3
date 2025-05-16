@@ -7,7 +7,13 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import { AnchorProvider } from "@coral-xyz/anchor";
-import { MarketConfig, MarketDataUI, MarketPriceData, PaystreamMetrics, PaystreamV1Program } from "@meimfhd/paystream-v1";
+import {
+  MarketConfig,
+  MarketDataUI,
+  MarketPriceData,
+  PaystreamMetrics,
+  PaystreamV1Program,
+} from "@meimfhd/paystream-v1";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
@@ -59,8 +65,9 @@ export default function OptimizersCard({
 
   // Memoize the stats calculation to prevent unnecessary updates
   const calculateStats = useCallback(() => {
-    if (!usdcMarketData || !solMarketData || !priceData || !solProtocolMetrics) return null;
-    
+    if (!usdcMarketData || !solMarketData || !priceData || !solProtocolMetrics)
+      return null;
+
     try {
       return getDriftOptimizerStats(
         usdcMarketData,
@@ -86,11 +93,11 @@ export default function OptimizersCard({
       title: "Drift",
       description:
         "An optimised gateway to Drift Trade with the same liquidity and risk parameters.",
-      suppliedVolume: stats?.supplyVolume.toFixed(2)|| "--",
+      suppliedVolume: stats?.supplyVolume.toFixed(4) || "--",
       apyImprovement: stats?.apyImprovement.toString() + "%" || "--",
     },
     kamino: {
-      title: "Kamino", 
+      title: "Kamino",
       description:
         "An optimised gateway to Kamino with the same liquidity and risk parameters.",
       suppliedVolume: "132.32k",

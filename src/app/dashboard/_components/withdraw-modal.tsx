@@ -197,7 +197,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
               {bnToNumber(
                 row.original.action_amount,
                 vaultTitle === "SOL" ? 9 : 6,
-              ).toFixed(2)}{" "}
+              ).toFixed(4)}{" "}
               {vaultTitle}
             </span>
             <span
