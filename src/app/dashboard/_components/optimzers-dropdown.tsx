@@ -13,8 +13,12 @@ import { useRouter } from "next/navigation";
 export default function OptimizersDropdown() {
   const optimizers = [
     {
-      name: "Drift",
-      path: "/optimizers/drift",
+      name: "USDC",
+      path: "/optimizers/drift/usdc",
+    },
+    {
+      name: "SOL",
+      path: "/optimizers/drift/sol",
     },
     // {
     //   name: "Kamino",
@@ -35,7 +39,7 @@ export default function OptimizersDropdown() {
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button className="w-fit bg-[#9CE0FF0F] font-body text-[#9CE0FF] hover:bg-[#9CE0FF0F]">
-          Optimizers
+          Markets
           {open ? (
             <ChevronDown className="ml-1 h-4 w-4" />
           ) : (
