@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 
 import LoadingOverlay from "@/components/loading-overlay";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
@@ -25,7 +26,7 @@ import {
   MarketHeaderWithPubkey,
   PRICE_PRECISION,
   PaystreamV1Program,
-  TraderPositionUI,
+  type TraderPositionUI,
   calculate_max_borrow_amount,
 } from "@meimfhd/paystream-v1";
 import {
@@ -39,7 +40,6 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { type VaultDataProps } from "./hero";
-import { Checkbox } from "@/components/ui/checkbox";
 
 const WalletMultiButton = dynamic(
   () =>
@@ -73,12 +73,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
   const [leverageValue, setLeverageValue] = useState(33);
   const [isDragging, setIsDragging] = useState(false);
-  const [isLendingDisabled, setIsLendingDisabled] = useState<boolean | null>(
-    null,
-  );
-  const [isBorrowDisabled, setIsBorrowDisabled] = useState<boolean | null>(
-    null,
-  );
+  const [isLendingDisabled, setIsLendingDisabled] = useState(false);
+  const [isBorrowDisabled, setIsBorrowDisabled] = useState(false);
 
   const [supplyType, setSupplyType] = useState<"p2p" | "collateral">("p2p");
 
@@ -127,16 +123,13 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     const isBorrowDisabled =
       vaultTitle === "USDC"
         ? solTrader?.isLender === true
-          ? false
-          : true
+          ? true
+          : false
         : usdcTrader?.isLender === true
-          ? false
-          : true;
-    setIsBorrowDisabled(!isBorrowDisabled);
-    const isLendingDisabled =
-      (usdcTrader?.isLender === true && vaultTitle === "USDC") ||
-      (solTrader?.isLender === true && vaultTitle === "SOL");
-    setIsLendingDisabled(!isLendingDisabled);
+          ? true
+          : false;
+    setIsBorrowDisabled(isBorrowDisabled);
+    setIsLendingDisabled(!isBorrowDisabled);
   }, [
     usdcConfig,
     solConfig,
@@ -242,6 +235,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     usdcConfig,
     solConfig,
   ]);
+
   const handleSupply = async () => {
     if (!inputValue || !wallet || !connection) return;
 
@@ -280,14 +274,14 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       if (isCollateral) {
         const result = await paystreamProgram.depositWithUI(
           vaultTitle === "USDC" ? usdcConfig : solConfig,
-          amount,
+          amountBN,
         );
         console.log("worked", result);
         toast.success("Deposit successful");
       } else {
         const result = await paystreamProgram.lendWithUI(
           vaultTitle === "USDC" ? usdcConfig : solConfig,
-          amount,
+          amountBN,
           vaultTitle === "USDC" ? isP2pUsdcEnabled : isP2pSolEnabled,
         );
         console.log("worked", result);
@@ -758,20 +752,16 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               variant="shady"
               className="w-full"
               onClick={handleSupplyClick}
-              disabled={isLendingDisabled ?? true}
+              disabled={isLendingDisabled}
             >
               {(() => {
-                if (
-                  solTrader === undefined ||
-                  usdcTrader === undefined ||
-                  isLendingDisabled === null
-                ) {
+                if (solTrader === undefined || usdcTrader === undefined) {
                   return "Loading...";
                 }
 
                 if (isLendingDisabled) {
-                  const isLender = !(vaultTitle === "USDC" 
-                    ? solTrader?.isLender 
+                  const isLender = !(vaultTitle === "USDC"
+                    ? solTrader?.isLender
                     : usdcTrader?.isLender);
 
                   return isLender
@@ -956,25 +946,24 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               variant="shady"
               className="w-full"
               onClick={handleBorrowClick}
-              disabled={isBorrowDisabled ?? true}
+              disabled={isBorrowDisabled}
             >
               {(() => {
-                if (
-                  solTrader === undefined ||
-                  usdcTrader === undefined ||
-                  isBorrowDisabled === null
-                ) {
+                if (solTrader === undefined || usdcTrader === undefined) {
                   return "Loading...";
                 }
 
                 if (isBorrowDisabled) {
-                  const isLender = vaultTitle === "USDC" 
-                    ? solTrader?.isLender 
-                    : usdcTrader?.isLender;
-                    
-                  return isLender ? "Already a lender" : "Insufficient collateral";
+                  const isLender =
+                    vaultTitle === "USDC"
+                      ? solTrader?.isLender
+                      : usdcTrader?.isLender;
+
+                  return isLender
+                    ? "Already a lender"
+                    : "Insufficient collateral";
                 }
-                
+
                 return "Borrow";
               })()}
             </Button>
