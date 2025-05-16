@@ -70,7 +70,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   const [collateralAmountToShow, setCollateralAmountToShow] = useState<
     number | null
   >(null);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState("0");
   const vaultState = useVaultStateStore((state) => state.vaultState);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -202,18 +202,17 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   }, [checkIsBorrowDisabled]);
 
   const fetchCollateralAmount = useCallback(async () => {
+    console.log("fetching collateral balance");
     if (vaultState !== "borrow") return;
     if (
       !provider ||
-      !inputValue ||
       !vaultTitle ||
       !solMarketData ||
       !usdcMarketData ||
       !paystreamProgram ||
       !usdcConfig ||
       !solConfig ||
-      !vaultState ||
-      !balance
+      !vaultState
     )
       return;
 
@@ -271,8 +270,10 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     const balanceDecimals =
       vaultTitle === "USDC" ? 1_000_000 : LAMPORTS_PER_SOL;
     if (collateralAmount.gt(remainingCollateralBalance)) {
+      console.log("insufficient collateral detected");
       setIsInsufficientCollateral(true);
     } else {
+      console.log("sufficient collateral detected");
       setIsInsufficientCollateral(false);
     }
     setCollateralBalance(
@@ -295,7 +296,6 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     usdcConfig,
     solConfig,
     vaultState,
-    balance,
     loadingMarketData,
     solTrader,
     usdcTrader,
@@ -304,7 +304,6 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   const fetchBalance = useCallback(async () => {
     if (vaultState !== "lend") return;
     if (!provider) {
-      setBalance(null);
       return;
     }
 
@@ -316,47 +315,39 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       owner: provider.publicKey,
     });
 
-    console.log(tokenAccount.toBase58(), "token account");
-
     const solBalance = await provider.connection.getBalance(provider.publicKey);
 
     const tokenAccountInfo =
       await provider.connection.getAccountInfo(tokenAccount);
     setUsdcTokenAccountExists(tokenAccountInfo ? true : false);
-    const tokenAccounts = tokenAccountInfo
+    const usdcBalanceTokenAccount = tokenAccountInfo
       ? await provider.connection.getTokenAccountBalance(tokenAccount)
       : null;
 
-    const usdcBalance = tokenAccounts ? tokenAccounts.value.uiAmount : null;
+    const usdcBalance = usdcBalanceTokenAccount
+      ? usdcBalanceTokenAccount.value.amount
+      : "0";
 
-    try {
-      if (vaultTitle === "SOL") {
-        if (solBalance) {
-          const balance = Number(solBalance / LAMPORTS_PER_SOL);
-          setBalance(balance ?? 0);
-          if (balance < Number(inputValue)) {
-            setIsInsufficientBalance(true);
-          } else {
-            setIsInsufficientBalance(false);
-          }
-        } else {
-          setBalance(0);
-        }
-      } else if (vaultTitle === "USDC") {
-        if (usdcBalance) {
-          setBalance(Number(usdcBalance.toFixed(4)));
-          if (usdcBalance < Number(inputValue)) {
-            setIsInsufficientBalance(true);
-          } else {
-            setIsInsufficientBalance(false);
-          }
-        } else {
-          setBalance(0);
-        }
+    if (vaultTitle === "SOL") {
+      console.log(solBalance, "sol balance");
+      const balance = Number(solBalance / LAMPORTS_PER_SOL);
+      console.log(balance, "sol balance");
+      if (balance < Number(inputValue)) {
+        setIsInsufficientBalance(true);
+      } else {
+        setIsInsufficientBalance(false);
       }
-    } catch (error) {
-      console.error("Error fetching balance:", error);
-      setBalance(null);
+      setBalance(balance);
+    } else if (vaultTitle === "USDC") {
+      console.log(usdcBalance, "usdc balance");
+      const balance = Number((Number(usdcBalance) / 1_000_000).toFixed(6));
+      console.log(balance, "usdc balance");
+      if (balance < Number(inputValue)) {
+        setIsInsufficientBalance(true);
+      } else {
+        setIsInsufficientBalance(false);
+      }
+      setBalance(balance);
     }
   }, [vaultState, provider, vaultTitle, inputValue]);
 
@@ -641,8 +632,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   };
 
   const handlePercentageClick = (percentage: number) => {
-    if (balance === null) return;
-    const amount = percentage === 100 ? balance : (balance * percentage) / 100;
+    if (collateralBalance === null) return;
+    const amount = percentage === 100 ? collateralBalance : (collateralBalance * percentage) / 100;
 
     const maxDecimals = vaultTitle === "SOL" ? 9 : 6;
     setInputValue(Number(amount.toFixed(maxDecimals)).toString());
@@ -684,24 +675,24 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
               Supply {vaultTitle}
             </span>
-            <div className="ml-auto flex items-center gap-2 font-body">
-              <span className="text-sm text-[#BCEBFF80]">
-                Balance: {balance !== null ? balance.toFixed(4) : "--"}{" "}
-                {vaultTitle}
-              </span>
-              <span
-                onClick={() => handlePercentageClick(50)}
-                className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
-              >
-                50%
-              </span>
-              <span
-                onClick={() => handlePercentageClick(100)}
-                className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
-              >
-                max
-              </span>
-            </div>
+              <div className="ml-auto flex items-center gap-2 font-body">
+                <span className="text-sm text-[#BCEBFF80]">
+                  Balance: {balance !== null ? balance : "--"} {vaultTitle}
+                </span>
+                <span
+                  onClick={() => handlePercentageClick(50)}
+                  className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
+                >
+                  50%
+                </span>
+                <span
+                  onClick={() => handlePercentageClick(100)}
+                  className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
+                >
+                  max
+                </span>
+              </div>
+            
           </div>
           <div className="flex h-[73px] w-full items-center justify-between bg-[#000D1E80] px-[16px]">
             <div className="flex items-center gap-2">
@@ -858,9 +849,9 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             </span>
             <div className="ml-auto flex items-center gap-2 font-body">
               <span className="text-sm text-[#BCEBFF80]">
-                Balance:{" "}
-                {balance !== null
-                  ? Number(balance.toFixed(4)).toString()
+                Collateral Balance:{" "}
+                {collateralBalance !== null
+                  ? Number(collateralBalance.toFixed(4)).toString()
                   : "--"}{" "}
                 {vaultTitle === "SOL" ? "USDC" : "SOL"}
               </span>
@@ -1011,7 +1002,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               %
             </span>
           </div>
-          {provider ? (
+
+          {vaultState === "borrow" && provider ? (
             <Button
               variant="shady"
               className="w-full"
@@ -1042,7 +1034,10 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
                   return "Loading...";
                 }
                 console.log("isBorrowDisabled", isBorrowDisabled);
-                console.log("isInsufficientCollateral", isInsufficientCollateral);
+                console.log(
+                  "isInsufficientCollateral",
+                  isInsufficientCollateral,
+                );
                 if (isBorrowDisabled) {
                   return "Already a lender";
                 } else if (isInsufficientCollateral) {
