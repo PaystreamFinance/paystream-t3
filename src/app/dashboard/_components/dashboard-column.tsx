@@ -51,6 +51,7 @@ export const dashboardColumn: ColumnDef<DashboardTable>[] = [
             alt={row.original.asset}
             width={24}
             height={24}
+            className="rounded-full"
           />
           <span className="text-[14px] font-light text-[#9CE0FF]">
             {row.original.asset.toUpperCase()}
