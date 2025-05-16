@@ -45,9 +45,20 @@ export default function DriftHero() {
 
   useEffect(() => {
     async function fetchStats() {
-      if (!usdcMarketData || !solMarketData || !priceData || !solProtocolMetrics) return;
+      if (
+        !usdcMarketData ||
+        !solMarketData ||
+        !priceData ||
+        !solProtocolMetrics
+      )
+        return;
 
-      const stats = getDriftStats(usdcMarketData, solMarketData, priceData, solProtocolMetrics);
+      const stats = getDriftStats(
+        usdcMarketData,
+        solMarketData,
+        priceData,
+        solProtocolMetrics,
+      );
       setStats(stats);
       console.log("USDC Stats", {
         totalAmountInP2p: usdcMarketData.stats.totalAmountInP2p.toString(),
@@ -176,7 +187,15 @@ export default function DriftHero() {
     if (!loading && !error && usdcMarketData && solMarketData && priceData) {
       fetchStats();
     }
-  }, [loading, error, usdcMarketData, solMarketData, priceData]);
+  }, [
+    loading,
+    error,
+    usdcMarketData,
+    solMarketData,
+    priceData,
+    solProtocolMetrics,
+    usdcProtocolMetrics,
+  ]);
 
   if (!connected) {
     return (
@@ -261,11 +280,7 @@ export default function DriftHero() {
             table data...
           </p>
         ) : (
-          <StatsTable
-            loading={loading}
-            columns={columns}
-            data={tableData}
-          />
+          <StatsTable loading={loading} columns={columns} data={tableData} />
         )}
       </div>
     </main>
