@@ -50,7 +50,7 @@ export default function StatsGrid({
             Projected Earnings
           </span>
           <span className="font-darkerGrotesque text-[32px] font-[400] text-[#EAEAEA]">
-            {stats.projectedEarnings}
+            $ {stats.projectedEarnings}
           </span>
         </div>
       </div>
@@ -81,7 +81,7 @@ export function StatsGridHorizontal({
           Total Deposits
         </span>
         <span className="font-darkerGrotesque text-lg font-[400] text-[#EAEAEA]">
-          {stats.totalDeposits}
+          $ {stats.totalDeposits}
         </span>
       </div>
       <div className="flex flex-col items-start justify-center gap-1 px-8 py-6">
@@ -94,7 +94,7 @@ export function StatsGridHorizontal({
           Liquidity
         </span>
         <span className="font-darkerGrotesque text-lg font-[400] text-[#EAEAEA]">
-          {stats.liquidity}
+          $ {stats.liquidity}
         </span>
       </div>
       <div className="flex flex-col items-start justify-center gap-1 px-8 py-6">

@@ -39,17 +39,18 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
     React.useState<MarketHeaderWithPubkey | null>(null);
 
   const inputRef = React.useRef<HTMLInputElement>(null);
-
+  const [repaymentTime, setRepaymentTime] = React.useState<Date | null>(null);
   const { publicKey, connected } = useWallet();
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
 
-  const { usdcConfig, solConfig, priceData } = useMarketData(
-    new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
-    new PublicKey("So11111111111111111111111111111111111111112"),
-    new PublicKey("CCQXHfu51HEpiaegMU2kyYZK7dw1NhNbAX6cV44gZDJ8"),
-    new PublicKey("GSjnD3XA1ezr7Xew3PZKPJdKGhjWEGefFFxXJhsfrX5e"),
-  );
+  const { usdcConfig, solConfig, priceData, solMarketData, usdcMarketData } =
+    useMarketData(
+      new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
+      new PublicKey("So11111111111111111111111111111111111111112"),
+      new PublicKey("CCQXHfu51HEpiaegMU2kyYZK7dw1NhNbAX6cV44gZDJ8"),
+      new PublicKey("GSjnD3XA1ezr7Xew3PZKPJdKGhjWEGefFFxXJhsfrX5e"),
+    );
 
   const provider = new AnchorProvider(connection, wallet!, {
     commitment: "processed",
@@ -189,7 +190,21 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
     };
 
     fetchMarketHeader();
-  }, []);
+    if (!solMarketData || !usdcMarketData) return;
+    const fetchTime = async () => {
+      const time =
+        vaultTitle === "SOL"
+          ? solMarketData?.matches.find(
+              (match) => match.borrower?.toString() === publicKey?.toString(),
+            )?.timestamp
+          : usdcMarketData?.matches.find(
+              (match) => match.borrower?.toString() === publicKey?.toString(),
+            )?.timestamp;
+      setRepaymentTime(time ?? null);
+    };
+
+    fetchTime();
+  }, [publicKey, vaultTitle, solMarketData, usdcMarketData]);
 
   return (
     <div>
@@ -271,7 +286,20 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
           </span>
         </div> */}
         <Badge className="mb-5 flex w-full items-center justify-center gap-2 border border-[#9CE0FF33] bg-[#000D1E80] px-4 py-3 text-sm font-medium text-[#9CE0FF] hover:bg-[#000D1E80]">
-          <Clock className="h-4 w-4" />7 days repayment period
+          <Clock className="h-4 w-4" />
+          <div className="flex items-center gap-2">
+            <span className="font-mono">
+              {repaymentTime
+                ? `${Math.ceil((Date.now() - repaymentTime.getTime()) / (1000 * 60 * 60 * 24))} days`
+                : "0 days"}
+            </span>
+            <span className="font-mono text-[#9CE0FF80]">|</span>
+            <span className="font-mono">
+              {repaymentTime
+                ? `${Math.ceil((Date.now() - repaymentTime.getTime()) / (1000 * 60 * 60))} hours`
+                : "0 hours"}
+            </span>
+          </div>
         </Badge>
 
         {connected ? (

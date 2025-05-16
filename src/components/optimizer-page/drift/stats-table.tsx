@@ -83,7 +83,7 @@ export function StatsTable<TData, TValue>({
               colSpan={columns.length}
               className="h-24 text-center text-white/80"
             >
-              No results.
+              Loading...
             </TableCell>
           </TableRow>
         )}

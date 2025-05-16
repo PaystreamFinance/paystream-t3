@@ -77,7 +77,7 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
         totalDeposits:
           solMarketData?.stats.deposits.collateralInUSD.toString() ?? "--",
         liquidity:
-          solMarketData?.stats.totalLiquidityAvailable.toString() ?? "--",
+          solMarketData?.stats.totalLiquidityAvailableInUSD.toString() ?? "--",
         apy:
           vaultState === "lend"
             ? (bnToNumber(
