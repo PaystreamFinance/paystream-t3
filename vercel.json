@@ -3,7 +3,7 @@
     {
       "source": "/",
       "has": [{ "type": "host", "value": "app.paystream.finance" }],
-      "destination": "/optimizers",
+      "destination": "/optimizers/drift",
       "permanent": true
     }
   ]
