@@ -1,7 +1,7 @@
 "use client";
 
 import { type NextPage } from "next";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { PaystreamV1Program } from "@meimfhd/paystream-v1";
@@ -40,13 +40,13 @@ const DashboardPage: NextPage = () => {
   const {
     usdcMarketData,
     solMarketData,
-    priceData,
     loading: loadingMarketData,
     error,
-    paystreamProgram,
     provider,
     usdcProtocolMetrics,
     solProtocolMetrics,
+    refresh,
+    setRefresh,
   } = useMarketData(
     new anchor.web3.PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
     new anchor.web3.PublicKey("So11111111111111111111111111111111111111112"),
@@ -54,64 +54,75 @@ const DashboardPage: NextPage = () => {
     new anchor.web3.PublicKey("GSjnD3XA1ezr7Xew3PZKPJdKGhjWEGefFFxXJhsfrX5e"),
   );
 
+  const fetchTraderPositions = useCallback(async () => {
+    // Don't proceed if we're already loading or if there's an error
+    if (loading || error) {
+      console.log("Loading", loading, "Error", error);
+      return;
+    }
+
+    // Don't proceed if we don't have all required data
+    if (
+      !provider ||
+      !usdcMarketData ||
+      !solMarketData ||
+      !usdcProtocolMetrics ||
+      !solProtocolMetrics
+    )
+      return;
+
+    try {
+      setLoading(true);
+
+      const positions = getTraderPositions(
+        provider.wallet.publicKey.toBase58(),
+        usdcMarketData,
+        solMarketData,
+        usdcProtocolMetrics,
+        solProtocolMetrics,
+      );
+      console.log("positions", positions);
+      console.log("usdcMarketData", usdcMarketData);
+
+      const matches = getP2PMatches(
+        provider.wallet.publicKey.toBase58(),
+        usdcMarketData,
+        solMarketData,
+      );
+
+      // Convert positions to table data format
+      const tableData: DashboardTable[] = positions
+        .filter((pos) => pos.positionData !== null)
+        .map((pos, idx) => ({
+          id: idx.toString(),
+          asset: pos.asset,
+          position: Number(pos.positionData!.amount.toFixed(4)).toString(),
+          type: pos.type,
+          apy: pos.apy?.toString() ?? "--",
+          action_amount: pos.positionData!.amount,
+          amount_in_usd: pos.positionData!.amountInUSD,
+          onSuccess: () => setRefresh(!refresh),
+        }));
+      console.log("tableData", tableData);
+      setTableData(tableData);
+    } catch (error) {
+      console.error("Error fetching trader positions:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    loading,
+    error,
+    provider,
+    usdcMarketData,
+    solMarketData,
+    usdcProtocolMetrics,
+    solProtocolMetrics,
+    refresh,
+    setRefresh,
+  ]);
+
   useEffect(() => {
-    const fetchTraderPositions = async () => {
-      // Don't proceed if we're already loading or if there's an error
-      if (loading || error) {
-        console.log("Loading", loading, "Error", error);
-        return;
-      }
-
-      // Don't proceed if we don't have all required data
-      if (
-        !provider ||
-        !usdcMarketData ||
-        !solMarketData ||
-        !usdcProtocolMetrics ||
-        !solProtocolMetrics
-      )
-        return;
-
-      try {
-        setLoading(true);
-
-        const positions = getTraderPositions(
-          provider.wallet.publicKey.toBase58(),
-          usdcMarketData,
-          solMarketData,
-          usdcProtocolMetrics,
-          solProtocolMetrics,
-        );
-        console.log("positions", positions);
-        console.log("usdcMarketData", usdcMarketData);
-
-        const matches = getP2PMatches(
-          provider.wallet.publicKey.toBase58(),
-          usdcMarketData,
-          solMarketData,
-        );
-
-        // Convert positions to table data format
-        const tableData: DashboardTable[] = positions
-          .filter((pos) => pos.positionData !== null)
-          .map((pos, idx) => ({
-            id: idx.toString(),
-            asset: pos.asset,
-            position: Number(pos.positionData!.amount.toFixed(4)).toString(),
-            type: pos.type,
-            apy: pos.apy?.toString() ?? "--",
-            action_amount: pos.positionData!.amount,
-            amount_in_usd: pos.positionData!.amountInUSD,
-          }));
-        console.log("tableData", tableData);
-        setTableData(tableData);
-      } catch (error) {
-        console.error("Error fetching trader positions:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     // Only fetch if we have the required data and we're not in a loading state
     if (
       !loadingMarketData &&
@@ -122,7 +133,17 @@ const DashboardPage: NextPage = () => {
     ) {
       fetchTraderPositions();
     }
-  }, [provider, usdcMarketData, solMarketData, error, loadingMarketData, loading, usdcProtocolMetrics, solProtocolMetrics]); // Only re-run when these core dependencies change
+  }, [
+    provider,
+    usdcMarketData,
+    solMarketData,
+    error,
+    loadingMarketData,
+    loading,
+    usdcProtocolMetrics,
+    solProtocolMetrics,
+    fetchTraderPositions,
+  ]); // Only re-run when these core dependencies change
 
   return (
     <MaxWidthWrapper>
@@ -163,7 +184,11 @@ const DashboardPage: NextPage = () => {
               table data...
             </p>
           ) : (
-            <StatsTable loading={loading} columns={dashboardColumn} data={tableData} />
+            <StatsTable
+              loading={loading}
+              columns={dashboardColumn}
+              data={tableData}
+            />
           )}
         </div>
       </main>

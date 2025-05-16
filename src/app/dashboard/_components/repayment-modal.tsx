@@ -32,7 +32,7 @@ import { bnToNumber } from "@/lib/contract";
 import { type WithdrawModalProps } from "./withdraw-modal";
 import { Clock } from "lucide-react";
 
-const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
+const RepaymentModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
   const [balance, setBalance] = React.useState<number | null>(null);
   const [inputValue, setInputValue] = React.useState("");
   const [marketHeader, setMarketHeader] =
@@ -88,7 +88,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
       const replayResult = await paystreamProgram.repayWithUI(config, amount);
       console.log(replayResult);
       toast.success("Repaid successful");
-
+      onSuccess();
       // const result = await paystreamProgram.withdrawWithUI(
       //   config!,
       //   freeCollateral,

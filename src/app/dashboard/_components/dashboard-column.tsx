@@ -32,6 +32,7 @@ export type DashboardTable = {
   apy: string;
   action_amount: number;
   amount_in_usd: number;
+  onSuccess: () => void;
 };
 
 export const dashboardColumn: ColumnDef<DashboardTable>[] = [
@@ -124,9 +125,9 @@ export const dashboardColumn: ColumnDef<DashboardTable>[] = [
             </DialogTrigger>
             <DialogContent className="border border-[#9CE0FF] bg-[#070f14] sm:max-w-[550px]">
               {type === "P2P BORROW" ? (
-                <RepaymentModal row={row} />
+                <RepaymentModal row={row} onSuccess={row.original.onSuccess} />
               ) : (
-                <WithdrawModal row={row} />
+                <WithdrawModal row={row} onSuccess={row.original.onSuccess} />
               )}
             </DialogContent>
           </Dialog>

@@ -6,7 +6,7 @@ export default function StatsGrid({
 }: {
   stats: {
     myPosition: string;
-    apy: string;
+    p2pApy: string;
     projectedEarnings: string;
   };
   underline?: boolean;
@@ -34,10 +34,10 @@ export default function StatsGrid({
               underline && "underline decoration-dotted",
             )}
           >
-            APY
+            P2P APY
           </span>
           <span className="font-darkerGrotesque text-[32px] font-[400] text-[#EAEAEA]">
-            {stats.apy}%
+            {stats.p2pApy}%
           </span>
         </div>
         <div className="flex flex-col items-start justify-center gap-1 px-8 py-6">

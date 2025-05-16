@@ -1,12 +1,12 @@
-import type{
+import type {
   MarketConfig,
   MarketDataUI,
   MarketPriceData,
-  PaystreamMetrics
+  PaystreamMetrics,
 } from "@meimfhd/paystream-v1";
 import { PaystreamV1Program } from "@meimfhd/paystream-v1";
-import { useEffect, useState, useRef } from "react";
-import { usePaystreamProgram } from "./use-paystream-program";
+import { useEffect, useState, useRef, useCallback } from "react";
+
 import { Connection, type PublicKey } from "@solana/web3.js";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { logger } from "@/lib/utils";
@@ -36,128 +36,147 @@ export function useMarketData(
     useState<PaystreamMetrics<"drift"> | null>(null);
   const [solProtocolMetrics, setSolProtocolMetrics] =
     useState<PaystreamMetrics<"drift"> | null>(null);
-
+  const [refresh, setRefresh] = useState(false);
   // Use ref to prevent redundant API calls
   const fetchingRef = useRef(false);
 
-  useEffect(() => {
-    // Skip if already fetching or no program
-    if (!wallet || fetchingRef.current) return;
+  const fetchAllData = useCallback(async () => {
+    // Mark as fetching to prevent duplicate calls
+    if (fetchingRef.current) return;
+    fetchingRef.current = true;
+    setLoading(true);
 
-    const fetchAllData = async () => {
-      // Mark as fetching to prevent duplicate calls
-      fetchingRef.current = true;
-      setLoading(true);
+    if (!wallet) {
+      setLoading(false);
+      fetchingRef.current = false;
+      return;
+    }
 
-      if (!wallet) return;
-      const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL!);
-      const provider = new AnchorProvider(connection, wallet, {
-        commitment: "processed",
-      });
-      const paystreamProgram = new PaystreamV1Program(provider);
-      setPaystreamProgram(paystreamProgram);
-      setProvider(provider);
+    const connection = new Connection(process.env.NEXT_PUBLIC_RPC_URL!, {
+      commitment: "confirmed",
+    });
+    const provider = new AnchorProvider(connection, wallet, {
+      commitment: "confirmed",
+      maxRetries: 3,
+      preflightCommitment: "confirmed",
+    });
+    const paystreamProgram = new PaystreamV1Program(provider);
+    setPaystreamProgram(paystreamProgram);
+    setProvider(provider);
 
-      try {
-        // STEP 1: Fetch configs
-        logger.info("Fetching market configs");
-        const [usdcConfigResult, solConfigResult] = await Promise.all([
-          paystreamProgram.getMarketConfig(
-            mint,
-            collateralMint,
-            market,
-            collateralMarket,
-          ),
-          paystreamProgram.getMarketConfig(
-            collateralMint,
-            mint,
-            collateralMarket,
-            market,
-          ),
-        ]);
+    try {
+      // STEP 1: Fetch configs
+      logger.info("Fetching market configs");
+      const [usdcConfigResult, solConfigResult] = await Promise.all([
+        paystreamProgram.getMarketConfig(
+          mint,
+          collateralMint,
+          market,
+          collateralMarket,
+        ),
+        paystreamProgram.getMarketConfig(
+          collateralMint,
+          mint,
+          collateralMarket,
+          market,
+        ),
+      ]);
 
-        if (!usdcConfigResult || !solConfigResult) {
-          setError("Market config not found");
-          return;
-        }
-
-        setUsdcConfig(usdcConfigResult);
-        setSolConfig(solConfigResult);
-
-        // STEP 2: Fetch market data
-        logger.info("Fetching market data");
-        const {
-          marketData,
-          collateralMarketData,
-          priceData: fetchedPriceData,
-        } = await paystreamProgram.getMarketDataUI(usdcConfigResult);
-
-        if (!marketData || !collateralMarketData || !fetchedPriceData) {
-          setError("Market data not found");
-          return;
-        }
-
-        // Determine which market is which based on marketId
-        let resolvedUsdcMarketData: MarketDataUI;
-        let resolvedSolMarketData: MarketDataUI;
-
-        if (marketData.marketId.toString() === "0") {
-          resolvedUsdcMarketData = marketData;
-          resolvedSolMarketData = collateralMarketData;
-        } else if (collateralMarketData.marketId.toString() === "0") {
-          resolvedUsdcMarketData = collateralMarketData;
-          resolvedSolMarketData = marketData;
-        } else {
-          setError("Invalid market data");
-          return;
-        }
-
-        setUsdcMarketData(resolvedUsdcMarketData);
-        setSolMarketData(resolvedSolMarketData);
-        setPriceData(fetchedPriceData);
-
-        // STEP 3: Fetch protocol metrics
-        logger.info("Fetching protocol metrics");
-        const [usdcMetrics, solMetrics] = await Promise.all([
-          paystreamProgram.getProtocolMetrics(
-            usdcConfigResult,
-            resolvedUsdcMarketData,
-          ),
-          paystreamProgram.getProtocolMetrics(
-            solConfigResult,
-            resolvedSolMarketData,
-          ),
-        ]);
-
-        if (!usdcMetrics) {
-          setError("USDC protocol metrics not found");
-          return;
-        }
-
-        if (!solMetrics) {
-          setError("SOL protocol metrics not found");
-          return;
-        }
-
-        setUsdcProtocolMetrics(usdcMetrics);
-        setSolProtocolMetrics(solMetrics);
-        setError(null);
-      } catch (err: any) {
-        logger.error("Error fetching market data:", err);
-        setError(err.message || "Failed to fetch market data");
-      } finally {
-        setLoading(false);
-        // Reset fetching flag with slight delay to prevent immediate re-triggering
-        setTimeout(() => {
-          fetchingRef.current = false;
-        }, 500);
+      if (!usdcConfigResult || !solConfigResult) {
+        setError("Market config not found");
+        return;
       }
-    };
 
-    fetchAllData();
+      setUsdcConfig(usdcConfigResult);
+      setSolConfig(solConfigResult);
 
-    // This effect should only run when paystreamProgram changes or any of the keys change
+      // STEP 2: Fetch market data
+      logger.info("Fetching market data");
+      const {
+        marketData,
+        collateralMarketData,
+        priceData: fetchedPriceData,
+      } = await paystreamProgram.getMarketDataUI(usdcConfigResult);
+
+      if (!marketData || !collateralMarketData || !fetchedPriceData) {
+        setError("Market data not found");
+        return;
+      }
+
+      // Determine which market is which based on marketId
+      let resolvedUsdcMarketData: MarketDataUI;
+      let resolvedSolMarketData: MarketDataUI;
+
+      if (marketData.marketId.toString() === "0") {
+        resolvedUsdcMarketData = marketData;
+        resolvedSolMarketData = collateralMarketData;
+      } else if (collateralMarketData.marketId.toString() === "0") {
+        resolvedUsdcMarketData = collateralMarketData;
+        resolvedSolMarketData = marketData;
+      } else {
+        setError("Invalid market data");
+        return;
+      }
+
+      setUsdcMarketData(resolvedUsdcMarketData);
+      setSolMarketData(resolvedSolMarketData);
+      setPriceData(fetchedPriceData);
+
+      // STEP 3: Fetch protocol metrics
+      logger.info("Fetching protocol metrics");
+      const [usdcMetrics, solMetrics] = await Promise.all([
+        paystreamProgram.getProtocolMetrics(
+          usdcConfigResult,
+          resolvedUsdcMarketData,
+        ),
+        paystreamProgram.getProtocolMetrics(
+          solConfigResult,
+          resolvedSolMarketData,
+        ),
+      ]);
+
+      if (!usdcMetrics) {
+        setError("USDC protocol metrics not found");
+        return;
+      }
+
+      if (!solMetrics) {
+        setError("SOL protocol metrics not found");
+        return;
+      }
+
+      setUsdcProtocolMetrics(usdcMetrics);
+      setSolProtocolMetrics(solMetrics);
+      setError(null);
+    } catch (err: any) {
+      logger.error("Error fetching market data:", err);
+      setError(err.message || "Failed to fetch market data");
+    } finally {
+      setLoading(false);
+      // Reset fetching flag with slight delay to prevent immediate re-triggering
+      setTimeout(() => {
+        fetchingRef.current = false;
+      }, 5000);
+    }
   }, [collateralMarket, collateralMint, market, mint, wallet]);
+
+  // Handle initial load and changes to dependencies
+  useEffect(() => {
+    if (!wallet) return;
+    fetchAllData();
+  }, [fetchAllData, wallet]);
+
+  // Handle manual refresh
+  useEffect(() => {
+    if (refresh) {
+      console.log("refreshing");
+      fetchAllData().then(() => {
+        // Reset refresh state after fetching
+        setRefresh(false);
+        console.log("refreshed");
+      });
+    }
+  }, [refresh, fetchAllData]);
 
   return {
     provider,
@@ -171,17 +190,7 @@ export function useMarketData(
     usdcProtocolMetrics,
     solProtocolMetrics,
     paystreamProgram,
+    refresh,
+    setRefresh,
   };
-}
-
-// Utility function for error handling
-export async function tryCatch<T, E = Error>(
-  promise: Promise<T>,
-): Promise<{ data: T | null; error: E | null }> {
-  try {
-    const data = await promise;
-    return { data, error: null };
-  } catch (error) {
-    return { data: null, error: error as E };
-  }
 }

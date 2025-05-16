@@ -29,16 +29,19 @@ import {
 import { useMarketData } from "@/hooks/useMarketData";
 import { bnToNumber } from "@/lib/contract";
 import { type DashboardTable } from "./dashboard-column";
+import { useRouter } from "next/navigation";
 
 export interface WithdrawModalProps {
   row: Row<DashboardTable>;
+  onSuccess: () => void;
 }
 
-const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
+const WithdrawModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
   const [balance, setBalance] = React.useState<number | null>(null);
   const [inputValue, setInputValue] = React.useState("");
   const [marketHeader, setMarketHeader] =
     React.useState<MarketHeaderWithPubkey | null>(null);
+  const router = useRouter();
 
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -108,6 +111,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
       );
       console.log(result);
       toast.success("Withdrawal successful");
+      onSuccess();
     } catch (error) {
       console.error("Error in withdraw:", error);
       toast.error("Withdrawal failed");

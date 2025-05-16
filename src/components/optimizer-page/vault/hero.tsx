@@ -62,6 +62,7 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
     error,
     usdcProtocolMetrics,
     solProtocolMetrics,
+    paystreamProgram,provider
   } = useMarketData(
     new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
     new PublicKey("So11111111111111111111111111111111111111112"),
@@ -72,42 +73,43 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
   const { vaultState } = useVaultStateStore();
 
   useEffect(() => {
+    if (!solMarketData || !usdcMarketData || !priceData || !usdcProtocolMetrics || !solProtocolMetrics) return;
     if (vaultTitle === "SOL") {
       setStats({
         totalDeposits:
-          solMarketData?.stats.deposits.collateralInUSD.toString() ?? "--",
+          Number(Number(solMarketData.stats.deposits.collateralInUSD.toString()).toFixed(4)).toString() ?? "--",
         liquidity:
-          solMarketData?.stats.totalLiquidityAvailableInUSD.toString() ?? "--",
+          Number(Number(solMarketData?.stats.totalLiquidityAvailableInUSD.toString()).toFixed(4)).toString() ?? "--",
         apy:
           vaultState === "lend"
             ? (solProtocolMetrics?.protocolMetrics?.depositRate
-                ? Number(
+                ? Number(Number(
                     bnToNumber(solProtocolMetrics.protocolMetrics.depositRate, 4)
-                  ).toFixed(4)
+                  ).toFixed(4)).toString()
                 : "--")
             : (solProtocolMetrics?.protocolMetrics?.borrowRate
-                ? Number(
+                ? Number(Number(
                     bnToNumber(solProtocolMetrics.protocolMetrics.borrowRate, 4)
-                  ).toFixed(4)
+                  ).toFixed(4)).toString()
                 : "--"),
       });
     } else if (vaultTitle === "USDC") {
       setStats({
         totalDeposits:
-          usdcMarketData?.stats.deposits.collateralInUSD.toString() ?? "--",
+          Number(Number(usdcMarketData?.stats.deposits.collateralInUSD.toString()).toFixed(4)).toString() ?? "--",
         liquidity:
-          usdcMarketData?.stats.totalLiquidityAvailable.toString() ?? "--",
+          Number(Number(usdcMarketData?.stats.totalLiquidityAvailableInUSD.toString()).toFixed(4)).toString() ?? "--",
         apy:
           vaultState === "lend"
             ? (usdcProtocolMetrics?.protocolMetrics?.depositRate
-                ? Number(
+                ? Number(Number(
                     bnToNumber(usdcProtocolMetrics.protocolMetrics.depositRate, 4)
-                  ).toFixed(4)
+                  ).toFixed(4)).toString()
                 : "--")
             : (usdcProtocolMetrics?.protocolMetrics?.borrowRate
-                ? Number(
+                ? Number(Number(
                     bnToNumber(usdcProtocolMetrics.protocolMetrics.borrowRate, 4)
-                  ).toFixed(4)
+                  ).toFixed(4)).toString()
                 : "--"),
       });
     }
@@ -122,13 +124,7 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
   ]);
 
   useEffect(() => {
-    if (!wallet || !connection) return;
-
-    const provider = new AnchorProvider(connection, wallet, {
-      commitment: "processed",
-    });
-
-    const paystreamProgram = new PaystreamV1Program(provider);
+    if (!wallet || !connection || !paystreamProgram) return;
     const fetchMarketHeader = async () => {
       try {
         const headers = await paystreamProgram.getAllMarketHeaders();
@@ -145,26 +141,21 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
     };
 
     fetchMarketHeader();
-  }, [wallet, connection, vaultTitle]);
+  }, [wallet, connection, vaultTitle, paystreamProgram]);
 
   useEffect(() => {
-    if (!wallet || !connection) return;
+    if (!wallet || !connection || !paystreamProgram) return;
 
-    const provider = new AnchorProvider(connection, wallet, {
-      commitment: "processed",
-    });
-
-    const paystreamProgram = new PaystreamV1Program(provider);
     const fetchUserData = async () => {
-      if (!usdcMarketData || !solMarketData || !priceData) return;
+      if (!usdcMarketData || !solMarketData || !priceData || !usdcProtocolMetrics || !solProtocolMetrics) return;
 
       try {
         const tableData = getTableData(
           usdcMarketData,
           solMarketData,
           priceData,
-          usdcProtocolMetrics!,
-          solProtocolMetrics!,
+          usdcProtocolMetrics,
+          solProtocolMetrics,
         );
 
         const usdcData = tableData?.filter(
@@ -215,31 +206,18 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
 
         setUserData({
           myPositions: Number(onVaultLendsNum.toFixed(4)).toString(),
-          apy: apy?.toString() ?? "0",
+          apy: apy ? Number(apy.toFixed(4)).toString() : "0",
           projectedEarnings: p2pApy
-            ? (Number(onVaultLendsNum) * (1 + Number(p2pApy) / 100)).toFixed(4).toString()
+            ? Number((Number(onVaultLendsNum) * (1 + Number(p2pApy) / 100)).toFixed(4)).toString()
             : "0",
-          p2pApy: p2pApy?.toString() ?? "0",
+          p2pApy: p2pApy ? Number(p2pApy.toFixed(4)).toString() : "0",
         });
       } catch (error) {
         console.info("Error fetching user data:", error);
       }
     };
     fetchUserData();
-  }, [
-    marketHeader,
-    connected,
-    publicKey,
-    wallet,
-    connection,
-    vaultTitle,
-    vaultState,
-    usdcMarketData,
-    solMarketData,
-    priceData,
-    usdcProtocolMetrics,
-    solProtocolMetrics,
-  ]);
+  }, [marketHeader, connected, publicKey, wallet, connection, vaultTitle, vaultState, usdcMarketData, solMarketData, priceData, usdcProtocolMetrics, solProtocolMetrics, paystreamProgram]);
 
   return (
     <main className="relative flex min-h-[1064px] w-full flex-col items-center justify-start border-x border-b border-border-t3">
@@ -266,7 +244,7 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
           <StatsGrid
             stats={{
               myPosition: userData?.myPositions ?? "--",
-              apy: userData?.p2pApy ?? "--",
+              p2pApy: userData?.p2pApy ?? "--",
               projectedEarnings: userData?.projectedEarnings ?? "--",
             }}
           />
