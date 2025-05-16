@@ -73,8 +73,12 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
 
   const [leverageValue, setLeverageValue] = useState(33);
   const [isDragging, setIsDragging] = useState(false);
-  const [isLendingDisabled, setIsLendingDisabled] = useState(false);
-  const [isBorrowDisabled, setIsBorrowDisabled] = useState(false);
+  const [isLendingDisabled, setIsLendingDisabled] = useState<boolean | null>(
+    null,
+  );
+  const [isBorrowDisabled, setIsBorrowDisabled] = useState<boolean | null>(
+    null,
+  );
 
   const [supplyType, setSupplyType] = useState<"p2p" | "collateral">("p2p");
 
@@ -123,13 +127,16 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     const isBorrowDisabled =
       vaultTitle === "USDC"
         ? solTrader?.isLender === true
-          ? true
-          : false
+          ? false
+          : true
         : usdcTrader?.isLender === true
-          ? true
-          : false;
-    setIsBorrowDisabled(isBorrowDisabled);
-    setIsLendingDisabled(!isBorrowDisabled);
+          ? false
+          : true;
+    setIsBorrowDisabled(!isBorrowDisabled);
+    const isLendingDisabled =
+      (usdcTrader?.isLender === true && vaultTitle === "USDC") ||
+      (solTrader?.isLender === true && vaultTitle === "SOL");
+    setIsLendingDisabled(!isLendingDisabled);
   }, [
     usdcConfig,
     solConfig,
@@ -235,7 +242,6 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     usdcConfig,
     solConfig,
   ]);
-
   const handleSupply = async () => {
     if (!inputValue || !wallet || !connection) return;
 
@@ -274,14 +280,14 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       if (isCollateral) {
         const result = await paystreamProgram.depositWithUI(
           vaultTitle === "USDC" ? usdcConfig : solConfig,
-          amountBN,
+          amount,
         );
         console.log("worked", result);
         toast.success("Deposit successful");
       } else {
         const result = await paystreamProgram.lendWithUI(
           vaultTitle === "USDC" ? usdcConfig : solConfig,
-          amountBN,
+          amount,
           vaultTitle === "USDC" ? isP2pUsdcEnabled : isP2pSolEnabled,
         );
         console.log("worked", result);
@@ -752,10 +758,14 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               variant="shady"
               className="w-full"
               onClick={handleSupplyClick}
-              disabled={isLendingDisabled}
+              disabled={isLendingDisabled ?? true}
             >
               {(() => {
-                if (solTrader === undefined || usdcTrader === undefined) {
+                if (
+                  solTrader === undefined ||
+                  usdcTrader === undefined ||
+                  isLendingDisabled === null
+                ) {
                   return "Loading...";
                 }
 
@@ -946,10 +956,14 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
               variant="shady"
               className="w-full"
               onClick={handleBorrowClick}
-              disabled={isBorrowDisabled}
+              disabled={isBorrowDisabled ?? true}
             >
               {(() => {
-                if (solTrader === undefined || usdcTrader === undefined) {
+                if (
+                  solTrader === undefined ||
+                  usdcTrader === undefined ||
+                  isBorrowDisabled === null
+                ) {
                   return "Loading...";
                 }
 
