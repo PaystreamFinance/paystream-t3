@@ -64,7 +64,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
       percentage === 100 ? maxAmount : (maxAmount * percentage) / 100;
 
     const maxDecimals = vaultTitle === "SOL" ? 9 : 6;
-    setInputValue(amount.toFixed(maxDecimals));
+    setInputValue(Number(amount.toFixed(maxDecimals)).toString());
   };
 
   const handleRepayment = async () => {
@@ -204,7 +204,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row }) => {
           <div className="ml-auto flex items-center gap-2 font-body">
             <span className="text-sm text-[#BCEBFF80]">
               Pending:{" "}
-              {row.original.action_amount.toFixed(4)} {vaultTitle}
+              {Number(row.original.action_amount.toFixed(4))} {vaultTitle}
             </span>
             <span
               onClick={() => handlePercentageClick(50)}

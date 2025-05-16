@@ -9,9 +9,9 @@ import { useEffect, useState, useCallback } from "react";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import {
   MarketConfig,
-  MarketDataUI,
-  MarketPriceData,
-  PaystreamMetrics,
+  type MarketDataUI,
+  type MarketPriceData,
+  type PaystreamMetrics,
   PaystreamV1Program,
 } from "@meimfhd/paystream-v1";
 import { useConnection } from "@solana/wallet-adapter-react";
@@ -93,8 +93,8 @@ export default function OptimizersCard({
       title: "Drift",
       description:
         "An optimised gateway to Drift Trade with the same liquidity and risk parameters.",
-      suppliedVolume: stats?.supplyVolume?.toFixed(4) || "--",
-      apyImprovement: stats?.apyImprovement?.toString() + "%" || "--",
+      suppliedVolume: stats?.supplyVolume?.toFixed(4) ? Number(stats?.supplyVolume?.toFixed(4)) : "--",
+      apyImprovement: stats?.apyImprovement?.toString() ? Number(stats?.apyImprovement?.toNumber().toFixed(2)) + "%" : "--",
     },
     kamino: {
       title: "Kamino",

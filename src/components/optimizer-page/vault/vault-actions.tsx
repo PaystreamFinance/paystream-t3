@@ -490,7 +490,8 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
                 Additional Collateral Required
               </h3>
               <p className="font-helvetica mt-2 text-[#EAEAEA]">
-                Please deposit an additional {amountToShow.toFixed(4)}{" "}
+                Please deposit an additional{" "}
+                {Number(amountToShow.toFixed(4)).toString()}{" "}
                 {vaultTitle === "USDC" ? "SOL" : "USDC"} as collateral to
                 borrow.
               </p>
@@ -628,6 +629,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
       const result = await paystreamProgram.withdrawWithUI(
         vaultTitle === "USDC" ? usdcConfig : solConfig,
         amount,
+        vaultTitle === "USDC" ? usdcTokenAccountExists ?? false : false,
       );
       console.log(result);
       toast.success("Withdrawal successful");
@@ -644,7 +646,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
     const amount = percentage === 100 ? balance : (balance * percentage) / 100;
 
     const maxDecimals = vaultTitle === "SOL" ? 9 : 6;
-    setInputValue(amount.toFixed(maxDecimals));
+    setInputValue(Number(amount.toFixed(maxDecimals)).toString());
   };
 
   const handleSupplyClick = () => {
@@ -847,7 +849,7 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             </span>
             <div className="ml-auto flex items-center gap-2 font-body">
               <span className="text-sm text-[#BCEBFF80]">
-                Balance: {balance !== null ? balance.toFixed(4) : "--"}{" "}
+                Balance: {balance !== null ? Number(balance.toFixed(4)).toString() : "--"}{" "}
                 {vaultTitle === "SOL" ? "USDC" : "SOL"}
               </span>
               <span
@@ -966,10 +968,10 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
               {vaultTitle === "USDC"
                 ? usdcConfig?.collateralLtvRatio?.toNumber()
-                  ? (usdcConfig.collateralLtvRatio.toNumber() / 100).toFixed(1)
+                  ? (Number(usdcConfig.collateralLtvRatio.toNumber() / 100).toFixed(1))
                   : "--"
                 : solConfig?.collateralLtvRatio?.toNumber()
-                  ? (solConfig.collateralLtvRatio.toNumber() / 100).toFixed(1)
+                  ? (Number(solConfig.collateralLtvRatio.toNumber() / 100).toFixed(1))
                   : "--"}
               %
             </span>
@@ -982,14 +984,10 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
               {vaultTitle === "USDC"
                 ? usdcConfig?.collateralLiquidationThreshold?.toNumber()
-                  ? (
-                      usdcConfig.collateralLiquidationThreshold.toNumber() / 100
-                    ).toFixed(1)
+                  ? (Number(usdcConfig.collateralLiquidationThreshold.toNumber() / 100).toFixed(1))
                   : "--"
                 : solConfig?.collateralLiquidationThreshold?.toNumber()
-                  ? (
-                      solConfig.collateralLiquidationThreshold.toNumber() / 100
-                    ).toFixed(1)
+                  ? (Number(solConfig.collateralLiquidationThreshold.toNumber() / 100).toFixed(1))
                   : "--"}
               %
             </span>

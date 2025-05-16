@@ -1,6 +1,6 @@
 "use client";
 
-import { NextPage } from "next";
+import { type NextPage } from "next";
 import React, { useEffect } from "react";
 
 import { AnchorProvider } from "@coral-xyz/anchor";
@@ -97,7 +97,7 @@ const DashboardPage: NextPage = () => {
           .map((pos, idx) => ({
             id: idx.toString(),
             asset: pos.asset,
-            position: pos.positionData!.amount.toFixed(4).toString(),
+            position: Number(pos.positionData!.amount.toFixed(4)).toString(),
             type: pos.type,
             apy: pos.apy?.toString() ?? "--",
             action_amount: pos.positionData!.amount,

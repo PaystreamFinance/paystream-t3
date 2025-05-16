@@ -1,7 +1,7 @@
 "use client";
 
 import { BN } from "@coral-xyz/anchor";
-import { ColumnDef } from "@tanstack/react-table";
+import { type ColumnDef } from "@tanstack/react-table";
 import { ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
 
@@ -69,7 +69,7 @@ export const dashboardColumn: ColumnDef<DashboardTable>[] = [
     cell: ({ row }) => (
       <div className="flex flex-col gap-1">
         <p className="text-[14px] font-light text-[#9CE0FF]">
-          $ {row.original.amount_in_usd.toFixed(4)}
+          $ {Number(row.original.amount_in_usd.toFixed(4))}
         </p>
         <p className="text-[12px] font-light text-[#9CE0FF]">
           {row.original.position} {row.original.asset}

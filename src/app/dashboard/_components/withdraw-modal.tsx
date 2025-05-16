@@ -1,6 +1,6 @@
 "use client";
 
-import { AnchorProvider, BN } from "@coral-xyz/anchor";
+import { AnchorProvider, BN, utils } from "@coral-xyz/anchor";
 import {
   type MarketHeaderWithPubkey,
   PaystreamV1Program,
@@ -53,7 +53,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
       percentage === 100 ? maxAmount : (maxAmount * percentage) / 100;
 
     const maxDecimals = vaultTitle === "SOL" ? 9 : 6;
-    setInputValue(amount.toFixed(maxDecimals));
+    setInputValue(Number(amount.toFixed(maxDecimals)).toString());
   };
   const { solConfig, usdcConfig, paystreamProgram, provider } = useMarketData(
     new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
@@ -63,7 +63,15 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
   );
 
   const handleWithdraw = async () => {
-    if (!marketHeader || !inputValue || !paystreamProgram) return;
+    if (
+      !marketHeader ||
+      !inputValue ||
+      !paystreamProgram ||
+      !solConfig ||
+      !usdcConfig ||
+      !provider
+    )
+      return;
 
     try {
       // const marketConfig = {
@@ -82,7 +90,22 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
 
       const config = vaultTitle === "SOL" ? solConfig : usdcConfig;
 
-      const result = await paystreamProgram.withdrawWithUI(config!, amount);
+      const usdcMint = new PublicKey(
+        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      ); // Mainnet USDC mint address
+      const tokenAccount = utils.token.associatedAddress({
+        mint: usdcMint,
+        owner: provider.publicKey,
+      });
+
+      const tokenAccountInfo =
+        await provider.connection.getAccountInfo(tokenAccount);
+      const usdcTokenAccountExists = tokenAccountInfo ? true : false;
+      const result = await paystreamProgram.withdrawWithUI(
+        config,
+        amount,
+        usdcTokenAccountExists,
+      );
       console.log(result);
       toast.success("Withdrawal successful");
     } catch (error) {
@@ -108,12 +131,10 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
       if (!provider) return;
       try {
         if (vaultTitle === "SOL") {
-          const tokenAccounts = await provider.connection.getParsedTokenAccountsByOwner(
-            publicKey,
-            {
+          const tokenAccounts =
+            await provider.connection.getParsedTokenAccountsByOwner(publicKey, {
               mint: new PublicKey(SOL_MINT),
-            },
-          );
+            });
           if (tokenAccounts.value.length > 0) {
             const balance =
               tokenAccounts.value[0]?.account.data.parsed.info.tokenAmount
@@ -123,12 +144,10 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
             setBalance(0);
           }
         } else if (vaultTitle === "USDC") {
-          const tokenAccounts = await provider.connection.getParsedTokenAccountsByOwner(
-            publicKey,
-            {
+          const tokenAccounts =
+            await provider.connection.getParsedTokenAccountsByOwner(publicKey, {
               mint: new PublicKey(USDC_MINT),
-            },
-          );
+            });
           if (tokenAccounts.value.length > 0) {
             const balance =
               tokenAccounts.value[0]?.account.data.parsed.info.tokenAmount
@@ -179,8 +198,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ row }) => {
           </span>
           <div className="ml-auto flex items-center gap-2 font-body">
             <span className="text-sm text-[#BCEBFF80]">
-              Available:{" "}
-              {row.original.action_amount.toFixed(4)}{" "}
+              Available: {Number(row.original.action_amount.toFixed(4))}{" "}
               {vaultTitle}
             </span>
             <span

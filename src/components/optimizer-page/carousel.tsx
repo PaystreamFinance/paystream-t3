@@ -4,7 +4,7 @@ import OptimizersCard from "./optimizers-card";
 import "./carousel.css";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { MarketDataUI, MarketPriceData, PaystreamMetrics } from "@meimfhd/paystream-v1";
+import { type MarketDataUI, type MarketPriceData, type PaystreamMetrics } from "@meimfhd/paystream-v1";
 
 type CardVariant = "drift" | "kamino" | "save" | "marginfi";
 

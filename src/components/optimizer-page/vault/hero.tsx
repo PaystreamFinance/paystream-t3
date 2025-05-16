@@ -80,14 +80,16 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
           solMarketData?.stats.totalLiquidityAvailableInUSD.toString() ?? "--",
         apy:
           vaultState === "lend"
-            ? (bnToNumber(
-                solProtocolMetrics?.protocolMetrics.depositRate,
-                4,
-              ).toFixed(4) ?? "--")
-            : (bnToNumber(
-                solProtocolMetrics?.protocolMetrics.borrowRate,
-                4,
-              ).toFixed(4) ?? "--"),
+            ? (solProtocolMetrics?.protocolMetrics?.depositRate
+                ? Number(
+                    bnToNumber(solProtocolMetrics.protocolMetrics.depositRate, 4)
+                  ).toFixed(4)
+                : "--")
+            : (solProtocolMetrics?.protocolMetrics?.borrowRate
+                ? Number(
+                    bnToNumber(solProtocolMetrics.protocolMetrics.borrowRate, 4)
+                  ).toFixed(4)
+                : "--"),
       });
     } else if (vaultTitle === "USDC") {
       setStats({
@@ -97,14 +99,16 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
           usdcMarketData?.stats.totalLiquidityAvailable.toString() ?? "--",
         apy:
           vaultState === "lend"
-            ? (bnToNumber(
-                usdcProtocolMetrics?.protocolMetrics.depositRate,
-                4,
-              ).toFixed(4) ?? "--")
-            : (bnToNumber(
-                usdcProtocolMetrics?.protocolMetrics.borrowRate,
-                4,
-              ).toFixed(4) ?? "--"),
+            ? (usdcProtocolMetrics?.protocolMetrics?.depositRate
+                ? Number(
+                    bnToNumber(usdcProtocolMetrics.protocolMetrics.depositRate, 4)
+                  ).toFixed(4)
+                : "--")
+            : (usdcProtocolMetrics?.protocolMetrics?.borrowRate
+                ? Number(
+                    bnToNumber(usdcProtocolMetrics.protocolMetrics.borrowRate, 4)
+                  ).toFixed(4)
+                : "--"),
       });
     }
   }, [
@@ -210,10 +214,10 @@ export default function VaultHero({ vaultTitle, icon }: VaultDataProps) {
         console.log(`P2P Lends ${vaultTitle}:`, inP2pLendsNum.toFixed(4));
 
         setUserData({
-          myPositions: onVaultLendsNum.toFixed(4),
+          myPositions: Number(onVaultLendsNum.toFixed(4)).toString(),
           apy: apy?.toString() ?? "0",
           projectedEarnings: p2pApy
-            ? (onVaultLendsNum * (1 + p2pApy / 100)).toFixed(4)
+            ? (Number(onVaultLendsNum) * (1 + Number(p2pApy) / 100)).toFixed(4).toString()
             : "0",
           p2pApy: p2pApy?.toString() ?? "0",
         });

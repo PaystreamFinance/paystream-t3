@@ -261,7 +261,11 @@ export default function DriftHero() {
             table data...
           </p>
         ) : (
-          <StatsTable columns={columns} data={tableData} />
+          <StatsTable
+            loading={loading}
+            columns={columns}
+            data={tableData}
+          />
         )}
       </div>
     </main>

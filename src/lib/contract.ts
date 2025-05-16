@@ -1,10 +1,10 @@
 import { BN } from "@coral-xyz/anchor";
 import {
-  MarketDataUI,
-  MarketPriceData,
-  PaystreamMetrics,
+  type MarketDataUI,
+  type MarketPriceData,
+  type PaystreamMetrics,
   ProtocolMetrics,
-  TraderPositionUI,
+  type TraderPositionUI,
 } from "@meimfhd/paystream-v1";
 import { logger } from "./utils";
 
