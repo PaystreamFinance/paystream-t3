@@ -44,17 +44,16 @@ export const dashboardColumn: ColumnDef<DashboardTable>[] = [
       </p>
     ),
     cell: ({ row }) => {
-      const asset = row.original.asset;
       return (
         <div className="flex items-center gap-2">
           <Image
-            src={`/optimizers/${asset}.png`}
-            alt={asset}
+            src={`/optimizers/${row.original.asset}.png`}
+            alt={row.original.asset}
             width={24}
             height={24}
           />
           <span className="text-[14px] font-light text-[#9CE0FF]">
-            {asset.toUpperCase()}
+            {row.original.asset.toUpperCase()}
           </span>
         </div>
       );
