@@ -12,7 +12,7 @@ Paystream is a peer-to-peer lending protocol built on Solana that allows users t
 
 ## Demo
 
-Check out our live demo: [Paystream Devnet Engine](https://testnet.paystream.finance/optimizers/marginfi)
+Check out our live demo: [Paystream Devnet Engine](https://youtu.be/pkN8J2qtoZ8)
 
 https://github.com/user-attachments/assets/6b950061-0c0c-47ca-8744-e5c4cc15c710
 
