@@ -18,8 +18,8 @@ importers:
         specifier: ^4.1.2
         version: 4.1.2(react-hook-form@7.54.2(react@18.3.1))
       '@meimfhd/paystream-v1':
-        specifier: 0.4.0-beta.23
-        version: 0.4.0-beta.23(@switchboard-xyz/common@3.2.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(mocha@11.2.2)(ts-node@10.9.2(@types/node@20.17.19)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10)
+        specifier: 0.4.0-beta.24
+        version: 0.4.0-beta.24(@switchboard-xyz/common@3.2.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(mocha@11.2.2)(ts-node@10.9.2(@types/node@20.17.19)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10)
       '@radix-ui/react-accordion':
         specifier: ^1.2.3
         version: 1.2.3(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1635,8 +1635,8 @@ packages:
   '@ledgerhq/logs@6.12.0':
     resolution: {integrity: sha512-ExDoj1QV5eC6TEbMdLUMMk9cfvNKhhv5gXol4SmULRVCx/3iyCPhJ74nsb3S0Vb+/f+XujBEj3vQn5+cwS0fNA==}
 
-  '@meimfhd/paystream-v1@0.4.0-beta.23':
-    resolution: {integrity: sha512-HtKsyFuS0JlOS2XT3eum6opOTj8X1a+W4tOSYi+QAH/QHntHSbvn0MempGR8ui0j8XxlXWhkQ94HrNToxu3aYw==}
+  '@meimfhd/paystream-v1@0.4.0-beta.24':
+    resolution: {integrity: sha512-ft7N0kemQhsULckL9Db+8vIwbeZq9ETlZdqNVhIU9qbMXmbZ1oo/wqx3oC4Edi9dPNl+jksBp5NpXbJ4WeP3XQ==}
 
   '@metamask/rpc-errors@5.1.1':
     resolution: {integrity: sha512-JjZnDi2y2CfvbohhBl+FOQRzmFlJpybcQlIk37zEX8B96eVSPbH/T8S0p7cSF8IE33IWx6JkD8Ycsd+2TXFxCw==}
@@ -10021,7 +10021,7 @@ snapshots:
 
   '@ledgerhq/logs@6.12.0': {}
 
-  '@meimfhd/paystream-v1@0.4.0-beta.23(@switchboard-xyz/common@3.2.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(mocha@11.2.2)(ts-node@10.9.2(@types/node@20.17.19)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10)':
+  '@meimfhd/paystream-v1@0.4.0-beta.24(@switchboard-xyz/common@3.2.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(mocha@11.2.2)(ts-node@10.9.2(@types/node@20.17.19)(typescript@5.7.3))(typescript@5.7.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@coral-xyz/anchor': 0.31.1(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)
       '@coral-xyz/anchor-v0.29': '@coral-xyz/anchor@0.29.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)'
