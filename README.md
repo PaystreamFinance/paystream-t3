@@ -1,4 +1,4 @@
-# Paystream-devnet P2P Engine
+# Paystream-P2P Engine
 
 [![Paystream Protocol](https://img.shields.io/badge/Paystream-Protocol-blue)](https://app.paystream.finance/optimizers/drift)
 
@@ -13,7 +13,8 @@ Paystream is a peer-to-peer lending protocol built on Solana that allows users t
 
 Check out our live demo: [Paystream](https://youtu.be/pkN8J2qtoZ8)
 
-https://github.com/user-attachments/assets/6b950061-0c0c-47ca-8744-e5c4cc15c710
+<iframe width="560" height="315" src="https://youtu.be/pkN8J2qtoZ8" frameborder="0" allowfullscreen></iframe>
+
 
 ## Getting Started
 
@@ -23,16 +24,12 @@ https://github.com/user-attachments/assets/6b950061-0c0c-47ca-8744-e5c4cc15c710
 - Basic understanding of DeFi lending protocols
 - Familiarity with Solana blockchain
 
-### Devnet Access
+### Main-net Access
 
-To interact with the Paystream protocol on devnet, use the following whitelisted wallet:
+Only whitelisted addresses can interact with the Paystream app.
 
-**Secret Key:**
-```
-9fGzRVVoVQRRnPPZtpSqjt5t7fRtfg5ooh5tYqgqe3zkmALiaFiUTcwk67mT3uCJ6fhRbPjXmTuSmX8SpkKP7N7
-```
+If you are not whitelisted yet, join our [Telegram](https://t.me/paystreamfi) and follow the instructions to request access.
 
-**Important:** Ensure that the network in your wallet is set to **Devnet**. This wallet has been pre-funded with devnet tokens for testing purposes.
 
 ## Protocol Flow
 
