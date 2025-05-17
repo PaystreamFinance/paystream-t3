@@ -13,7 +13,10 @@ Paystream is a peer-to-peer lending protocol built on Solana that allows users t
 
 Check out our live demo: [Paystream](https://youtu.be/pkN8J2qtoZ8)
 
-<iframe width="560" height="315" src="https://youtu.be/pkN8J2qtoZ8" frameborder="0" allowfullscreen></iframe>
+## Demo
+
+[![Watch the demo](https://img.youtube.com/vi/pkN8J2qtoZ8/maxresdefault.jpg)](https://youtu.be/pkN8J2qtoZ8)
+
 
 
 ## Getting Started
