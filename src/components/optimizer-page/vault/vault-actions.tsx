@@ -27,6 +27,7 @@ import {
   PRICE_PRECISION,
   PaystreamV1Program,
   type TraderPositionUI,
+  calculate_collateral_value_in_debt,
   calculate_max_borrow_amount,
 } from "@meimfhd/paystream-v1";
 import {
@@ -632,11 +633,35 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
   };
 
   const handlePercentageClick = (percentage: number) => {
-    if (collateralBalance === null) return;
-    const amount = percentage === 100 ? collateralBalance : (collateralBalance * percentage) / 100;
+    if (vaultState === "lend") {
+      if (balance === null) return;
+    } else {
+      // if (collateralBalance === null) return;
+    }
+    const collateralBalanceInDebt = calculate_collateral_value_in_debt(
+      new BN(collateralBalance ?? 0).mul(
+        new BN(10 ** (vaultTitle === "SOL" ? 9 : 6)),
+      ),
+      vaultTitle === "SOL"
+        ? new BN(priceData?.collateralPriceInBorrowMintScaled ?? 0)
+        : new BN(priceData?.borrowPriceInCollateralMintScaled ?? 0),
+      vaultTitle === "SOL" ? 9 : 6,
+      vaultTitle === "SOL" ? 6 : 9,
+    );
+    console.log(collateralBalanceInDebt.toNumber(), "collateralBalanceInDebt");
+    const amount =
+      percentage === 100
+        ? vaultState === "lend"
+          ? (balance ?? 0)
+          : (collateralBalanceInDebt ?? 0)
+        : vaultState === "lend"
+          ? ((balance ?? 0) * percentage) / 100
+          : ((Number(collateralBalanceInDebt) ?? 0) * percentage) / 100;
+    console.log(amount.toString(), "amount");
 
     const maxDecimals = vaultTitle === "SOL" ? 9 : 6;
-    setInputValue(Number(amount.toFixed(maxDecimals)).toString());
+    setInputValue(Number(amount).toFixed(maxDecimals));
+    console.log(inputValue, "inputValue");
   };
 
   const handleSupplyClick = () => {
@@ -675,24 +700,23 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
             <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
               Supply {vaultTitle}
             </span>
-              <div className="ml-auto flex items-center gap-2 font-body">
-                <span className="text-sm text-[#BCEBFF80]">
-                  Balance: {balance !== null ? balance : "--"} {vaultTitle}
-                </span>
-                <span
-                  onClick={() => handlePercentageClick(50)}
-                  className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
-                >
-                  50%
-                </span>
-                <span
-                  onClick={() => handlePercentageClick(100)}
-                  className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
-                >
-                  max
-                </span>
-              </div>
-            
+            <div className="ml-auto flex items-center gap-2 font-body">
+              <span className="text-sm text-[#BCEBFF80]">
+                Balance: {balance !== null ? balance : "--"} {vaultTitle}
+              </span>
+              <span
+                onClick={() => handlePercentageClick(50)}
+                className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
+              >
+                50%
+              </span>
+              <span
+                onClick={() => handlePercentageClick(100)}
+                className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
+              >
+                max
+              </span>
+            </div>
           </div>
           <div className="flex h-[73px] w-full items-center justify-between bg-[#000D1E80] px-[16px]">
             <div className="flex items-center gap-2">
@@ -855,18 +879,18 @@ export default function VaultActions({ vaultTitle, icon }: VaultDataProps) {
                   : "--"}{" "}
                 {vaultTitle === "SOL" ? "USDC" : "SOL"}
               </span>
-              <span
-                onClick={() => handlePercentageClick(50)}
+              {/* <span
+                // onClick={() => handlePercentageClick(50)}
                 className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
               >
                 50%
               </span>
               <span
-                onClick={() => handlePercentageClick(100)}
+                // onClick={() => handlePercentageClick(100)}
                 className="cursor-pointer text-sm text-[#9CE0FF] transition-colors hover:text-[#BCEBFF]"
               >
                 max
-              </span>
+              </span> */}
             </div>
           </div>
           <div className="flex h-[73px] w-full items-center justify-between bg-[#000D1E80] px-[16px]">

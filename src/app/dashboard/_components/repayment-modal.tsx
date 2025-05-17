@@ -31,6 +31,7 @@ import { useMarketData } from "@/hooks/useMarketData";
 import { type PositionData } from "@/lib/contract";
 import { type WithdrawModalProps } from "./withdraw-modal";
 import { Clock } from "lucide-react";
+import { Console } from "console";
 
 const RepaymentModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
   const [balance, setBalance] = React.useState<number | null>(null);
@@ -39,7 +40,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
     React.useState<MarketHeaderWithPubkey | null>(null);
 
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const [repaymentTime, setRepaymentTime] = React.useState<Date | null>(null);
+  const [timeBorrowed, setTimeBorrowed] = React.useState<Date | null>(null);
   const { publicKey, connected } = useWallet();
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
@@ -201,7 +202,7 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
           : usdcMarketData?.matches.find(
               (match) => match.borrower?.toString() === publicKey?.toString(),
             )?.timestamp;
-      setRepaymentTime(time ?? null);
+      setTimeBorrowed(time ?? null);
       console.log("time", time);
     };
 
@@ -210,6 +211,12 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
 
   const getPendingAmount = (position: PositionData) => {
     return Number(position.amount.add(position.interestAccrued ?? new BN(0)));
+  };
+
+  const getInterestAccrued = (position: PositionData) => {
+    const decimals = vaultTitle === "SOL" ? LAMPORTS_PER_SOL : 1_000_000;
+    console.log(position.interestAccrued?.toString(), "interest accrued");
+    return Number(position.interestAccrued?.div(new BN(decimals)));
   };
 
   return (
@@ -268,11 +275,16 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
         </div>
         <div className="flex items-center justify-between gap-2">
           <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF33]">
-            Transaction Settings
+            Total Interest
           </span>
 
           <span className="font-body text-[12px] font-[500] uppercase text-[#9CE0FF]">
-            Normal
+            {Number(
+              getInterestAccrued(row.original.positionData).toFixed(
+                vaultTitle === "SOL" ? 9 : 6,
+              ),
+            )}{" "}
+            {vaultTitle}
           </span>
         </div>
         {/* <div className="flex items-center justify-between gap-2">
@@ -297,15 +309,21 @@ const RepaymentModal: React.FC<WithdrawModalProps> = ({ row, onSuccess }) => {
           <Clock className="h-4 w-4" />
           <div className="flex items-center gap-2">
             <span className="font-mono">
-              {repaymentTime
-                ? `${Math.ceil((repaymentTime.getTime() - Date.now() / 1000) / (60 * 60 * 24))} days`
-                : "0 days"}
-            </span>
-            <span className="font-mono text-[#9CE0FF80]">|</span>
-            <span className="font-mono">
-              {repaymentTime
-                ? `${Math.ceil((repaymentTime.getTime() - Date.now() / 1000) / (60 * 60))} hours`
-                : "0 hours"}
+              {timeBorrowed
+                ? (() => {
+                    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000; // seven days in ms
+                    const deadline = timeBorrowed.getTime() + SEVEN_DAYS_MS;
+                    const timeLeft = Math.max(0, deadline - Date.now());
+                    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor(
+                      (timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+                    );
+                    const minutes = Math.floor(
+                      (timeLeft % (1000 * 60 * 60)) / (1000 * 60),
+                    );
+                    return `${days}d ${hours}h ${minutes}m left`;
+                  })()
+                : "--"}
             </span>
           </div>
         </Badge>
