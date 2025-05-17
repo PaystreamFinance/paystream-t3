@@ -15,8 +15,7 @@ Check out our live demo: [Paystream](https://youtu.be/pkN8J2qtoZ8)
 
 ## Demo
 
-[![Watch the demo](https://img.youtube.com/vi/pkN8J2qtoZ8/maxresdefault.jpg)](https://youtu.be/pkN8J2qtoZ8)
-
+https://github.com/user-attachments/assets/fd14ecd9-ca84-4ba5-969f-31a50259dc09
 
 
 ## Getting Started
