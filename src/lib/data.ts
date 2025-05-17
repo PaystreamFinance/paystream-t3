@@ -22,7 +22,6 @@ export function getDriftStats(
   const optimizerStats = getDriftOptimizerStats(
     usdcMarketData,
     solMarketData,
-    priceData,
     solProtocolMetrics,
   );
 

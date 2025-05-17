@@ -72,7 +72,6 @@ export default function OptimizersCard({
       return getDriftOptimizerStats(
         usdcMarketData,
         solMarketData,
-        priceData,
         solProtocolMetrics,
       );
     } catch (error) {
@@ -93,8 +92,12 @@ export default function OptimizersCard({
       title: "Drift",
       description:
         "An optimised gateway to Drift Trade with the same liquidity and risk parameters.",
-      suppliedVolume: stats?.supplyVolume?.toFixed(4) ? Number(stats?.supplyVolume?.toFixed(4)) : "--",
-      apyImprovement: stats?.apyImprovement?.toString() ? Number(stats?.apyImprovement?.toNumber().toFixed(2)) + "%" : "--",
+      suppliedVolume: stats?.supplyVolume?.toFixed(4)
+        ? Number(stats?.supplyVolume?.toFixed(4))
+        : "--",
+      apyImprovement: stats?.apyImprovement?.toString()
+        ? Number(stats?.apyImprovement?.toNumber().toFixed(2)) + "%"
+        : "--",
     },
     kamino: {
       title: "Kamino",

@@ -263,9 +263,9 @@ export function getDriftOptimizerStats(
         : 0;
 
     const apyImprovement = solProtocolMetrics.midRateApy
-      .sub(solProtocolMetrics.protocolMetrics.depositRate)
+      .sub(solProtocolMetrics.protocolMetrics?.depositRate)
       .mul(new BN(100))
-      .div(solProtocolMetrics.protocolMetrics.depositRate);
+      .div(solProtocolMetrics.protocolMetrics?.depositRate);
 
     return {
       borrowVolume,
