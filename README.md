@@ -1,7 +1,6 @@
 # Paystream-devnet P2P Engine
 
-[![Paystream Protocol](https://img.shields.io/badge/Paystream-Protocol-blue)](https://testnet.paystream.finance/optimizers/marginfi)
-[![Devnet](https://img.shields.io/badge/Network-Devnet-orange)](https://solana.com/)
+[![Paystream Protocol](https://img.shields.io/badge/Paystream-Protocol-blue)](https://app.paystream.finance/optimizers/drift)
 
 ## Overview
 
@@ -12,7 +11,7 @@ Paystream is a peer-to-peer lending protocol built on Solana that allows users t
 
 ## Demo
 
-Check out our live demo: [Paystream Devnet Engine](https://youtu.be/pkN8J2qtoZ8)
+Check out our live demo: [Paystream](https://youtu.be/pkN8J2qtoZ8)
 
 https://github.com/user-attachments/assets/6b950061-0c0c-47ca-8744-e5c4cc15c710
 
