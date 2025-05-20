@@ -22,8 +22,9 @@ const navItems = [
     target: "_blank",
   },
   {
-    label: "Benefits",
-    href: "/#payment-solutions",
+    label: "Docs",
+    href: "https://docs.paystream.finance",
+    target: "_blank",
   },
   {
     label: "Whitepaper",

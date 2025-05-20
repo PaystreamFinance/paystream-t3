@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
                 How to earn?
               </Link>
               <Link href="/#payment-solutions">Benefits</Link>
-              <Link href="/whitepaper.pdf" target="_blank">
+              <Link href="https://docs.paystream.finance" target="_blank">
                 Docs
               </Link>
             </div>
