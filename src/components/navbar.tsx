@@ -106,7 +106,7 @@ const Navbar: React.FC = () => {
               </Link>
             ))}
 
-            <Link href="https://forms.gle/XiB5bhjWbp6uY9Ss8" target="_blank">
+            <Link href="https://forms.gle/C9zx9j5Gwz8uCadq9" target="_blank">
               <Button variant="primary">Join Waitlist</Button>
             </Link>
           </div>
