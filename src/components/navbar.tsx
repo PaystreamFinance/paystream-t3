@@ -26,11 +26,11 @@ const navItems = [
     href: "https://docs.paystream.finance",
     target: "_blank",
   },
-  // {
-  //   label: "Whitepaper",
-  //   href: "/whitepaper.pdf",
-  //   target: "_blank",
-  // },
+  {
+    label: "Whitepaper",
+    href: "/whitepaper.pdf",
+    target: "_blank",
+  },
 ];
 
 const mobileMenuItems = [
